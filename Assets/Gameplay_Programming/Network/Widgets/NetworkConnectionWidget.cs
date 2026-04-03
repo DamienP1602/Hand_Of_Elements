@@ -1,11 +1,16 @@
+using System.Net;
+using System.Net.Sockets;
 using TMPro;
 using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class NetworkConnectionWidget : NetworkBehaviour
 {
     [SerializeField] NetworkDebugWidget debug;
+    [SerializeField] TMP_InputField clientIpField;
+    [SerializeField] TMP_Text hostIpText;
     [SerializeField] Button hostButton;
     [SerializeField] Button joinButton;
     [SerializeField] Button startGame;
@@ -13,8 +18,9 @@ public class NetworkConnectionWidget : NetworkBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        hostButton.onClick.AddListener(() => NetworkManager.Singleton.StartHost());
-        joinButton.onClick.AddListener(() => NetworkManager.Singleton.StartClient());
+        hostButton.onClick.AddListener(LaunchHost);
+        joinButton.onClick.AddListener(LaunchClient);
+
         startGame.onClick.AddListener(() => NetworkManager.Singleton.SceneManager.LoadScene("GameScene", UnityEngine.SceneManagement.LoadSceneMode.Single));
 
         NetworkManager.Singleton.OnConnectionEvent += OnConnection;
@@ -79,5 +85,43 @@ public class NetworkConnectionWidget : NetworkBehaviour
                 startGame.gameObject.SetActive(true);
             }
         }
+    }
+
+    void LaunchHost()
+    {
+        SetIPAddress();
+        hostIpText.gameObject.SetActive(true);
+        hostIpText.text = GetHostIP();
+
+        NetworkManager.Singleton.StartHost();
+    }
+
+    void SetIPAddress()
+    {
+        string _text = clientIpField.text;
+        UnityTransport _transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+        UnityTransport.ConnectionAddressData _data = _transport.ConnectionData;
+        _data.Address = _text;
+        _transport.ConnectionData = _data;
+    }
+
+    void LaunchClient()
+    {
+        SetIPAddress();
+
+        NetworkManager.Singleton.StartClient();
+    }
+
+    string GetHostIP()
+    {
+        IPHostEntry _host = Dns.GetHostEntry(Dns.GetHostName());
+        foreach (IPAddress _ip in _host.AddressList)
+        {
+            if (_ip.AddressFamily == AddressFamily.InterNetwork)
+            {
+                return _ip.ToString();
+            }
+        }
+        return "";
     }
 }

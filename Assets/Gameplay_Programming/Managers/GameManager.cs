@@ -4,12 +4,9 @@ using UnityEngine;
 
 public class GameManager : Singleton<GameManager>
 {
-    [Header("Camera Parameters")]
-    [SerializeField] Vector3 cameraPosition;
-    [SerializeField] Camera playerCamera;
-
-    [field:SerializeField] PlayerEntity firstPlayer { get; set; }
-    [field:SerializeField] PlayerEntity secondPlayer { get; set; }
+    [Header("Players")]
+    [field:SerializeField] public PlayerEntity firstPlayer { get; set; }
+    [field:SerializeField] public PlayerEntity secondPlayer { get; set; }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -28,15 +25,12 @@ public class GameManager : Singleton<GameManager>
         PlayerEntity[] _players = FindObjectsByType<PlayerEntity>(FindObjectsSortMode.InstanceID);
 
         firstPlayer = _players[0];
-        firstPlayer.InitCamera(playerCamera, cameraPosition, false);
-        secondPlayer = _players[1];
-        secondPlayer.InitCamera(playerCamera, cameraPosition, true);
-    }
+        firstPlayer.HandComponent.value = true;
+        firstPlayer.Init();
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(cameraPosition, 1.0f);
+        secondPlayer = _players[1];
+        secondPlayer.HandComponent.value = false;
+        secondPlayer.Init();
     }
 
 }

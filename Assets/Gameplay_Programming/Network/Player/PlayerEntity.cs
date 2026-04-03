@@ -1,10 +1,13 @@
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
+[RequireComponent(typeof(PlayerInputComponent), typeof(PlayerInteractComponent),typeof(PlayerHandComponent))]
 public class PlayerEntity : NetworkBehaviour
 {
     public PlayerInputComponent InputsComponent { get; private set; }
-    public PlayerClickComponent ClickComponent { get; private set; }
+    public PlayerInteractComponent InteractComponent { get; private set; }
+    public PlayerHandComponent HandComponent { get; private set; }
 
     [Header("Parameters")]
     [SerializeField] Camera playerCamera;
@@ -12,34 +15,39 @@ public class PlayerEntity : NetworkBehaviour
     private void Awake()
     {
         InputsComponent = GetComponent<PlayerInputComponent>();
-        ClickComponent = GetComponent<PlayerClickComponent>();
+        InteractComponent = GetComponent<PlayerInteractComponent>();
+        HandComponent = GetComponent<PlayerHandComponent>();
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        InitInputs();
+
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
-    }
 
-    public void InitCamera(Camera _camera,Vector3 _spawnPosition, bool _shouldRotate)
-    {
-        if (IsOwner)
-        {
-            playerCamera = Instantiate(_camera, transform);
-            playerCamera.transform.position = _spawnPosition;
-            if (_shouldRotate)
-                playerCamera.transform.eulerAngles += Vector3.forward * 180.0f;
-        }
     }
 
     void InitInputs()
     {
-        InputsComponent.Click.started += (_context) => ClickComponent.OnPlayerClick();
+        InputsComponent.Click.started += (_context) => InteractComponent.OnPlayerClick();
     }
+
+    public void Init()
+    {
+        if (!IsOwner) return;
+
+        InitCamera();
+        InitInputs();
+
+        HandComponent.Init();
+    }
+
+    void InitCamera()
+    {
+        playerCamera = Camera.main;
+        Camera.main.transform.SetParent(transform);
+    }
+
 }
