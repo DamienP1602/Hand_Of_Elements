@@ -1,0 +1,35 @@
+{
+    "version": 1,
+    "name": "IAA_Player",
+    "maps": [
+        {
+            "name": "Player",
+            "id": "2e567fc0-c6a6-49f2-bb81-0caee8643be5",
+            "actions": [
+                {
+                    "name": "Click",
+                    "type": "Button",
+                    "id": "e619f33c-0e23-4f36-a261-6003ecef245a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "bbcb12d6-f600-4d60-a673-850986999d6a",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
