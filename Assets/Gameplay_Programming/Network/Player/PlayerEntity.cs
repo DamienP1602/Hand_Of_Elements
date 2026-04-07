@@ -19,6 +19,8 @@ public class PlayerEntity : NetworkBehaviour
     [SerializeField] Camera playerCamera;
     [SerializeField] PlayerEnum player;
 
+    public PlayerEnum PlayerTag => player;
+
     private void Awake()
     {
         InputsComponent = GetComponent<PlayerInputComponent>();
@@ -41,12 +43,14 @@ public class PlayerEntity : NetworkBehaviour
         InputsComponent.Click.started += (_context) => InteractComponent.OnPlayerClick();
     }
 
-    public void Init()
+    public void Init(PlayerEnum _type)
     {
         if (!IsOwner) return;
 
         InitCamera();
         InitInputs();
+
+        player = _type;
 
         HandComponent.Init();
     }

@@ -7,7 +7,6 @@ using UnityEngine;
 public class PlayerHandComponent : NetworkBehaviour
 {
     [SerializeField] List<HandCardComponent> cardsInHand;
-    HandCardComponent lastCreatedCard;
 
     public List<HandCardComponent> Cards => cardsInHand;
 
@@ -19,7 +18,7 @@ public class PlayerHandComponent : NetworkBehaviour
 
     public void Init()
     {
-        AddCardToHand();
+        DrawCard();
     }
 
     // Update is called once per frame
@@ -54,18 +53,25 @@ public class PlayerHandComponent : NetworkBehaviour
         }
     }
 
-    void AddCardToHand()
+    public void DrawCard()
     {
-        lastCreatedCard = Instantiate(CardManager.Instance.Prefab, transform);
-        cardsInHand.Add(lastCreatedCard);
-
         SpawnCard_ServerRpc();
     }
 
     [ServerRpc]
-    public void SpawnCard_ServerRpc()
+    void SpawnCard_ServerRpc()
     {
-        lastCreatedCard.NetworkObject.Spawn();
-        lastCreatedCard.NetworkObject.TrySetParent(transform);
+        HandCardComponent _card = Instantiate(CardManager.Instance.Prefab, transform);
+        _card.NetworkObject.Spawn();
+        _card.NetworkObject.TrySetParent(transform);
+         
+        SetCardInHand_ClientRpc();
+    }
+
+    [ClientRpc]
+    void SetCardInHand_ClientRpc()
+    {
+        HandCardComponent[] _cards = GetComponentsInChildren<HandCardComponent>();
+        cardsInHand = _cards.ToList();
     }
 }

@@ -617,6 +617,8 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   <firstPlayer>k__BackingField: {fileID: 0}
   <secondPlayer>k__BackingField: {fileID: 0}
+  card1: {fileID: 11400000, guid: e3d5f389416002a4c894f8f079c14c48, type: 2}
+  card2: {fileID: 11400000, guid: 72bd5c1c2568e3f48a7ca930ee81f5a0, type: 2}
 --- !u!114 &1954490449
 MonoBehaviour:
   m_ObjectHideFlags: 0
