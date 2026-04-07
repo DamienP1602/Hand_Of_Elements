@@ -99,6 +99,8 @@ public class NetworkConnectionWidget : NetworkBehaviour
     void SetIPAddress()
     {
         string _text = clientIpField.text;
+        if (string.IsNullOrEmpty(_text)) return;
+
         UnityTransport _transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
         UnityTransport.ConnectionAddressData _data = _transport.ConnectionData;
         _data.Address = _text;

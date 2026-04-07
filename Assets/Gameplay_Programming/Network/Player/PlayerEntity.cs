@@ -2,6 +2,12 @@ using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 
+public enum PlayerEnum
+{
+    Player_One,
+    Player_Two
+}
+
 [RequireComponent(typeof(PlayerInputComponent), typeof(PlayerInteractComponent),typeof(PlayerHandComponent))]
 public class PlayerEntity : NetworkBehaviour
 {
@@ -11,6 +17,7 @@ public class PlayerEntity : NetworkBehaviour
 
     [Header("Parameters")]
     [SerializeField] Camera playerCamera;
+    [SerializeField] PlayerEnum player;
 
     private void Awake()
     {
@@ -47,7 +54,5 @@ public class PlayerEntity : NetworkBehaviour
     void InitCamera()
     {
         playerCamera = Camera.main;
-        Camera.main.transform.SetParent(transform);
     }
-
 }

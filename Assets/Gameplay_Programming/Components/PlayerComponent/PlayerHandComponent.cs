@@ -1,12 +1,13 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
-public class PlayerHandComponent : MonoBehaviour
+public class PlayerHandComponent : NetworkBehaviour
 {
     [SerializeField] List<HandCardComponent> cardsInHand;
-    public bool value;
+    HandCardComponent lastCreatedCard;
 
     public List<HandCardComponent> Cards => cardsInHand;
 
@@ -18,15 +19,7 @@ public class PlayerHandComponent : MonoBehaviour
 
     public void Init()
     {
-        HandCardComponent[] _cards = FindObjectsByType<HandCardComponent>(FindObjectsSortMode.None);
-        foreach (HandCardComponent _card in _cards)
-        {
-            if (_card.value == value)
-            {
-                cardsInHand.Add(_card);
-            }
-
-        }
+        AddCardToHand();
     }
 
     // Update is called once per frame
@@ -59,5 +52,20 @@ public class PlayerHandComponent : MonoBehaviour
         {
             _card.GetComponentInChildren<MeshRenderer>().material.color = Color.white;
         }
+    }
+
+    void AddCardToHand()
+    {
+        lastCreatedCard = Instantiate(CardManager.Instance.Prefab, transform);
+        cardsInHand.Add(lastCreatedCard);
+
+        SpawnCard_ServerRpc();
+    }
+
+    [ServerRpc]
+    public void SpawnCard_ServerRpc()
+    {
+        lastCreatedCard.NetworkObject.Spawn();
+        lastCreatedCard.NetworkObject.TrySetParent(transform);
     }
 }
