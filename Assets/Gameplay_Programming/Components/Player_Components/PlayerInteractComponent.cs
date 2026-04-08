@@ -8,14 +8,33 @@ public class PlayerInteractComponent : NetworkBehaviour
     private void Start()
     {
         if (IsOwner)
-            InvokeRepeating(nameof(OnHoverUpdate), 0.2f, 0.2f);
+            InvokeRepeating(nameof(OnHoverUpdate), 0.05f, 0.05f);
     }
 
     public void OnPlayerClick()
     {
         if (Physics.Raycast(PointOnScreen, out RaycastHit _hit, 15.0f))
         {
+            if (_hit.collider.gameObject.GetComponent<HandCardComponent>() is HandCardComponent _card)
+            {
+                PlayerHandComponent _hand = GetComponent<PlayerHandComponent>();
+                if (_hand)
+                {
+                    OnSelectCard_ServerRpc(_hand.Cards.IndexOf(_card));
+                }
+            }
+        }
+    }
 
+    public void OnPlayerRelease()
+    {
+        if (Physics.Raycast(PointOnScreen, out RaycastHit _hit, 15.0f))
+        {
+            PlayerHandComponent _hand = GetComponent<PlayerHandComponent>();
+            if (_hand)
+            {
+                OnReleaseCard_ServerRpc();
+            }
         }
     }
 
@@ -53,5 +72,19 @@ public class PlayerInteractComponent : NetworkBehaviour
     {
         PlayerHandComponent _hand = GetComponent<PlayerHandComponent>();
         _hand.UnhoverCard_ClientRpc();
+    }
+
+    [ServerRpc]
+    void OnSelectCard_ServerRpc(int _id)
+    {
+        PlayerHandComponent _hand = GetComponent<PlayerHandComponent>();
+        _hand.SetSelectedCard_ClientRpc(_id);
+    }
+
+    [ServerRpc]
+    void OnReleaseCard_ServerRpc()
+    {
+        PlayerHandComponent _hand = GetComponent<PlayerHandComponent>();
+        _hand.ReleaseCard_ClientRpc();
     }
 }

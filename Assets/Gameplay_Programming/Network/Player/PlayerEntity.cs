@@ -16,7 +16,6 @@ public class PlayerEntity : NetworkBehaviour
     public PlayerHandComponent HandComponent { get; private set; }
 
     [Header("Parameters")]
-    [SerializeField] Camera playerCamera;
     [SerializeField] PlayerEnum player;
 
     public PlayerEnum PlayerTag => player;
@@ -41,22 +40,24 @@ public class PlayerEntity : NetworkBehaviour
     void InitInputs()
     {
         InputsComponent.Click.started += (_context) => InteractComponent.OnPlayerClick();
+        InputsComponent.Click.canceled += (_context) => InteractComponent.OnPlayerRelease();
     }
 
-    public void Init(PlayerEnum _type)
+    [ClientRpc]
+    public void Init_ClientRpc()
     {
+        player = OwnerClientId == 0 ? PlayerEnum.Player_One : PlayerEnum.Player_Two;
+
         if (!IsOwner) return;
-
-        InitCamera();
         InitInputs();
-
-        player = _type;
-
         HandComponent.Init();
     }
 
-    void InitCamera()
+    [ClientRpc]
+    public void RotateCamera_ClientRpc()
     {
-        playerCamera = Camera.main;
+        Camera _camera = Camera.main;
+        _camera.transform.eulerAngles = new Vector3(90.0f, 0.0f, 180.0f);
+        Debug.Log("Rotate Camera");
     }
 }

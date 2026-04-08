@@ -1,15 +1,18 @@
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameManager : Singleton<GameManager>
 {
-    [Header("Players")]
-    [field:SerializeField] public PlayerEntity firstPlayer { get; set; }
-    [field:SerializeField] public PlayerEntity secondPlayer { get; set; }
+    [Header("Player Data")]
+    [SerializeField] Vector3 firstPlayerPosition;
+    [SerializeField] Vector3 secondPlayerPosition;
+    [SerializeField] List<PlayerEntity> players;
 
-    [SerializeField] Card card1;
-    [SerializeField] Card card2;
+
+    public List<PlayerEntity> GetAllPlayers => players;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -20,25 +23,42 @@ public class GameManager : Singleton<GameManager>
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     void InitPlayers()
     {
-        PlayerEntity[] _players = FindObjectsByType<PlayerEntity>(FindObjectsSortMode.InstanceID);
+        players = FindObjectsByType<PlayerEntity>(FindObjectsSortMode.None).ToList();
 
-        firstPlayer = _players[0];
-        firstPlayer.Init(PlayerEnum.Player_One);
-        firstPlayer.transform.position = new Vector3(0.0f, 2.0f, 7.0f);
+        foreach (PlayerEntity _player in players)
+        {
+            _player.Init_ClientRpc();
 
-        secondPlayer = _players[1];
-        secondPlayer.Init(PlayerEnum.Player_Two);
-        secondPlayer.transform.position = new Vector3(0.0f, 2.0f, -7.0f);
+            bool _isFirstPlayer = _player.PlayerTag == PlayerEnum.Player_One;
+
+            Vector3 _position = _isFirstPlayer ? firstPlayerPosition : secondPlayerPosition;
+            _player.transform.position = _position;
+
+            if (!_isFirstPlayer)
+                _player.RotateCamera_ClientRpc();
+        }
+    }
+
+    public PlayerEntity GetOtherPlayer(PlayerEnum _type)
+    {
+        return players.Find(_player => _player.PlayerTag == _type);
     }
 
     public PlayerEntity GetPlayer(PlayerEnum _type)
     {
-        return _type == PlayerEnum.Player_One ? secondPlayer : firstPlayer;
+        return players.Find(_player => _player.PlayerTag != _type);
     }
 
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+
+        Gizmos.DrawWireSphere(firstPlayerPosition,1.0f);
+        Gizmos.DrawWireSphere(secondPlayerPosition,1.0f);
+    }
 }
