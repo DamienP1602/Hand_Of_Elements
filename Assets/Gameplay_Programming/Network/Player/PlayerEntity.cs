@@ -57,7 +57,6 @@ public class PlayerEntity : NetworkBehaviour
     public void RotateCamera_ClientRpc()
     {
         Camera _camera = Camera.main;
-        _camera.transform.eulerAngles = new Vector3(90.0f, 0.0f, 180.0f);
-        Debug.Log("Rotate Camera");
+        _camera.transform.rotation = Quaternion.Euler(90.0f, 180.0f, 0.0f);
     }
 }

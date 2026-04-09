@@ -1,11 +1,9 @@
-using System;
 using Unity.Netcode;
 using UnityEngine;
 
-public class CardManager : Singleton<CardManager>
+public class CardComponent : NetworkBehaviour
 {
-    [field:SerializeField] public HandCardComponent handCardPrefab { get; private set; }
-    [field:SerializeField] public BoardCardComponent boardCardPrefab { get; private set; }
+    [field:SerializeField] public bool IsHovered {  get; set; }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()

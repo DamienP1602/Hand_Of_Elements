@@ -19,9 +19,9 @@ public class PlayerHandComponent : NetworkBehaviour
 
     public void Init()
     {
-        DrawCard();
-        DrawCard();
-        DrawCard();
+        Invoke(nameof(DrawCard),0.5f);
+        Invoke(nameof(DrawCard),1.0f);
+        Invoke(nameof(DrawCard),1.5f);
     }
 
     // Update is called once per frame
@@ -31,6 +31,73 @@ public class PlayerHandComponent : NetworkBehaviour
             UpdateSelectedCard();
 
         UpdateCardPosition();
+        HoveredUpdate();
+    }
+
+    #region Card Hovered
+
+    void HoveredUpdate()
+    {
+        foreach (HandCardComponent _card in cardsInHand)
+        {
+            if (_card.IsSelected) continue;
+
+            if (_card.IsHovered)
+            {
+                _card.GetComponentInChildren<MeshRenderer>().material.color = Color.red;
+            }
+            else
+            {
+                _card.GetComponentInChildren<MeshRenderer>().material.color = Color.white;
+            }
+        }
+    }
+
+    [ClientRpc]
+    public void SetHoveredCard_ClientRpc(int _id)
+    {
+        int _size = cardsInHand.Count;
+        for (int _i = 0; _i < _size; _i++)
+        {
+            HandCardComponent _card = cardsInHand[_i];
+
+            // Card is Hovered if _id == _i
+            // _id = position in list
+            _card.IsHovered = _i == _id;
+        }
+    }
+
+    [ClientRpc]
+    public void UnhoverCard_ClientRpc()
+    {
+        foreach (HandCardComponent _card in cardsInHand)
+        {
+            _card.IsHovered = false;
+        }
+    }
+
+    #endregion
+
+    #region Card Selected
+
+    void UpdateSelectedCard()
+    {
+        if (IsOwner)
+        {
+            Ray _ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit[] _hits = Physics.RaycastAll(_ray, 20.0f);
+
+            foreach (RaycastHit _hit in _hits)
+            {
+                Vector3 _point = _hit.point;
+                selectedCard.transform.position = new Vector3(_point.x, 2.0f, _point.z);
+            }
+        }
+        else
+        {
+            selectedCard.GetComponentInChildren<MeshRenderer>().material.color = Color.green;
+        }
+
     }
 
     void UpdateCardPosition()
@@ -45,53 +112,27 @@ public class PlayerHandComponent : NetworkBehaviour
         }
     }
 
-    void UpdateSelectedCard()
+    [ClientRpc]
+    public void SetSelectedCard_ClientRpc(int _id)
     {
-        if (IsOwner)
-        {
-            Ray _ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit[] _hits = Physics.RaycastAll(_ray, 20.0f);
-
-            bool _hasHit = false;
-            foreach (RaycastHit _hit in _hits)
-            {
-                if (_hit.collider.GetComponent<BoardComponent>())
-                {
-                    Vector3 _point = _hit.point;
-                    selectedCard.transform.position = new Vector3(_point.x, 2.0f, _point.z);
-                    _hasHit = true;
-                }
-            }
-            Debug.DrawRay(_ray.origin, _ray.direction * 20.0f, _hasHit ? Color.green : Color.red);
-        }
-        else
-        {
-            selectedCard.GetComponentInChildren<MeshRenderer>().material.color = Color.green;
-        }
-
+        selectedCard = cardsInHand[_id];
+        selectedCard.GetComponent<BoxCollider>().enabled = false;
+        selectedCard.IsSelected = true;
     }
 
     [ClientRpc]
-    public void SetHoveredCard_ClientRpc(int _id)
+    public void ReleaseCard_ClientRpc()
     {
-        int _size = cardsInHand.Count;
-        for (int _i = 0; _i < _size; _i++)
-        {
-            if (_i == _id)
-            {
-                cardsInHand[_i].GetComponentInChildren<MeshRenderer>().material.color = Color.red;
-            }
-        }
+        if (!selectedCard) return;
+
+        selectedCard.IsSelected = false;
+        selectedCard.GetComponent<BoxCollider>().enabled = true;
+        selectedCard = null;
     }
 
-    [ClientRpc]
-    public void UnhoverCard_ClientRpc()
-    {
-        foreach (HandCardComponent _card in cardsInHand)
-        {
-            _card.GetComponentInChildren<MeshRenderer>().material.color = Color.white;
-        }
-    }
+    #endregion
+
+    #region Card Draw
 
     public void DrawCard()
     {
@@ -101,7 +142,7 @@ public class PlayerHandComponent : NetworkBehaviour
     [ServerRpc]
     void SpawnCard_ServerRpc()
     {
-        HandCardComponent _card = Instantiate(CardManager.Instance.Prefab, transform);
+        CardComponent _card = Instantiate(CardManager.Instance.handCardPrefab, transform);
         _card.NetworkObject.Spawn();
         _card.NetworkObject.TrySetParent(gameObject, true);
 
@@ -125,19 +166,27 @@ public class PlayerHandComponent : NetworkBehaviour
         }
     }
 
-    [ClientRpc]
-    public void SetSelectedCard_ClientRpc(int _id)
+    #endregion
+
+    public HandCardComponent GetSelectedCard()
     {
-        selectedCard = cardsInHand[_id];
-        selectedCard.IsSelected = true;
+        foreach (HandCardComponent _card in cardsInHand)
+        {
+            if (_card.IsSelected)
+                return _card;
+        }
+
+        return null;
     }
 
-    [ClientRpc]
-    public void ReleaseCard_ClientRpc()
+    public void RemoveSelectedCard()
     {
-        if (!selectedCard) return;
+        if (IsServer)
+            Debug.Log("je passe ici par server");
 
-        selectedCard.IsSelected = false;
-        selectedCard = null;
+        cardsInHand.Remove(selectedCard);
+
+        ReleaseCard_ClientRpc();
+        SetCardInHand_ClientRpc();
     }
 }

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2693770540005688924}
   - component: {fileID: 1932200199212837275}
   m_Layer: 3
-  m_Name: Card
+  m_Name: Hand_Card
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -73,6 +73,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+  <IsHovered>k__BackingField: 0
+  <IsSelected>k__BackingField: 0
 --- !u!65 &1932200199212837275
 BoxCollider:
   m_ObjectHideFlags: 0

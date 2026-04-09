@@ -30,11 +30,20 @@ public class PlayerInteractComponent : NetworkBehaviour
     {
         if (Physics.Raycast(PointOnScreen, out RaycastHit _hit, 15.0f))
         {
-            PlayerHandComponent _hand = GetComponent<PlayerHandComponent>();
-            if (_hand)
+            if (_hit.collider.gameObject.GetComponent<BoardSlotComponent>() is BoardSlotComponent _slot)
             {
-                OnReleaseCard_ServerRpc();
+                if (_slot.PlayerTag == GetComponent<PlayerEntity>().PlayerTag)
+                {
+                    if (_slot.IsEmpty)
+                    {
+                        PutCardOnBoard_ServerRpc(_slot.PlayerTag, _slot.SlotIndex);
+                    }
+                    else
+                        OnReleaseCard_ServerRpc();
+                }
             }
+            else
+                OnReleaseCard_ServerRpc();
         }
     }
 
@@ -86,5 +95,16 @@ public class PlayerInteractComponent : NetworkBehaviour
     {
         PlayerHandComponent _hand = GetComponent<PlayerHandComponent>();
         _hand.ReleaseCard_ClientRpc();
+    }
+
+    [ServerRpc]
+    void PutCardOnBoard_ServerRpc(PlayerEnum _ownerTag, int _index)
+    {
+        BoardComponent _board = GameManager.Instance.Board;
+        BoardSlotComponent _slot = _board.GetSlot(_ownerTag,_index);
+        _slot.PutCardInSlot();
+
+        PlayerEntity _player = GameManager.Instance.GetPlayer(_ownerTag);
+        _player.HandComponent.RemoveSelectedCard();
     }
 }

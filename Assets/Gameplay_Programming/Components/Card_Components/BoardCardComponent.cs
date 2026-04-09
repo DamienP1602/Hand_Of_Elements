@@ -1,9 +1,7 @@
 using UnityEngine;
 
-public class HandCardComponent : CardComponent
+public class BoardCardComponent : CardComponent
 {
-    [field: SerializeField] public bool IsSelected { get; set; }
-
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {

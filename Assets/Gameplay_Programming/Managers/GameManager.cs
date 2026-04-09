@@ -11,7 +11,10 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] Vector3 secondPlayerPosition;
     [SerializeField] List<PlayerEntity> players;
 
+    [Header("Board Data")]
+    [SerializeField] BoardComponent board;
 
+    public BoardComponent Board => board;
     public List<PlayerEntity> GetAllPlayers => players;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
