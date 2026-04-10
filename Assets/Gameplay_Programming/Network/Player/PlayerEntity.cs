@@ -1,5 +1,4 @@
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public enum PlayerEnum
@@ -50,6 +49,7 @@ public class PlayerEntity : NetworkBehaviour
 
         if (!IsOwner) return;
         InitInputs();
+
         HandComponent.Init();
     }
 

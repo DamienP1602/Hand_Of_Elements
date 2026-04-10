@@ -28,22 +28,21 @@ public class PlayerInteractComponent : NetworkBehaviour
 
     public void OnPlayerRelease()
     {
+        PlayerEnum _playerTurn = GameManager.Instance.PlayerTurnTag;
         if (Physics.Raycast(PointOnScreen, out RaycastHit _hit, 15.0f))
         {
             if (_hit.collider.gameObject.GetComponent<BoardSlotComponent>() is BoardSlotComponent _slot)
             {
-                if (_slot.PlayerTag == GetComponent<PlayerEntity>().PlayerTag)
+                if (_slot.PlayerTag == _playerTurn && GetComponent<PlayerEntity>().PlayerTag == _playerTurn)
                 {
                     if (_slot.IsEmpty)
                     {
-                        PutCardOnBoard_ServerRpc(_slot.PlayerTag, _slot.SlotIndex);
+                        PutCardOnBoard_ServerRpc(_playerTurn, _slot.SlotIndex);
+                        return;
                     }
-                    else
-                        OnReleaseCard_ServerRpc();
                 }
             }
-            else
-                OnReleaseCard_ServerRpc();
+            OnReleaseCard_ServerRpc();
         }
     }
 
@@ -101,7 +100,7 @@ public class PlayerInteractComponent : NetworkBehaviour
     void PutCardOnBoard_ServerRpc(PlayerEnum _ownerTag, int _index)
     {
         BoardComponent _board = GameManager.Instance.Board;
-        BoardSlotComponent _slot = _board.GetSlot(_ownerTag,_index);
+        BoardSlotComponent _slot = _board.GetSlot(_ownerTag, _index);
         _slot.PutCardInSlot();
 
         PlayerEntity _player = GameManager.Instance.GetPlayer(_ownerTag);

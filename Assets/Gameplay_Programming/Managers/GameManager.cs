@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameManager : Singleton<GameManager>
@@ -10,12 +9,22 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] Vector3 firstPlayerPosition;
     [SerializeField] Vector3 secondPlayerPosition;
     [SerializeField] List<PlayerEntity> players;
+    [SerializeField] GameWidget playerWidgetPrefab;
+
+    [Header("Turn Data")]
+    [SerializeField] PlayerEnum playerTurn;
 
     [Header("Board Data")]
     [SerializeField] BoardComponent board;
 
+    [Header("Widget Data")]
+    [SerializeField] GameWidget widget;
+
     public BoardComponent Board => board;
     public List<PlayerEntity> GetAllPlayers => players;
+    public GameWidget PlayerWidget => playerWidgetPrefab;
+
+    public PlayerEnum PlayerTurnTag => playerTurn;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -47,6 +56,8 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
+    #region GetPlayer
+
     public PlayerEntity GetOtherPlayer(PlayerEnum _type)
     {
         return players.Find(_player => _player.PlayerTag == _type);
@@ -56,6 +67,18 @@ public class GameManager : Singleton<GameManager>
     {
         return players.Find(_player => _player.PlayerTag != _type);
     }
+
+    public PlayerEntity GetPlayerFromTurn()
+    {
+        return players.Find(_player => _player.PlayerTag == playerTurn);
+    }
+
+    #endregion
+
+    [ClientRpc]
+    public void ChangeTurn_ClientRpc(PlayerEnum _enum) => playerTurn = _enum;
+
+    public void ChangeTurn(PlayerEnum _enum) => playerTurn = _enum;
 
     private void OnDrawGizmos()
     {

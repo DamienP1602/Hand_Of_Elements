@@ -181,10 +181,11 @@ public class PlayerHandComponent : NetworkBehaviour
 
     public void RemoveSelectedCard()
     {
-        if (IsServer)
-            Debug.Log("je passe ici par server");
-
-        cardsInHand.Remove(selectedCard);
+        PlayerEntity _player = GameManager.Instance.GetPlayerFromTurn();
+        HandCardComponent _card = _player.HandComponent.selectedCard;
+        _player.HandComponent.cardsInHand.Remove(_card);
+        _card.NetworkObject.Despawn();
+        Destroy(_card.gameObject);
 
         ReleaseCard_ClientRpc();
         SetCardInHand_ClientRpc();

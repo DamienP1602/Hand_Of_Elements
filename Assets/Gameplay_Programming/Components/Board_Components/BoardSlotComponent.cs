@@ -30,7 +30,6 @@ public class BoardSlotComponent : NetworkBehaviour
         card.NetworkObject.Spawn();
 
         PutCardInSlot_ClientRpc();
-        Debug.Log("Je passe ici");
     }
 
     [ClientRpc]
