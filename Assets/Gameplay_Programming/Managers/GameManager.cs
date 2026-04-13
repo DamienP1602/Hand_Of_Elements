@@ -8,11 +8,12 @@ public class GameManager : Singleton<GameManager>
     [Header("Player Data")]
     [SerializeField] Vector3 firstPlayerPosition;
     [SerializeField] Vector3 secondPlayerPosition;
+
     [SerializeField] List<PlayerEntity> players;
     [SerializeField] GameWidget playerWidgetPrefab;
 
     [Header("Turn Data")]
-    [SerializeField] PlayerEnum playerTurn;
+    [SerializeField] NetworkVariable<PlayerEnum> playerTurn = new NetworkVariable<PlayerEnum>(PlayerEnum.Player_One, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     [Header("Board Data")]
     [SerializeField] BoardComponent board;
@@ -20,16 +21,19 @@ public class GameManager : Singleton<GameManager>
     [Header("Widget Data")]
     [SerializeField] GameWidget widget;
 
+    [Header("Debug Data")]
+    public DebugWidget debugWidget;
+
     public BoardComponent Board => board;
     public List<PlayerEntity> GetAllPlayers => players;
     public GameWidget PlayerWidget => playerWidgetPrefab;
 
-    public PlayerEnum PlayerTurnTag => playerTurn;
+    public PlayerEnum PlayerTurnTag => playerTurn.Value;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        InitPlayers();
+        InitPlayers_ClientRPC();
+        playerTurn.OnValueChanged += CallChangeTurn;
     }
 
     // Update is called once per frame
@@ -38,21 +42,30 @@ public class GameManager : Singleton<GameManager>
 
     }
 
-    void InitPlayers()
+    void CallChangeTurn(PlayerEnum _oldVal, PlayerEnum _newVal)
+    {
+        debugWidget.SetDebugText($"Change turn from {_oldVal.ToString()} to {_newVal.ToString()}");
+    }
+
+    [ClientRpc]
+    void InitPlayers_ClientRPC()
     {
         players = FindObjectsByType<PlayerEntity>(FindObjectsSortMode.None).ToList();
 
         foreach (PlayerEntity _player in players)
         {
-            _player.Init_ClientRpc();
 
-            bool _isFirstPlayer = _player.PlayerTag == PlayerEnum.Player_One;
+            if (_player.IsOwner)
+            {
+                _player.transform.position = firstPlayerPosition;
+            }
+            else
+            {
+                _player.transform.position = secondPlayerPosition;
+                _player.BoardComponent.InvertBoardPosition();
+            }
 
-            Vector3 _position = _isFirstPlayer ? firstPlayerPosition : secondPlayerPosition;
-            _player.transform.position = _position;
-
-            if (!_isFirstPlayer)
-                _player.RotateCamera_ClientRpc();
+            _player.Init();
         }
     }
 
@@ -60,31 +73,33 @@ public class GameManager : Singleton<GameManager>
 
     public PlayerEntity GetOtherPlayer(PlayerEnum _type)
     {
-        return players.Find(_player => _player.PlayerTag == _type);
+        return players.Find(_player => _player.PlayerTag != _type);
     }
 
     public PlayerEntity GetPlayer(PlayerEnum _type)
     {
-        return players.Find(_player => _player.PlayerTag != _type);
+        return players.Find(_player => _player.PlayerTag == _type);
     }
 
     public PlayerEntity GetPlayerFromTurn()
     {
-        return players.Find(_player => _player.PlayerTag == playerTurn);
+        return players.Find(_player => _player.PlayerTag == playerTurn.Value);
     }
 
     #endregion
 
-    [ClientRpc]
-    public void ChangeTurn_ClientRpc(PlayerEnum _enum) => playerTurn = _enum;
-
-    public void ChangeTurn(PlayerEnum _enum) => playerTurn = _enum;
+    public void ChangeTurn()
+    {
+        PlayerEnum _newTurn = playerTurn.Value == PlayerEnum.Player_One ? PlayerEnum.Player_Two : PlayerEnum.Player_One;
+        playerTurn.Value = _newTurn;
+    }
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.red;
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(firstPlayerPosition, 1.0f);
 
-        Gizmos.DrawWireSphere(firstPlayerPosition,1.0f);
-        Gizmos.DrawWireSphere(secondPlayerPosition,1.0f);
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(secondPlayerPosition, 1.0f);
     }
 }

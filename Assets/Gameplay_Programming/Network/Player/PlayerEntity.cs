@@ -1,4 +1,7 @@
+using NUnit.Framework;
+using System.Collections.Generic;
 using Unity.Netcode;
+using UnityEditor;
 using UnityEngine;
 
 public enum PlayerEnum
@@ -7,14 +10,16 @@ public enum PlayerEnum
     Player_Two
 }
 
-[RequireComponent(typeof(PlayerInputComponent), typeof(PlayerInteractComponent),typeof(PlayerHandComponent))]
+[RequireComponent(typeof(PlayerInputComponent), typeof(PlayerInteractComponent), typeof(PlayerHandComponent))]
+[RequireComponent(typeof(PlayerBoardComponent))]
 public class PlayerEntity : NetworkBehaviour
 {
     public PlayerInputComponent InputsComponent { get; private set; }
     public PlayerInteractComponent InteractComponent { get; private set; }
     public PlayerHandComponent HandComponent { get; private set; }
+    public PlayerBoardComponent BoardComponent { get; private set; }
 
-    [Header("Parameters")]
+    [Header("Player Parameters")]
     [SerializeField] PlayerEnum player;
 
     public PlayerEnum PlayerTag => player;
@@ -24,6 +29,7 @@ public class PlayerEntity : NetworkBehaviour
         InputsComponent = GetComponent<PlayerInputComponent>();
         InteractComponent = GetComponent<PlayerInteractComponent>();
         HandComponent = GetComponent<PlayerHandComponent>();
+        BoardComponent = GetComponent<PlayerBoardComponent>();
     }
 
     void Start()
@@ -42,21 +48,33 @@ public class PlayerEntity : NetworkBehaviour
         InputsComponent.Click.canceled += (_context) => InteractComponent.OnPlayerRelease();
     }
 
-    [ClientRpc]
-    public void Init_ClientRpc()
+    public void Init()
     {
-        player = OwnerClientId == 0 ? PlayerEnum.Player_One : PlayerEnum.Player_Two;
+        player = OwnerClientId == 0 ? PlayerEnum.Player_One : PlayerEnum.Player_Two;       
 
         if (!IsOwner) return;
-        InitInputs();
 
+        InitInputs();
         HandComponent.Init();
+        GameManager.Instance.debugWidget.SetDebugText($"Init for {player.ToString()} is done");
+
+        SpawnBoard_ServerRpc();
     }
 
-    [ClientRpc]
-    public void RotateCamera_ClientRpc()
+    public void ChangeTurn()
     {
-        Camera _camera = Camera.main;
-        _camera.transform.rotation = Quaternion.Euler(90.0f, 180.0f, 0.0f);
+        ChangeTurn_ServerRPC();
+    }
+
+    [ServerRpc]
+    void ChangeTurn_ServerRPC()
+    {
+        GameManager.Instance.ChangeTurn();
+    }
+
+    [ServerRpc]
+    void SpawnBoard_ServerRpc()
+    {
+        BoardComponent.CreateBoard(player);
     }
 }

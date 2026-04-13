@@ -28,16 +28,17 @@ public class PlayerInteractComponent : NetworkBehaviour
 
     public void OnPlayerRelease()
     {
-        PlayerEnum _playerTurn = GameManager.Instance.PlayerTurnTag;
         if (Physics.Raycast(PointOnScreen, out RaycastHit _hit, 15.0f))
         {
             if (_hit.collider.gameObject.GetComponent<BoardSlotComponent>() is BoardSlotComponent _slot)
             {
-                if (_slot.PlayerTag == _playerTurn && GetComponent<PlayerEntity>().PlayerTag == _playerTurn)
+                PlayerEntity _player = GetComponent<PlayerEntity>();
+
+                if (_slot.PlayerTag == _player.PlayerTag && _player.PlayerTag == GameManager.Instance.PlayerTurnTag)
                 {
                     if (_slot.IsEmpty)
                     {
-                        PutCardOnBoard_ServerRpc(_playerTurn, _slot.SlotIndex);
+                        PutCardOnBoard_ServerRpc(_slot.GetSlotIndex);
                         return;
                     }
                 }
@@ -86,7 +87,7 @@ public class PlayerInteractComponent : NetworkBehaviour
     void OnSelectCard_ServerRpc(int _id)
     {
         PlayerHandComponent _hand = GetComponent<PlayerHandComponent>();
-        _hand.SetSelectedCard_ClientRpc(_id);
+        _hand.SelectCard_ClientRpc(_id);
     }
 
     [ServerRpc]
@@ -97,13 +98,13 @@ public class PlayerInteractComponent : NetworkBehaviour
     }
 
     [ServerRpc]
-    void PutCardOnBoard_ServerRpc(PlayerEnum _ownerTag, int _index)
+    void PutCardOnBoard_ServerRpc(int _index)
     {
         BoardComponent _board = GameManager.Instance.Board;
-        BoardSlotComponent _slot = _board.GetSlot(_ownerTag, _index);
-        _slot.PutCardInSlot();
+        //BoardSlotComponent _slot = _board.GetSlot(GameManager.Instance.PlayerTurnTag, _index);
+        //_slot.PutCardInSlot();
 
-        PlayerEntity _player = GameManager.Instance.GetPlayer(_ownerTag);
+        PlayerEntity _player = GameManager.Instance.GetPlayerFromTurn();
         _player.HandComponent.RemoveSelectedCard();
     }
 }

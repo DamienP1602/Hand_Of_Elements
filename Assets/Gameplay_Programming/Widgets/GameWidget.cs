@@ -2,26 +2,28 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GameWidget : NetworkBehaviour
+public class GameWidget : MonoBehaviour
 {
     [SerializeField] Button endTurnButton;
-    
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        endTurnButton.onClick.AddListener(ChangeTurn_ServerRpc);
+        endTurnButton.onClick.AddListener(ChangeTurn);
     }
-
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
-    [ServerRpc]
-    void ChangeTurn_ServerRpc()
+    void ChangeTurn()
     {
-        PlayerEnum _newTurnTag = GameManager.Instance.PlayerTurnTag == PlayerEnum.Player_One ? PlayerEnum.Player_Two : PlayerEnum.Player_One;
-        GameManager.Instance.ChangeTurn_ClientRpc(_newTurnTag);
+        NetworkObject _obj = NetworkManager.Singleton.LocalClient.PlayerObject;
+
+        if (_obj.GetComponent<PlayerEntity>() is PlayerEntity _player)
+        {
+            _player.ChangeTurn();
+        }
     }
 }
