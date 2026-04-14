@@ -32,7 +32,7 @@ public class GameManager : Singleton<GameManager>
 
     void Start()
     {
-        InitPlayers_ClientRPC();
+        Invoke(nameof(InitPlayers_ClientRPC), Time.deltaTime);
         playerTurn.OnValueChanged += CallChangeTurn;
     }
 
@@ -44,7 +44,7 @@ public class GameManager : Singleton<GameManager>
 
     void CallChangeTurn(PlayerEnum _oldVal, PlayerEnum _newVal)
     {
-        debugWidget.SetDebugText($"Change turn from {_oldVal.ToString()} to {_newVal.ToString()}");
+        debugWidget.SetDebugText($"Change turn to {_newVal.ToString()}");
     }
 
     [ClientRpc]
@@ -54,7 +54,6 @@ public class GameManager : Singleton<GameManager>
 
         foreach (PlayerEntity _player in players)
         {
-
             if (_player.IsOwner)
             {
                 _player.transform.position = firstPlayerPosition;
@@ -62,10 +61,10 @@ public class GameManager : Singleton<GameManager>
             else
             {
                 _player.transform.position = secondPlayerPosition;
-                _player.BoardComponent.InvertBoardPosition();
             }
 
             _player.Init();
+            board.SetPlayerBoardSide(_player);
         }
     }
 

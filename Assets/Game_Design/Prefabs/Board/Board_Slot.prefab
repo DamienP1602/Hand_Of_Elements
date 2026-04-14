@@ -160,9 +160,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  cardTransform: {fileID: 3600435021483258275}
+  cardPosition: {x: 0, y: 2, z: 0}
   card: {fileID: 0}
-  playerTag: 1
+  playerTag:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
+  slotIndex:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
 --- !u!65 &7685998380189361153
 BoxCollider:
   m_ObjectHideFlags: 0

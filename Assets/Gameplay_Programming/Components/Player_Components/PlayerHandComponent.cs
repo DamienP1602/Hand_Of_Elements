@@ -1,16 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
 public class PlayerHandComponent : NetworkBehaviour
 {
     [SerializeField] NetworkVariable<int> cardSelectedID = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    [SerializeField] NetworkVariable<int> cardHoveredID = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     [SerializeField] List<HandCardComponent> cardsInHand;
 
     public List<HandCardComponent> Cards => cardsInHand;
-    public HandCardComponent GetSelectedCard => cardsInHand[cardSelectedID.Value];
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -20,130 +19,162 @@ public class PlayerHandComponent : NetworkBehaviour
 
     public void Init()
     {
-        Invoke(nameof(DrawCard), 0.5f);
-        Invoke(nameof(DrawCard), 1.0f);
-        Invoke(nameof(DrawCard), 1.5f);
+        Invoke(nameof(InitDraw), Time.deltaTime);
+    }
+
+    void InitDraw()
+    {
+        DrawCard(3);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (cardSelectedID.Value > -1)
-            UpdateSelectedCard();
-
         UpdateCardPosition();
         HoveredUpdate();
+        UpdateSelectedCard();
     }
 
-    #region Card Hovered
+    #region Update
 
+    /// <summary>
+    /// Will draw in blue the hovered Card
+    /// </summary>
     void HoveredUpdate()
     {
-        foreach (HandCardComponent _card in cardsInHand)
-        {
-            if (_card.IsSelected) continue;
-
-            if (_card.IsHovered)
-            {
-                _card.GetComponentInChildren<MeshRenderer>().material.color = Color.blue;
-            }
-            else
-            {
-                _card.GetComponentInChildren<MeshRenderer>().material.color = Color.white;
-            }
-        }
-    }
-
-    [ClientRpc]
-    public void SetHoveredCard_ClientRpc(int _id)
-    {
-        int _size = cardsInHand.Count;
-        for (int _i = 0; _i < _size; _i++)
+        int _handSize = cardsInHand.Count;
+        for (int _i = 0; _i < _handSize; _i++)
         {
             HandCardComponent _card = cardsInHand[_i];
-            _card.IsHovered = _i == _id;
+            if (!_card) continue;
+
+            if (_i == cardHoveredID.Value)
+            {
+                if (IsOwner)
+                    _card.GetComponentInChildren<MeshRenderer>().material.color = Color.red;
+                else
+                    _card.GetComponentInChildren<MeshRenderer>().material.color = Color.green;
+            }
+            else
+                _card.GetComponentInChildren<MeshRenderer>().material.color = Color.white;
         }
     }
 
-    [ClientRpc]
-    public void UnhoverCard_ClientRpc()
-    {
-        foreach (HandCardComponent _card in cardsInHand)
-        {
-            _card.IsHovered = false;
-        }
-    }
-
-    #endregion
-
-    #region Card Selected
-
+    /// <summary>
+    /// Will move the selected Card to the mouse Position
+    /// </summary>
     void UpdateSelectedCard()
     {
-        HandCardComponent _card = cardsInHand[cardSelectedID.Value];
+        HandCardComponent _card = GetSelectedCard();
+        if (!_card) return;
+
         if (IsOwner)
         {
             Ray _ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit[] _hits = Physics.RaycastAll(_ray, 20.0f);
-
-            foreach (RaycastHit _hit in _hits)
+            if (Physics.Raycast(_ray, out RaycastHit _hit, 20.0f))
             {
                 Vector3 _point = _hit.point;
                 _card.transform.position = new Vector3(_point.x, 2.0f, _point.z);
             }
         }
         else
-        {
-            _card.GetComponentInChildren<MeshRenderer>().material.color = Color.blue;
-        }
-
+            _card.GetComponentInChildren<MeshRenderer>().material.color = Color.green;
     }
 
+    /// <summary>
+    /// Will put the card in the right position;
+    /// </summary>
     void UpdateCardPosition()
     {
         int _size = cardsInHand.Count;
         for (int _i = 0; _i < _size; _i++)
         {
+            int _indexOffset = _i - (_size / 2);
             HandCardComponent _card = cardsInHand[_i];
+            if (!_card) continue;
 
             if (_i != cardSelectedID.Value)
-                _card.transform.localPosition = new Vector3(_i * 3.0f, 0.0f, 0.0f);
+                _card.transform.localPosition = new Vector3(_indexOffset * 3.0f, 0.0f, 0.0f);
         }
     }
 
-    [ClientRpc]
-    public void SelectCard_ClientRpc(int _id)
+    #endregion
+
+    #region Card Hovered
+
+    public void SetHoveredCard(int _id)
     {
+        if (cardHoveredID.Value == _id) return;
+        cardHoveredID.Value = _id;
+    }
+
+    public void UnhoverCard()
+    {
+        if (cardHoveredID.Value == -1) return;
+        cardHoveredID.Value = -1;
+    }
+
+    #endregion
+
+    #region Card Selected
+
+    public void SelectCard(int _id)
+    {
+        if (cardSelectedID.Value == _id) return;
         cardSelectedID.Value = _id;
-        HandCardComponent _card = cardsInHand[_id];
+
+        Invoke(nameof(SelectCard_ClientRpc), Time.deltaTime);
+    }
+
+    [ClientRpc]
+    void SelectCard_ClientRpc()
+    {
+        HandCardComponent _card = GetSelectedCard();
+        if (!_card)
+        {
+            GameManager.Instance.debugWidget.SetDebugText("Can't get card");
+            return;
+        }
+
         _card.GetComponent<BoxCollider>().enabled = false;
         _card.IsSelected = true;
     }
 
+    public void ReleaseCard()
+    {
+        ReleaseCard_ClientRpc();
+        cardSelectedID.Value = -1;
+    }
+
     [ClientRpc]
-    public void ReleaseCard_ClientRpc()
+    void ReleaseCard_ClientRpc()
     {
         if (cardSelectedID.Value == -1) return;
 
-        HandCardComponent _card = cardsInHand[cardSelectedID.Value];
+        HandCardComponent _card = GetSelectedCard();
+        if (!_card) return;
+
         _card.IsSelected = false;
         _card.GetComponent<BoxCollider>().enabled = true;
-        cardSelectedID.Value = -1;
     }
 
     #endregion
 
     #region Card Draw
 
-    public void DrawCard()
+    public void DrawCard(int _amount)
     {
-        SpawnCard_ServerRpc();
+        for (int _i = 0; _i < _amount; _i++)
+        {
+            SpawnCard_ServerRpc(); //C'EST INVERSE
+        }
     }
 
     [ServerRpc]
     void SpawnCard_ServerRpc()
     {
-        CardComponent _card = Instantiate(CardManager.Instance.handCardPrefab, transform);
+        HandCardComponent _card = Instantiate(CardManager.Instance.handCardPrefab);
         _card.NetworkObject.Spawn();
         _card.NetworkObject.TrySetParent(gameObject, true);
 
@@ -153,22 +184,12 @@ public class PlayerHandComponent : NetworkBehaviour
     [ClientRpc]
     void SetCardInHand_ClientRpc()
     {
-        GameManager _manager = GameManager.Instance;
-        if (!_manager) return;
-
-        List<PlayerEntity> _players = _manager.GetAllPlayers;
-        foreach (PlayerEntity _player in _players)
+        cardsInHand.Clear();
+        HandCardComponent[] _cards = GetComponentsInChildren<HandCardComponent>();
+        foreach (HandCardComponent _card in _cards)
         {
-            if (_player)
-            {
-                _player.HandComponent.cardsInHand.Clear();
-                HandCardComponent[] _cards = _player.GetComponentsInChildren<HandCardComponent>();
-                foreach (HandCardComponent _card in _cards)
-                {
-                    if (_card)
-                        _player.HandComponent.cardsInHand.Add(_card);
-                }
-            }
+            if (_card)
+                cardsInHand.Add(_card);
         }
     }
 
@@ -176,16 +197,19 @@ public class PlayerHandComponent : NetworkBehaviour
 
     public void RemoveSelectedCard()
     {
-        PlayerEntity _player = GameManager.Instance.GetPlayerFromTurn();
-        HandCardComponent _card = _player.HandComponent.GetSelectedCard;
-        _player.HandComponent.cardsInHand.Remove(_card);
-        _card.NetworkObject.Despawn(true);
-        _card.NetworkObject.OnDeferredDespawnComplete += () => 
-            {
-                SetCardInHand_ClientRpc();
-                return true;
-            };
+        HandCardComponent _card = GetSelectedCard();
+        if (!_card) return;
 
-        _player.HandComponent.ReleaseCard_ClientRpc();
+        ReleaseCard();
+        _card.NetworkObject.Despawn(true);
+        Invoke(nameof(SetCardInHand_ClientRpc), Time.deltaTime);
+    }
+
+    public HandCardComponent GetSelectedCard()
+    {
+        if (cardSelectedID.Value < 0 || cardSelectedID.Value >= cardsInHand.Count)
+            return null;
+
+        return cardsInHand[cardSelectedID.Value];
     }
 }

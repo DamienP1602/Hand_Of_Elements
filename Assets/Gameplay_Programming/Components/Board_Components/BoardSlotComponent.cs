@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class BoardSlotComponent : NetworkBehaviour
 {
-    [SerializeField] Transform cardTransform;
+    [SerializeField] Vector3 cardPosition;
     [SerializeField] BoardCardComponent card;
     [SerializeField] NetworkVariable<PlayerEnum> playerTag = new NetworkVariable<PlayerEnum>(PlayerEnum.Player_One, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     [SerializeField] NetworkVariable<int> slotIndex = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
@@ -33,8 +33,10 @@ public class BoardSlotComponent : NetworkBehaviour
 
     public void PutCardInSlot()
     {
-        card = Instantiate(CardManager.Instance.boardCardPrefab, cardTransform);
+        card = Instantiate(CardManager.Instance.boardCardPrefab);
         card.NetworkObject.Spawn();
+        card.NetworkObject.TrySetParent(transform, true);
+
 
         PutCardInSlot_ClientRpc();
     }
@@ -42,7 +44,19 @@ public class BoardSlotComponent : NetworkBehaviour
     [ClientRpc]
     void PutCardInSlot_ClientRpc()
     {
-        card.NetworkObject.TrySetParent(cardTransform, true);
-        card.GetComponentInChildren<MeshRenderer>().material.color = Color.magenta;
+        BoardCardComponent _card = GetComponentInChildren<BoardCardComponent>();
+        if (_card)
+        {
+            card = _card;
+            card.transform.position = cardPosition + transform.position;
+            card.GetComponentInChildren<MeshRenderer>().material.color = Color.magenta;
+        }
+
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position + cardPosition, 0.25f);
     }
 }

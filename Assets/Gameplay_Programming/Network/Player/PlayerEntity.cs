@@ -11,13 +11,11 @@ public enum PlayerEnum
 }
 
 [RequireComponent(typeof(PlayerInputComponent), typeof(PlayerInteractComponent), typeof(PlayerHandComponent))]
-[RequireComponent(typeof(PlayerBoardComponent))]
 public class PlayerEntity : NetworkBehaviour
 {
     public PlayerInputComponent InputsComponent { get; private set; }
     public PlayerInteractComponent InteractComponent { get; private set; }
     public PlayerHandComponent HandComponent { get; private set; }
-    public PlayerBoardComponent BoardComponent { get; private set; }
 
     [Header("Player Parameters")]
     [SerializeField] PlayerEnum player;
@@ -29,7 +27,6 @@ public class PlayerEntity : NetworkBehaviour
         InputsComponent = GetComponent<PlayerInputComponent>();
         InteractComponent = GetComponent<PlayerInteractComponent>();
         HandComponent = GetComponent<PlayerHandComponent>();
-        BoardComponent = GetComponent<PlayerBoardComponent>();
     }
 
     void Start()
@@ -56,9 +53,6 @@ public class PlayerEntity : NetworkBehaviour
 
         InitInputs();
         HandComponent.Init();
-        GameManager.Instance.debugWidget.SetDebugText($"Init for {player.ToString()} is done");
-
-        SpawnBoard_ServerRpc();
     }
 
     public void ChangeTurn()
@@ -70,11 +64,5 @@ public class PlayerEntity : NetworkBehaviour
     void ChangeTurn_ServerRPC()
     {
         GameManager.Instance.ChangeTurn();
-    }
-
-    [ServerRpc]
-    void SpawnBoard_ServerRpc()
-    {
-        BoardComponent.CreateBoard(player);
     }
 }

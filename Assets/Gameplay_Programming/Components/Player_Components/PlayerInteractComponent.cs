@@ -57,15 +57,11 @@ public class PlayerInteractComponent : NetworkBehaviour
                 if (_hand)
                 {
                     if (_hand.Cards.Contains(_card))
-                    {
                         HoverCard_ServerRpc(_hand.Cards.IndexOf(_card));
-                    }
                 }
             }
             else
-            {
                 UnhoverCard_ServerRpc();
-            }
         }
     }
 
@@ -73,38 +69,41 @@ public class PlayerInteractComponent : NetworkBehaviour
     void HoverCard_ServerRpc(int _id)
     {
         PlayerHandComponent _hand = GetComponent<PlayerHandComponent>();
-        _hand.SetHoveredCard_ClientRpc(_id);
+        _hand.SetHoveredCard(_id);
     }
 
     [ServerRpc]
     void UnhoverCard_ServerRpc()
     {
         PlayerHandComponent _hand = GetComponent<PlayerHandComponent>();
-        _hand.UnhoverCard_ClientRpc();
+        _hand.UnhoverCard();
     }
 
     [ServerRpc]
     void OnSelectCard_ServerRpc(int _id)
     {
         PlayerHandComponent _hand = GetComponent<PlayerHandComponent>();
-        _hand.SelectCard_ClientRpc(_id);
+        _hand.SelectCard(_id);
     }
 
     [ServerRpc]
     void OnReleaseCard_ServerRpc()
     {
         PlayerHandComponent _hand = GetComponent<PlayerHandComponent>();
-        _hand.ReleaseCard_ClientRpc();
+        _hand.ReleaseCard();
     }
 
     [ServerRpc]
     void PutCardOnBoard_ServerRpc(int _index)
     {
-        BoardComponent _board = GameManager.Instance.Board;
-        //BoardSlotComponent _slot = _board.GetSlot(GameManager.Instance.PlayerTurnTag, _index);
-        //_slot.PutCardInSlot();
-
         PlayerEntity _player = GameManager.Instance.GetPlayerFromTurn();
-        _player.HandComponent.RemoveSelectedCard();
+        HandCardComponent _card = _player.HandComponent.GetSelectedCard();
+        BoardSlotComponent _slot = GameManager.Instance.Board.GetSlot(_player.PlayerTag, _index);
+
+        if (_card && _slot)
+        {
+            _slot.PutCardInSlot();
+            _player.HandComponent.RemoveSelectedCard();
+        }
     }
 }
