@@ -90,7 +90,7 @@ public class PlayerHandComponent : NetworkBehaviour
         int _size = cardsInHand.Count;
         for (int _i = 0; _i < _size; _i++)
         {
-            int _indexOffset = _i - (_size / 2);
+            float _indexOffset = _i - (_size / 2) + (_size % 2 != 0 ? 0.0f : 0.5f);
             HandCardComponent _card = cardsInHand[_i];
             if (!_card) continue;
 
@@ -167,16 +167,10 @@ public class PlayerHandComponent : NetworkBehaviour
     {
         for (int _i = 0; _i < _amount; _i++)
         {
-            SpawnCard_ServerRpc(); //C'EST INVERSE
+            HandCardComponent _card = Instantiate(CardManager.Instance.handCardPrefab);
+            _card.NetworkObject.Spawn();
+            _card.NetworkObject.TrySetParent(gameObject, true);
         }
-    }
-
-    [ServerRpc]
-    void SpawnCard_ServerRpc()
-    {
-        HandCardComponent _card = Instantiate(CardManager.Instance.handCardPrefab);
-        _card.NetworkObject.Spawn();
-        _card.NetworkObject.TrySetParent(gameObject, true);
 
         SetCardInHand_ClientRpc();
     }

@@ -6,10 +6,12 @@ public class BoardComponent : MonoBehaviour
 {
     [Header("Player One Parameters")]
     [SerializeField] Transform playerOneSide;
+    [SerializeField] Transform playerOneDeck;
     [SerializeField] List<BoardSlotComponent> playerOneSlots;
 
     [Header("Player Two Parameters")]
     [SerializeField] Transform playerTwoSide;
+    [SerializeField] Transform playerTwoDeck;
     [SerializeField] List<BoardSlotComponent> playerTwoSlots;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -26,7 +28,7 @@ public class BoardComponent : MonoBehaviour
 
     public void SetPlayerBoardSide(PlayerEntity _player)
     {
-        Vector3 _offset = Vector3.forward * (_player.IsOwner ? 4.5f : -4.5f);
+        Vector3 _offset = Vector3.forward * (_player.IsOwner ? 4.5f : -4.5f) + Vector3.down * 2.0f;
         Vector3 _newPos = _player.transform.position + _offset;
 
         if (_player.PlayerTag == PlayerEnum.Player_One)
