@@ -51,4 +51,9 @@ public class BoardComponent : MonoBehaviour
 
         return null;
     }
+
+    public Vector3 GetDeckPosition(PlayerEnum _playerTag)
+    {
+        return _playerTag == PlayerEnum.Player_One ? playerOneDeck.position : playerTwoDeck.position;
+    }
 }

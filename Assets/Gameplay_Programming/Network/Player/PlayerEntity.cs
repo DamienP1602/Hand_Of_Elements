@@ -52,7 +52,6 @@ public class PlayerEntity : NetworkBehaviour
         if (!IsOwner) return;
 
         InitInputs();
-        HandComponent.Init();
     }
 
     public void ChangeTurn()

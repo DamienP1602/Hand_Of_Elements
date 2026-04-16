@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: -445027073842354036}
   - component: {fileID: 1932200199212837275}
   - component: {fileID: 8967812732163145341}
+  - component: {fileID: 6997199870020094744}
   m_Layer: 3
   m_Name: Board_Card
   m_TagString: Untagged
@@ -95,6 +96,45 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   <IsHovered>k__BackingField: 0
+--- !u!114 &6997199870020094744
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4591595903680623571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f53fa66162e58d14ab1ba0c26747adc2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  drawDebug: 0
+  movementBasedOnCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  destination: {x: 0, y: 0, z: 0}
+  initialPosition: {x: 0, y: 0, z: 0}
 --- !u!1 &7489218117187105566
 GameObject:
   m_ObjectHideFlags: 0

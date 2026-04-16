@@ -11,26 +11,33 @@ public class PlayerHandComponent : NetworkBehaviour
 
     public List<HandCardComponent> Cards => cardsInHand;
 
+    #region Getter
+    public HandCardComponent GetSelectedCard()
+    {
+        if (cardSelectedID.Value < 0 || cardSelectedID.Value >= cardsInHand.Count)
+            return null;
+        return cardsInHand[cardSelectedID.Value];
+    }
+
+    public HandCardComponent GetCard(int _index)
+    {
+        if (_index < 0 || _index >= cardsInHand.Count)
+            return null;
+        return cardsInHand[_index];
+
+    }
+
+    #endregion
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
 
     }
 
-    public void Init()
-    {
-        Invoke(nameof(InitDraw), Time.deltaTime);
-    }
-
-    void InitDraw()
-    {
-        DrawCard(3);
-    }
-
     // Update is called once per frame
     void Update()
     {
-        UpdateCardPosition();
         HoveredUpdate();
         UpdateSelectedCard();
     }
@@ -82,23 +89,6 @@ public class PlayerHandComponent : NetworkBehaviour
             _card.GetComponentInChildren<MeshRenderer>().material.color = Color.green;
     }
 
-    /// <summary>
-    /// Will put the card in the right position;
-    /// </summary>
-    void UpdateCardPosition()
-    {
-        int _size = cardsInHand.Count;
-        for (int _i = 0; _i < _size; _i++)
-        {
-            float _indexOffset = _i - (_size / 2) + (_size % 2 != 0 ? 0.0f : 0.5f);
-            HandCardComponent _card = cardsInHand[_i];
-            if (!_card) continue;
-
-            if (_i != cardSelectedID.Value)
-                _card.transform.localPosition = new Vector3(_indexOffset * 3.0f, 0.0f, 0.0f);
-        }
-    }
-
     #endregion
 
     #region Card Hovered
@@ -124,18 +114,14 @@ public class PlayerHandComponent : NetworkBehaviour
         if (cardSelectedID.Value == _id) return;
         cardSelectedID.Value = _id;
 
-        Invoke(nameof(SelectCard_ClientRpc), Time.deltaTime);
+        SelectCard_ClientRpc(_id);
     }
 
     [ClientRpc]
-    void SelectCard_ClientRpc()
+    void SelectCard_ClientRpc(int _index)
     {
-        HandCardComponent _card = GetSelectedCard();
-        if (!_card)
-        {
-            GameManager.Instance.debugWidget.SetDebugText("Can't get card");
-            return;
-        }
+        HandCardComponent _card = GetCard(_index);
+        if (!_card) return;
 
         _card.GetComponent<BoxCollider>().enabled = false;
         _card.IsSelected = true;
@@ -153,7 +139,8 @@ public class PlayerHandComponent : NetworkBehaviour
         if (cardSelectedID.Value == -1) return;
 
         HandCardComponent _card = GetSelectedCard();
-        if (!_card) return;
+        if (!_card)
+            return;
 
         _card.IsSelected = false;
         _card.GetComponent<BoxCollider>().enabled = true;
@@ -165,18 +152,18 @@ public class PlayerHandComponent : NetworkBehaviour
 
     public void DrawCard(int _amount)
     {
+        if (IsServer)
+        Debug.Log("Create Card");
         for (int _i = 0; _i < _amount; _i++)
         {
-            HandCardComponent _card = Instantiate(CardManager.Instance.handCardPrefab);
+            HandCardComponent _card = Instantiate(CardManager.Instance.handCardPrefab, GameManager.Instance.Board.GetDeckPosition(GetComponent<PlayerEntity>().PlayerTag), Quaternion.identity);
             _card.NetworkObject.Spawn();
             _card.NetworkObject.TrySetParent(gameObject, true);
         }
-
-        SetCardInHand_ClientRpc();
     }
 
     [ClientRpc]
-    void SetCardInHand_ClientRpc()
+    public void SetCardInHand_ClientRpc()
     {
         cardsInHand.Clear();
         HandCardComponent[] _cards = GetComponentsInChildren<HandCardComponent>();
@@ -184,6 +171,33 @@ public class PlayerHandComponent : NetworkBehaviour
         {
             if (_card)
                 cardsInHand.Add(_card);
+        }
+        UpdateCardPosition();
+    }
+
+    /// <summary>
+    /// Will put the card in the right position;
+    /// </summary>
+    void UpdateCardPosition()
+    {
+        int _size = cardsInHand.Count;
+        for (int _i = 0; _i < _size; _i++)
+        {
+            float _indexOffset = _i - (_size / 2) + (_size % 2 != 0 ? 0.0f : 0.5f);
+            HandCardComponent _card = cardsInHand[_i];
+            if (!_card) continue;
+
+            if (_i != cardSelectedID.Value)
+            {
+                List<Vector3> _destinations = new List<Vector3>();
+                if (IsOwner && _i == _size - 1)
+                {
+                    _destinations.Add(CardManager.Instance.cardShowPositon);
+                }
+                _destinations.Add(transform.position + new Vector3(_indexOffset * 3.0f, 0.0f, 0.0f));
+
+                _card.MovementComponent.SetDestination(_destinations);
+            }
         }
     }
 
@@ -197,13 +211,5 @@ public class PlayerHandComponent : NetworkBehaviour
         ReleaseCard();
         _card.NetworkObject.Despawn(true);
         Invoke(nameof(SetCardInHand_ClientRpc), Time.deltaTime);
-    }
-
-    public HandCardComponent GetSelectedCard()
-    {
-        if (cardSelectedID.Value < 0 || cardSelectedID.Value >= cardsInHand.Count)
-            return null;
-
-        return cardsInHand[cardSelectedID.Value];
     }
 }

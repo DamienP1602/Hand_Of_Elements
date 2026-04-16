@@ -92,15 +92,11 @@ public class GameManager : Singleton<GameManager>
         PlayerEnum _newTurn = playerTurn.Value == PlayerEnum.Player_One ? PlayerEnum.Player_Two : PlayerEnum.Player_One;
         playerTurn.Value = _newTurn;
 
-        DrawCards_ClientRpc();
-    }
-
-    [ClientRpc]
-    void DrawCards_ClientRpc()
-    {
         PlayerEntity _player = GetPlayerFromTurn();
         _player.HandComponent.DrawCard(1);
+        _player.HandComponent.SetCardInHand_ClientRpc();
     }
+
 
     private void OnDrawGizmos()
     {
