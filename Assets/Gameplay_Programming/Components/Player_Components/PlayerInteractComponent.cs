@@ -20,7 +20,7 @@ public class PlayerInteractComponent : NetworkBehaviour
                 PlayerHandComponent _hand = GetComponent<PlayerHandComponent>();
                 if (_hand)
                 {
-                    OnSelectCard_ServerRpc(_hand.Cards.IndexOf(_card));
+                    OnSelectCard_ServerRpc(_hand.GetIndexOf(_card));
                 }
             }
         }
@@ -56,8 +56,8 @@ public class PlayerInteractComponent : NetworkBehaviour
                 PlayerHandComponent _hand = GetComponent<PlayerHandComponent>();
                 if (_hand)
                 {
-                    if (_hand.Cards.Contains(_card))
-                        HoverCard_ServerRpc(_hand.Cards.IndexOf(_card));
+                    if (_hand.Contains(_card))
+                        HoverCard_ServerRpc(_hand.GetIndexOf(_card));
                 }
             }
             else

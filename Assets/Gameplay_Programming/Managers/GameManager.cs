@@ -93,6 +93,8 @@ public class GameManager : Singleton<GameManager>
         playerTurn.Value = _newTurn;
 
         PlayerEntity _player = GetPlayerFromTurn();
+        if (_player.DeckComponent.CardCount == 0) return;
+
         _player.HandComponent.DrawCard(1);
         _player.HandComponent.SetCardInHand_ClientRpc();
     }

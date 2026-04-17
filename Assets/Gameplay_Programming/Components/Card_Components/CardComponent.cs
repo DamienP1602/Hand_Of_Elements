@@ -7,6 +7,7 @@ public class CardComponent : NetworkBehaviour
     public CardMovementComponent MovementComponent { get; private set; }
 
     [field:SerializeField] public bool IsHovered {  get; set; }
+    [SerializeField] protected BaseCardData data;
 
     private void Awake()
     {

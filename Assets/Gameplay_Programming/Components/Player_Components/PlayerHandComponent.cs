@@ -9,9 +9,8 @@ public class PlayerHandComponent : NetworkBehaviour
     [SerializeField] NetworkVariable<int> cardHoveredID = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     [SerializeField] List<HandCardComponent> cardsInHand;
 
-    public List<HandCardComponent> Cards => cardsInHand;
-
     #region Getter
+
     public HandCardComponent GetSelectedCard()
     {
         if (cardSelectedID.Value < 0 || cardSelectedID.Value >= cardsInHand.Count)
@@ -25,6 +24,27 @@ public class PlayerHandComponent : NetworkBehaviour
             return null;
         return cardsInHand[_index];
 
+    }
+
+    public int GetIndexOf(HandCardComponent _card)
+    {
+        int _size = cardsInHand.Count;
+        for (int _i = 0; _i < _size; _i++)
+        {
+            if (_card == cardsInHand[_i])
+                return _i;
+        }
+        return -1;
+    }
+
+    public bool Contains(HandCardComponent _toCheck)
+    {
+        foreach (HandCardComponent _card in cardsInHand)
+        {
+            if (_card == _toCheck)
+                return true;
+        }
+        return false;
     }
 
     #endregion
@@ -146,19 +166,31 @@ public class PlayerHandComponent : NetworkBehaviour
         _card.GetComponent<BoxCollider>().enabled = true;
     }
 
+    public void RemoveSelectedCard()
+    {
+        HandCardComponent _card = GetSelectedCard();
+        if (!_card) return;
+
+        ReleaseCard();
+        _card.NetworkObject.Despawn(true);
+        Invoke(nameof(SetCardInHand_ClientRpc), Time.deltaTime);
+    }
+
     #endregion
 
     #region Card Draw
 
     public void DrawCard(int _amount)
     {
-        if (IsServer)
-        Debug.Log("Create Card");
         for (int _i = 0; _i < _amount; _i++)
         {
             HandCardComponent _card = Instantiate(CardManager.Instance.handCardPrefab, GameManager.Instance.Board.GetDeckPosition(GetComponent<PlayerEntity>().PlayerTag), Quaternion.identity);
             _card.NetworkObject.Spawn();
             _card.NetworkObject.TrySetParent(gameObject, true);
+
+            PlayerDeckComponent _deck = GetComponent<PlayerDeckComponent>();
+            int _random = UnityEngine.Random.Range(0, _deck.CardCount);
+            _card.SetID(_random);
         }
     }
 
@@ -203,13 +235,5 @@ public class PlayerHandComponent : NetworkBehaviour
 
     #endregion
 
-    public void RemoveSelectedCard()
-    {
-        HandCardComponent _card = GetSelectedCard();
-        if (!_card) return;
 
-        ReleaseCard();
-        _card.NetworkObject.Despawn(true);
-        Invoke(nameof(SetCardInHand_ClientRpc), Time.deltaTime);
-    }
 }

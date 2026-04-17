@@ -288,6 +288,11 @@ MonoBehaviour:
   <handCardPrefab>k__BackingField: {fileID: 2693770540005688924, guid: f6b7fe6d73720bd4eb69f4d1690682a6, type: 3}
   <boardCardPrefab>k__BackingField: {fileID: 8967812732163145341, guid: 6c2097caf08e7dd45bab27c5c93f6a6e, type: 3}
   <cardShowPositon>k__BackingField: {x: 8.5, y: 4, z: 0}
+  soldierCards:
+  - {fileID: 11400000, guid: 6a35c30123493ed43b923802715e2d9a, type: 2}
+  - {fileID: 11400000, guid: e286a234a4d589f4a9e23aba40e4dd0b, type: 2}
+  - {fileID: 11400000, guid: 99771dce0108d744cb72995f9d095a32, type: 2}
+  - {fileID: 11400000, guid: 6277c5e660f9cc7479dbc9fe4825e3c7, type: 2}
 --- !u!114 &326008748
 MonoBehaviour:
   m_ObjectHideFlags: 0

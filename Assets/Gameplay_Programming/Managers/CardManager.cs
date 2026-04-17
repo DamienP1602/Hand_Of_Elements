@@ -1,5 +1,4 @@
-using System;
-using Unity.Netcode;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CardManager : Singleton<CardManager>
@@ -8,6 +7,33 @@ public class CardManager : Singleton<CardManager>
     [field:SerializeField] public BoardCardComponent boardCardPrefab { get; private set; }
 
     [field:SerializeField] public Vector3 cardShowPositon { get; private set; }
+
+    [Header("Card Lists")]
+    [SerializeField] List<BaseCardData> allCards;
+    Dictionary<int, BaseCardData> cardsDictionary = new Dictionary<int, BaseCardData>();
+
+
+
+    #region Getters
+
+    public BaseCardData GetCard(int _id)
+    {
+        if (_id < 0 || _id >= cardsDictionary.Count) return null;
+
+        return cardsDictionary[_id];
+    }
+
+    #endregion
+
+    protected override void Awake()
+    {
+        base.Awake();
+
+        foreach (BaseCardData _card in allCards)
+        {
+            cardsDictionary[_card.cardID] = _card;
+        }
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
