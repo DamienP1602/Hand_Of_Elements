@@ -31,12 +31,11 @@ public class BoardSlotComponent : NetworkBehaviour
         slotIndex.Value  = _index;
     }
 
-    public void PutCardInSlot()
+    public void PutCardInSlot(Vector3 _startingPos)
     {
-        card = Instantiate(CardManager.Instance.boardCardPrefab);
+        card = Instantiate(CardManager.Instance.boardCardPrefab, _startingPos,Quaternion.identity);
         card.NetworkObject.Spawn();
         card.NetworkObject.TrySetParent(transform, true);
-
 
         PutCardInSlot_ClientRpc();
     }
@@ -49,7 +48,10 @@ public class BoardSlotComponent : NetworkBehaviour
         {
             card = _card;
             card.transform.position = cardPosition + transform.position;
-            card.GetComponentInChildren<MeshRenderer>().material.color = Color.magenta;
+
+            PlayerEntity _player = GameManager.Instance.GetPlayerFromTurn();
+            HandCardComponent _selectedCard =_player.HandComponent.GetSelectedCard();
+            card.SetID(_selectedCard.ID);
         }
 
     }

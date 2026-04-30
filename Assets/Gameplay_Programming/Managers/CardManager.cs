@@ -12,8 +12,6 @@ public class CardManager : Singleton<CardManager>
     [SerializeField] List<BaseCardData> allCards;
     Dictionary<int, BaseCardData> cardsDictionary = new Dictionary<int, BaseCardData>();
 
-
-
     #region Getters
 
     public BaseCardData GetCard(int _id)

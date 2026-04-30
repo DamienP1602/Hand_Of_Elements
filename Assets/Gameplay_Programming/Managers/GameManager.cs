@@ -33,18 +33,12 @@ public class GameManager : Singleton<GameManager>
     void Start()
     {
         Invoke(nameof(InitPlayers_ClientRPC), Time.deltaTime);
-        playerTurn.OnValueChanged += CallChangeTurn;
     }
 
     // Update is called once per frame
     void Update()
     {
 
-    }
-
-    void CallChangeTurn(PlayerEnum _oldVal, PlayerEnum _newVal)
-    {
-        debugWidget.SetDebugText($"Change turn to {_newVal.ToString()}");
     }
 
     [ClientRpc]
@@ -97,6 +91,24 @@ public class GameManager : Singleton<GameManager>
 
         _player.HandComponent.DrawCard(1);
         _player.HandComponent.SetCardInHand_ClientRpc();
+
+        widget.SetButtonIsVisible(false);
+        Invoke(nameof(CheckButtonInteractable_ClientRpc),0.1f);
+    }
+
+    [ClientRpc]
+    void CheckButtonInteractable_ClientRpc()
+    {
+        NetworkObject _obj = NetworkManager.Singleton.LocalClient.PlayerObject;
+        if (_obj.GetComponent<PlayerEntity>() is PlayerEntity _player)
+        {
+            SetButtonVisibleFromPlayerTurn(_player.PlayerTag);
+        }        
+    }
+
+    public void SetButtonVisibleFromPlayerTurn(PlayerEnum _player)
+    {
+        widget.SetButtonIsVisible(_player == playerTurn.Value);
     }
 
 

@@ -10,8 +10,7 @@ public class CardMovementComponent : MonoBehaviour
     [Header("Parameters")]
     [SerializeField] AnimationCurve movementBasedOnCurve;
     [SerializeField] float movementSpeed;
-    [SerializeField] List<Vector3> destinations;
-    [SerializeField] int destinationIndex;
+    [SerializeField] Vector3 destination;
     [SerializeField] Vector3 initialPosition;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -26,50 +25,28 @@ public class CardMovementComponent : MonoBehaviour
         MoveTo();
     }
 
-    public void SetDestination(List<Vector3> _destination)
+    public void SetDestination(Vector3 _destination)
     {
         initialPosition = transform.position;
-        destinations = _destination;
-        destinationIndex = 0;
+        destination = _destination;
     }
 
     public void MoveTo()
     {
-        if (destinationIndex == destinations.Count) return;
-
-        if (transform.position == destinations[destinationIndex])
-        {
-            destinationIndex++;
-            return;
-        }
-
-        float _value = Mathf.InverseLerp(initialPosition.magnitude, destinations[destinationIndex].magnitude, transform.position.magnitude);
+        float _value = Mathf.InverseLerp(initialPosition.magnitude, destination.magnitude, transform.position.magnitude);
         float _step = Time.deltaTime * movementBasedOnCurve.Evaluate(_value) * movementSpeed;
 
-        transform.position = Vector3.MoveTowards(transform.position, destinations[destinationIndex], _step);
+        transform.position = Vector3.MoveTowards(transform.position, destination, _step);
     }
 
     private void OnDrawGizmos()
     {
         if (!drawDebug) return;
 
-        if (destinationIndex == destinations.Count) return;
-
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(initialPosition,0.5f);
 
-        int _size = destinations.Count;
-        for (int _i = 0; _i < _size; _i++)
-        {
-            if (_i == 0)
-                Gizmos.color = Color.blue;
-            else
-                Gizmos.color = Color.red;
-
-            Gizmos.DrawWireSphere(destinations[0], 0.5f);
-        }
-
         Gizmos.color = Color.red;
-        Gizmos.DrawLine(transform.position, destinations[destinationIndex]);
+        Gizmos.DrawWireSphere(destination, 0.5f);
     }
 }

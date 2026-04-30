@@ -169,8 +169,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51998f065e33d0f44ab1e485f00e4a5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardsInDeck:
-  - {fileID: 11400000, guid: 6a35c30123493ed43b923802715e2d9a, type: 2}
-  - {fileID: 11400000, guid: e286a234a4d589f4a9e23aba40e4dd0b, type: 2}
-  - {fileID: 11400000, guid: 99771dce0108d744cb72995f9d095a32, type: 2}
-  - {fileID: 11400000, guid: 6277c5e660f9cc7479dbc9fe4825e3c7, type: 2}
+  cardsInDeck: 00000000010000000200000003000000

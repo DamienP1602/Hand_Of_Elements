@@ -55,6 +55,7 @@ public class PlayerEntity : NetworkBehaviour
         if (!IsOwner) return;
 
         InitInputs();
+        GameManager.Instance.SetButtonVisibleFromPlayerTurn(player);
     }
 
     /// <summary>

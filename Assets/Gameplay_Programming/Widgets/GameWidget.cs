@@ -26,4 +26,9 @@ public class GameWidget : MonoBehaviour
             _player.ChangeTurn();
         }
     }
+
+    public void SetButtonIsVisible(bool _value)
+    {
+        endTurnButton.gameObject.SetActive(_value);
+    }
 }

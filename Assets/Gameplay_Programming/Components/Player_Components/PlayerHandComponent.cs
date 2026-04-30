@@ -6,7 +6,7 @@ using UnityEngine;
 public class PlayerHandComponent : NetworkBehaviour
 {
     [SerializeField] NetworkVariable<int> cardSelectedID = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-    [SerializeField] NetworkVariable<int> cardHoveredID = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    //[SerializeField] NetworkVariable<int> cardHoveredID = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     [SerializeField] List<HandCardComponent> cardsInHand;
 
     #region Getter
@@ -49,13 +49,11 @@ public class PlayerHandComponent : NetworkBehaviour
 
     #endregion
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
 
     }
 
-    // Update is called once per frame
     void Update()
     {
         HoveredUpdate();
@@ -69,13 +67,11 @@ public class PlayerHandComponent : NetworkBehaviour
     /// </summary>
     void HoveredUpdate()
     {
-        int _handSize = cardsInHand.Count;
-        for (int _i = 0; _i < _handSize; _i++)
+        foreach (HandCardComponent _card in cardsInHand)
         {
-            HandCardComponent _card = cardsInHand[_i];
             if (!_card) continue;
 
-            if (_i == cardHoveredID.Value)
+            if (_card.IsHovered)
             {
                 if (IsOwner)
                     _card.GetComponentInChildren<MeshRenderer>().material.color = Color.red;
@@ -115,14 +111,19 @@ public class PlayerHandComponent : NetworkBehaviour
 
     public void SetHoveredCard(int _id)
     {
-        if (cardHoveredID.Value == _id) return;
-        cardHoveredID.Value = _id;
+        HandCardComponent _card = cardsInHand[_id];
+        if (_card.IsHovered) return;
+
+        cardsInHand[_id].SetIsHovered(true);
     }
 
     public void UnhoverCard()
     {
-        if (cardHoveredID.Value == -1) return;
-        cardHoveredID.Value = -1;
+        foreach (HandCardComponent _card in cardsInHand)
+        {
+            if (_card.IsHovered)
+                _card.SetIsHovered(false);
+        }
     }
 
     #endregion
@@ -144,7 +145,7 @@ public class PlayerHandComponent : NetworkBehaviour
         if (!_card) return;
 
         _card.GetComponent<BoxCollider>().enabled = false;
-        _card.IsSelected = true;
+        _card.SetIsSelected(true);
     }
 
     public void ReleaseCard()
@@ -162,7 +163,7 @@ public class PlayerHandComponent : NetworkBehaviour
         if (!_card)
             return;
 
-        _card.IsSelected = false;
+        _card.SetIsSelected(false);
         _card.GetComponent<BoxCollider>().enabled = true;
     }
 
@@ -202,7 +203,9 @@ public class PlayerHandComponent : NetworkBehaviour
         foreach (HandCardComponent _card in _cards)
         {
             if (_card)
+            {
                 cardsInHand.Add(_card);
+            }
         }
         UpdateCardPosition();
     }
@@ -215,25 +218,12 @@ public class PlayerHandComponent : NetworkBehaviour
         int _size = cardsInHand.Count;
         for (int _i = 0; _i < _size; _i++)
         {
-            float _indexOffset = _i - (_size / 2) + (_size % 2 != 0 ? 0.0f : 0.5f);
             HandCardComponent _card = cardsInHand[_i];
             if (!_card) continue;
 
-            if (_i != cardSelectedID.Value)
-            {
-                List<Vector3> _destinations = new List<Vector3>();
-                if (IsOwner && _i == _size - 1)
-                {
-                    _destinations.Add(CardManager.Instance.cardShowPositon);
-                }
-                _destinations.Add(transform.position + new Vector3(_indexOffset * 3.0f, 0.0f, 0.0f));
-
-                _card.MovementComponent.SetDestination(_destinations);
-            }
+            float _indexOffset = _i - (_size / 2) + (_size % 2 != 0 ? 0.0f : 0.5f);
+            _card.MovementComponent.SetDestination(transform.position + new Vector3(_indexOffset * 3.0f, 0.0f, 0.0f));
         }
     }
-
     #endregion
-
-
 }

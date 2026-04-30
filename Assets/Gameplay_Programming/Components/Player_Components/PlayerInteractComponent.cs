@@ -8,7 +8,28 @@ public class PlayerInteractComponent : NetworkBehaviour
     private void Start()
     {
         if (IsOwner)
-            InvokeRepeating(nameof(OnHoverUpdate), 0.05f, 0.05f);
+            InvokeRepeating(nameof(OnHoverUpdate), 0.1f, 0.1f);
+    }
+
+    void OnHoverUpdate()
+    {
+        if (Physics.Raycast(PointOnScreen, out RaycastHit _hit, 15.0f))
+        {
+            if (_hit.collider.gameObject.GetComponent<HandCardComponent>() is HandCardComponent _card)
+            {
+                PlayerHandComponent _hand = GetComponent<PlayerHandComponent>();
+                if (_hand)
+                {
+                    if (_hand.Contains(_card))
+                    {
+                        if (_card != _hand.GetSelectedCard())
+                            HoverCard_ServerRpc(_hand.GetIndexOf(_card));
+                    }
+                }
+            }
+            else
+                UnhoverCard_ServerRpc();
+        }
     }
 
     public void OnPlayerClick()
@@ -22,6 +43,11 @@ public class PlayerInteractComponent : NetworkBehaviour
                 {
                     OnSelectCard_ServerRpc(_hand.GetIndexOf(_card));
                 }
+            }
+
+            else if (_hit.collider.gameObject.GetComponent<BoardCardComponent>() is BoardCardComponent _board)
+            {
+                //_board.
             }
         }
     }
@@ -47,23 +73,7 @@ public class PlayerInteractComponent : NetworkBehaviour
         }
     }
 
-    void OnHoverUpdate()
-    {
-        if (Physics.Raycast(PointOnScreen, out RaycastHit _hit, 15.0f))
-        {
-            if (_hit.collider.gameObject.GetComponent<HandCardComponent>() is HandCardComponent _card)
-            {
-                PlayerHandComponent _hand = GetComponent<PlayerHandComponent>();
-                if (_hand)
-                {
-                    if (_hand.Contains(_card))
-                        HoverCard_ServerRpc(_hand.GetIndexOf(_card));
-                }
-            }
-            else
-                UnhoverCard_ServerRpc();
-        }
-    }
+
 
     [ServerRpc]
     void HoverCard_ServerRpc(int _id)
@@ -102,7 +112,7 @@ public class PlayerInteractComponent : NetworkBehaviour
 
         if (_card && _slot)
         {
-            _slot.PutCardInSlot();
+            _slot.PutCardInSlot(_card.transform.position);
             _player.HandComponent.RemoveSelectedCard();
         }
     }
