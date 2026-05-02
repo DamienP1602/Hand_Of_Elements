@@ -3,6 +3,11 @@ using System.Net.Sockets;
 using TMPro;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
+using Unity.Networking.Transport.Relay;
+using Unity.Services.Authentication;
+using Unity.Services.Core;
+using Unity.Services.Relay;
+using Unity.Services.Relay.Models;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,9 +20,18 @@ public class NetworkConnectionWidget : NetworkBehaviour
     [SerializeField] Button joinButton;
     [SerializeField] Button startGame;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    async void Start()
     {
+        // Initalize the service
+        await UnityServices.InitializeAsync();
+
+        if (!AuthenticationService.Instance.IsSignedIn)
+        {
+            await AuthenticationService.Instance.SignInAnonymouslyAsync();
+            debug.SetDebugText("Sign in to server");
+        }
+        
+        // Init buttons
         hostButton.onClick.AddListener(LaunchHost);
         joinButton.onClick.AddListener(LaunchClient);
 
@@ -38,11 +52,11 @@ public class NetworkConnectionWidget : NetworkBehaviour
         {
             if (_data.ClientId == _manager.CurrentSessionOwner)
             {
-                debug.SetDebugText("Owner Created");
+                debug.SetDebugText("Server Created");
             }
             else
             {
-                debug.SetDebugText("Client is connected : " + _data.ClientId.ToString());
+                debug.SetDebugText("new Client : " + _data.ClientId.ToString());
             }
         }
         else if (IsClient)
@@ -87,43 +101,31 @@ public class NetworkConnectionWidget : NetworkBehaviour
         }
     }
 
-    void LaunchHost()
+    async void LaunchHost()
     {
-        SetIPAddress();
+        Allocation _alloc = await RelayService.Instance.CreateAllocationAsync(1);
+
+        string _joinCode = await RelayService.Instance.GetJoinCodeAsync(_alloc.AllocationId);
+
+        UnityTransport _transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+        _transport.SetRelayServerData(new RelayServerData(_alloc,"dtls"));
+
         hostIpText.gameObject.SetActive(true);
-        hostIpText.text = GetHostIP();
+        hostIpText.text = _joinCode;
 
         NetworkManager.Singleton.StartHost();
     }
 
-    void SetIPAddress()
+    async void LaunchClient()
     {
-        string _text = clientIpField.text;
-        if (string.IsNullOrEmpty(_text)) return;
+        if (string.IsNullOrEmpty(clientIpField.text)) return;
+
+        JoinAllocation _join = await RelayService.Instance.JoinAllocationAsync(clientIpField.text.Trim().ToUpper());
 
         UnityTransport _transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
-        UnityTransport.ConnectionAddressData _data = _transport.ConnectionData;
-        _data.Address = _text;
-        _transport.ConnectionData = _data;
-    }
-
-    void LaunchClient()
-    {
-        SetIPAddress();
+        _transport.SetRelayServerData(new RelayServerData(_join,"dtls"));
 
         NetworkManager.Singleton.StartClient();
     }
 
-    string GetHostIP()
-    {
-        IPHostEntry _host = Dns.GetHostEntry(Dns.GetHostName());
-        foreach (IPAddress _ip in _host.AddressList)
-        {
-            if (_ip.AddressFamily == AddressFamily.InterNetwork)
-            {
-                return _ip.ToString();
-            }
-        }
-        return "";
-    }
 }
