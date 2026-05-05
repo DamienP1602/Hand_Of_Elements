@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using UnityEngine;
 
 public class BoardComponent : MonoBehaviour
@@ -14,6 +15,17 @@ public class BoardComponent : MonoBehaviour
     [SerializeField] Transform playerTwoDeck;
     [SerializeField] List<BoardSlotComponent> playerTwoSlots;
 
+    List<BoardSlotComponent> GetSlotsFromTag(PlayerEnum _tag) => _tag == PlayerEnum.Player_One ? playerOneSlots : playerTwoSlots;
+
+    List<BoardSlotComponent> GetAllSlots()
+    {
+        List<BoardSlotComponent> _allSlots = new List<BoardSlotComponent>();
+        _allSlots.AddRange(playerOneSlots);
+        _allSlots.AddRange(playerTwoSlots);
+
+        return _allSlots;
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -23,7 +35,39 @@ public class BoardComponent : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        UpdateHoveredCards();
+        UpdateSelectedCard();
+    }
+
+    void UpdateHoveredCards()
+    {
+        List<BoardSlotComponent> _allSlots = GetAllSlots();
+
+        foreach (BoardSlotComponent _slot in _allSlots)
+        {
+            if (_slot.IsEmpty || _slot.Card.IsSelected)
+                continue;
+
+            if (_slot.Card.IsHovered)
+                _slot.Card.GetComponentInChildren<MeshRenderer>().material.color = Color.red;
+            else
+                _slot.Card.GetComponentInChildren<MeshRenderer>().material.color = Color.white;
+        }
+    }
+
+    void UpdateSelectedCard()
+    {
+        List<BoardSlotComponent> _allSlots = GetAllSlots();
+
+        foreach (BoardSlotComponent _slot in _allSlots)
+        {
+            if (_slot.IsEmpty) continue;
+
+            if (_slot.Card.IsSelected)
+            {
+                _slot.Card.GetComponentInChildren<MeshRenderer>().material.color = Color.green;
+            }
+        }
     }
 
     public void SetPlayerBoardSide(PlayerEntity _player)
@@ -55,5 +99,126 @@ public class BoardComponent : MonoBehaviour
     public Vector3 GetDeckPosition(PlayerEnum _playerTag)
     {
         return _playerTag == PlayerEnum.Player_One ? playerOneDeck.position : playerTwoDeck.position;
+    }
+
+    public int GetSlotIndex(BoardCardComponent _card, PlayerEnum _playerTag)
+    {
+        List<BoardSlotComponent> _slots = GetSlotsFromTag(_playerTag);
+
+        int _size = _slots.Count;
+        for (int _i = 0; _i < _size; _i++)
+        {
+            BoardSlotComponent _slot = _slots[_i];
+            if (_slot.Card == _card)
+                return _i;
+        }
+        return -1;
+    }
+
+    /// <summary>
+    /// Server Function
+    /// </summary>
+    /// <param name="_enum"></param>
+    public void UnhoverCards(PlayerEnum _playerTag)
+    {
+        List<BoardSlotComponent> _slots = GetSlotsFromTag(_playerTag);
+
+        foreach (BoardSlotComponent _slot in _slots)
+        {
+            if (_slot.IsEmpty) continue;
+
+            if (_slot.Card.IsHovered)
+                _slot.Card.SetIsHovered(false);
+        }
+    }
+
+    /// <summary>
+    /// Server Function
+    /// </summary>
+    public void HoverCard(int _id, PlayerEnum _playerTag)
+    {
+        List<BoardSlotComponent> _slots = GetSlotsFromTag(_playerTag);
+
+        int _size = _slots.Count;
+        for (int _i = 0; _i < _size; _i++)
+        {
+            BoardSlotComponent _slot = _slots[_i];
+            if (_slot.IsEmpty) continue;
+
+            _slot.Card.SetIsHovered(_i == _id);
+        }
+    }
+
+    /// <summary>
+    /// Server Function
+    /// </summary>
+    public void SelectCard(int _id, PlayerEnum _playerTag)
+    {
+        List<BoardSlotComponent> _slots = GetSlotsFromTag(_playerTag);
+
+        int _size = _slots.Count;
+        for (int _i = 0; _i < _size; _i++)
+        {
+            BoardSlotComponent _slot = _slots[_i];
+            if (_slot.IsEmpty) continue;
+
+            _slot.Card.SetIsSelected(_i == _id);
+        }
+    }
+
+    /// <summary>
+    /// Server Fuction
+    /// </summary>
+    public void ReleaseCards(PlayerEnum _playerTag)
+    {
+        List<BoardSlotComponent> _slots = GetSlotsFromTag(_playerTag);
+
+        foreach (BoardSlotComponent _slot in _slots)
+        {
+            if (_slot.IsEmpty || !_slot.Card.IsSelected) continue;
+
+            _slot.Card.SetIsSelected(false);
+        }
+    }
+
+    public PlayerEnum GetOwnerOfCard(BoardCardComponent _boardCard)
+    {
+        List<BoardSlotComponent> _allSlots = GetAllSlots();
+
+        foreach (BoardSlotComponent _slot in _allSlots)
+        {
+            if (_slot.IsEmpty) continue;
+
+            if (_slot.Card == _boardCard)
+                return _slot.PlayerTag;
+        }
+
+        return PlayerEnum.Player_NONE;
+    }
+
+    public BoardCardComponent GetSelectedCard(PlayerEnum _playerTag)
+    {
+        List<BoardSlotComponent> _slots = GetSlotsFromTag(_playerTag);
+
+        foreach (BoardSlotComponent _slot in _slots)
+        {
+            if (_slot.IsEmpty) continue;
+
+            if (_slot.Card.IsSelected)
+                return _slot.Card;
+        }
+        return null;
+    }
+
+    public void SetCardCanAttack(PlayerEnum _playerTag)
+    {
+        List<BoardSlotComponent> _slots = GetSlotsFromTag(_playerTag);
+
+        foreach (BoardSlotComponent _slot in _slots)
+        {
+            if (_slot.IsEmpty) continue;
+
+            _slot.Card.SetCanAttack(true);
+        }
     }
 }

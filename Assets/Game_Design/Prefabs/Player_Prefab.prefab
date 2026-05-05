@@ -133,6 +133,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+  ownerTag: 0
 --- !u!114 &2261687693739972999
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146,16 +147,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  cardSelectedID:
-    UpdateTraits:
-      MinSecondsBetweenUpdates: 0
-      MaxSecondsBetweenUpdates: 0
-    m_InternalValue: -1
-  cardHoveredID:
-    UpdateTraits:
-      MinSecondsBetweenUpdates: 0
-      MaxSecondsBetweenUpdates: 0
-    m_InternalValue: -1
   cardsInHand: []
 --- !u!114 &4118169201543858551
 MonoBehaviour:
@@ -169,4 +160,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51998f065e33d0f44ab1e485f00e4a5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardsInDeck: 00000000010000000200000003000000
+  ShowTopMostFoldoutHeaderGroup: 1
+  cardsInDeck:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0000000001000000020000000300000004000000050000000600000007000000

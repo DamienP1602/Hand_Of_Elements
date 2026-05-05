@@ -13,30 +13,32 @@ using UnityEngine.UI;
 
 public class NetworkConnectionWidget : NetworkBehaviour
 {
+    [Header("Parameters")]
     [SerializeField] NetworkDebugWidget debug;
     [SerializeField] TMP_InputField clientIpField;
     [SerializeField] TMP_Text hostIpText;
-    [SerializeField] Button hostButton;
-    [SerializeField] Button joinButton;
     [SerializeField] Button startGame;
 
-    async void Start()
-    {
-        // Initalize the service
-        await UnityServices.InitializeAsync();
+    [Header("Online")]
+    [SerializeField] Button onlineHostButton;
+    [SerializeField] Button onlineJoinButton;
 
-        if (!AuthenticationService.Instance.IsSignedIn)
-        {
-            await AuthenticationService.Instance.SignInAnonymouslyAsync();
-            debug.SetDebugText("Sign in to server");
-        }
-        
-        // Init buttons
-        hostButton.onClick.AddListener(LaunchHost);
-        joinButton.onClick.AddListener(LaunchClient);
+    [Header("Local")]
+    [SerializeField] Button localHostButton;
+    [SerializeField] Button localJoinButton;
+
+    void Start()
+    {
+        // Init Online buttons
+        onlineHostButton.onClick.AddListener(LaunchHost);
+        onlineJoinButton.onClick.AddListener(LaunchClient);
+
+        // Init Local buttons
+        localHostButton.onClick.AddListener(() => NetworkManager.Singleton.StartHost());
+        localJoinButton.onClick.AddListener(() => NetworkManager.Singleton.StartClient());
+
 
         startGame.onClick.AddListener(() => NetworkManager.Singleton.SceneManager.LoadScene("GameScene", UnityEngine.SceneManagement.LoadSceneMode.Single));
-
         NetworkManager.Singleton.OnConnectionEvent += OnConnection;
     }
 
@@ -103,6 +105,15 @@ public class NetworkConnectionWidget : NetworkBehaviour
 
     async void LaunchHost()
     {
+        // Connection to the Unity Servers
+        await UnityServices.InitializeAsync();
+
+        if (!AuthenticationService.Instance.IsSignedIn)
+        {
+            await AuthenticationService.Instance.SignInAnonymouslyAsync();
+            debug.SetDebugText("Sign in to server");
+        }
+
         Allocation _alloc = await RelayService.Instance.CreateAllocationAsync(1);
 
         string _joinCode = await RelayService.Instance.GetJoinCodeAsync(_alloc.AllocationId);
@@ -118,6 +129,15 @@ public class NetworkConnectionWidget : NetworkBehaviour
 
     async void LaunchClient()
     {
+        // Connection to the Unity Servers
+        await UnityServices.InitializeAsync();
+
+        if (!AuthenticationService.Instance.IsSignedIn)
+        {
+            await AuthenticationService.Instance.SignInAnonymouslyAsync();
+            debug.SetDebugText("Sign in to server");
+        }
+
         if (string.IsNullOrEmpty(clientIpField.text)) return;
 
         JoinAllocation _join = await RelayService.Instance.JoinAllocationAsync(clientIpField.text.Trim().ToUpper());

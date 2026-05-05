@@ -1,21 +1,23 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Unity.Netcode;
 using UnityEngine;
 
 public class PlayerHandComponent : NetworkBehaviour
 {
-    [SerializeField] NetworkVariable<int> cardSelectedID = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-    //[SerializeField] NetworkVariable<int> cardHoveredID = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     [SerializeField] List<HandCardComponent> cardsInHand;
 
     #region Getter
 
     public HandCardComponent GetSelectedCard()
     {
-        if (cardSelectedID.Value < 0 || cardSelectedID.Value >= cardsInHand.Count)
-            return null;
-        return cardsInHand[cardSelectedID.Value];
+        foreach (HandCardComponent _card in cardsInHand)
+        {
+            if (_card.IsSelected)
+                return _card;
+        }
+        return null;
     }
 
     public HandCardComponent GetCard(int _index)
@@ -72,12 +74,7 @@ public class PlayerHandComponent : NetworkBehaviour
             if (!_card) continue;
 
             if (_card.IsHovered)
-            {
-                if (IsOwner)
-                    _card.GetComponentInChildren<MeshRenderer>().material.color = Color.red;
-                else
-                    _card.GetComponentInChildren<MeshRenderer>().material.color = Color.green;
-            }
+                _card.GetComponentInChildren<MeshRenderer>().material.color = Color.red;
             else
                 _card.GetComponentInChildren<MeshRenderer>().material.color = Color.white;
         }
@@ -109,20 +106,31 @@ public class PlayerHandComponent : NetworkBehaviour
 
     #region Card Hovered
 
+    /// <summary>
+    /// Server Function
+    /// </summary>
     public void SetHoveredCard(int _id)
     {
-        HandCardComponent _card = cardsInHand[_id];
-        if (_card.IsHovered) return;
+        HandCardComponent _cardToHover = GetCard(_id);
+        if (!_cardToHover || _cardToHover.IsHovered) return;
 
-        cardsInHand[_id].SetIsHovered(true);
+        foreach (HandCardComponent _card in cardsInHand)
+        {
+            _card.SetIsHovered(_card == _cardToHover);
+        }
     }
 
+    /// <summary>
+    /// Server Function
+    /// </summary>
     public void UnhoverCard()
     {
         foreach (HandCardComponent _card in cardsInHand)
         {
             if (_card.IsHovered)
+            {
                 _card.SetIsHovered(false);
+            }
         }
     }
 
@@ -132,10 +140,11 @@ public class PlayerHandComponent : NetworkBehaviour
 
     public void SelectCard(int _id)
     {
-        if (cardSelectedID.Value == _id) return;
-        cardSelectedID.Value = _id;
+        HandCardComponent _card = GetCard(_id);
+        if (!_card) return;
 
         SelectCard_ClientRpc(_id);
+        _card.SetIsSelected(true);
     }
 
     [ClientRpc]
@@ -145,36 +154,34 @@ public class PlayerHandComponent : NetworkBehaviour
         if (!_card) return;
 
         _card.GetComponent<BoxCollider>().enabled = false;
-        _card.SetIsSelected(true);
     }
 
     public void ReleaseCard()
     {
+        HandCardComponent _card = GetSelectedCard();
+        if (!_card) return;
+
         ReleaseCard_ClientRpc();
-        cardSelectedID.Value = -1;
+        _card.SetIsSelected(false);
     }
 
     [ClientRpc]
     void ReleaseCard_ClientRpc()
     {
-        if (cardSelectedID.Value == -1) return;
-
         HandCardComponent _card = GetSelectedCard();
-        if (!_card)
-            return;
+        if (!_card) return;
 
-        _card.SetIsSelected(false);
         _card.GetComponent<BoxCollider>().enabled = true;
+        UpdateCardPosition();
     }
 
     public void RemoveSelectedCard()
     {
         HandCardComponent _card = GetSelectedCard();
-        if (!_card) return;
+        if (!_card) return; 
 
-        ReleaseCard();
         _card.NetworkObject.Despawn(true);
-        Invoke(nameof(SetCardInHand_ClientRpc), Time.deltaTime);
+        Invoke(nameof(SetCardInHand_ClientRpc),0.1f);
     }
 
     #endregion

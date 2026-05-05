@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -49,5 +50,12 @@ public class CardManager : Singleton<CardManager>
     {
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireCube(transform.position + cardShowPositon, Vector3.one);
+    }
+
+    public bool IsSoldierID(int _id)
+    {
+        if (_id < 0 || _id >= cardsDictionary.Count) return false;
+
+        return cardsDictionary[_id] is SoldierCardData;
     }
 }

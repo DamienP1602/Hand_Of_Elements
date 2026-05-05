@@ -10,6 +10,7 @@ public class BoardSlotComponent : NetworkBehaviour
 
     public PlayerEnum PlayerTag => playerTag.Value;
     public int GetSlotIndex => slotIndex.Value;
+    public BoardCardComponent Card => card;
 
     public bool IsEmpty => card == null;
 
@@ -31,11 +32,16 @@ public class BoardSlotComponent : NetworkBehaviour
         slotIndex.Value  = _index;
     }
 
-    public void PutCardInSlot(Vector3 _startingPos)
+    /// <summary>
+    /// Server Function
+    /// </summary>
+    public void PutCardInSlot(Vector3 _startingPos,int _cardID)
     {
         card = Instantiate(CardManager.Instance.boardCardPrefab, _startingPos,Quaternion.identity);
         card.NetworkObject.Spawn();
         card.NetworkObject.TrySetParent(transform, true);
+
+        card.SetID(_cardID);
 
         PutCardInSlot_ClientRpc();
     }
@@ -48,12 +54,7 @@ public class BoardSlotComponent : NetworkBehaviour
         {
             card = _card;
             card.transform.position = cardPosition + transform.position;
-
-            PlayerEntity _player = GameManager.Instance.GetPlayerFromTurn();
-            HandCardComponent _selectedCard =_player.HandComponent.GetSelectedCard();
-            card.SetID(_selectedCard.ID);
         }
-
     }
 
     private void OnDrawGizmos()

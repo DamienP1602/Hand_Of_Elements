@@ -93,7 +93,9 @@ public class GameManager : Singleton<GameManager>
         _player.HandComponent.SetCardInHand_ClientRpc();
 
         widget.SetButtonIsVisible(false);
-        Invoke(nameof(CheckButtonInteractable_ClientRpc),0.1f);
+        Invoke(nameof(CheckButtonInteractable_ClientRpc), 0.1f);
+
+        board.SetCardCanAttack(playerTurn.Value);
     }
 
     [ClientRpc]
@@ -103,7 +105,7 @@ public class GameManager : Singleton<GameManager>
         if (_obj.GetComponent<PlayerEntity>() is PlayerEntity _player)
         {
             SetButtonVisibleFromPlayerTurn(_player.PlayerTag);
-        }        
+        }
     }
 
     public void SetButtonVisibleFromPlayerTurn(PlayerEnum _player)
@@ -111,6 +113,18 @@ public class GameManager : Singleton<GameManager>
         widget.SetButtonIsVisible(_player == playerTurn.Value);
     }
 
+    public void PutCardOnBoard(PlayerEnum _type, int _boardSlotIndex)
+    {
+        PlayerEntity _player = GetPlayer(_type);
+        HandCardComponent _card = _player.HandComponent.GetSelectedCard();
+        BoardSlotComponent _slot = board.GetSlot(_type, _boardSlotIndex);
+
+        if (_card && _slot)
+        {
+            _slot.PutCardInSlot(_card.transform.position, _card.ID);
+            _player.HandComponent.RemoveSelectedCard();
+        }
+    }
 
     private void OnDrawGizmos()
     {

@@ -7,7 +7,8 @@ using UnityEngine;
 public enum PlayerEnum
 {
     Player_One,
-    Player_Two
+    Player_Two,
+    Player_NONE
 }
 
 [RequireComponent(typeof(PlayerInputComponent), typeof(PlayerInteractComponent), typeof(PlayerHandComponent))]
@@ -54,6 +55,7 @@ public class PlayerEntity : NetworkBehaviour
 
         if (!IsOwner) return;
 
+        InteractComponent.SetOwnerTag(player);
         InitInputs();
         GameManager.Instance.SetButtonVisibleFromPlayerTurn(player);
     }
