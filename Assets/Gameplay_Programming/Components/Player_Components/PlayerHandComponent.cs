@@ -188,6 +188,9 @@ public class PlayerHandComponent : NetworkBehaviour
 
     #region Card Draw
 
+    /// <summary>
+    /// Server Function
+    /// </summary>
     public void DrawCard(int _amount)
     {
         for (int _i = 0; _i < _amount; _i++)
@@ -196,10 +199,19 @@ public class PlayerHandComponent : NetworkBehaviour
             _card.NetworkObject.Spawn();
             _card.NetworkObject.TrySetParent(gameObject, true);
 
-            PlayerDeckComponent _deck = GetComponent<PlayerDeckComponent>();
-            int _random = UnityEngine.Random.Range(0, _deck.CardCount);
-            _card.SetID(_random);
+            PlayerDeckComponent _deck = GetComponent<PlayerDeckComponent>();            
+            BaseCardData _data = _deck.GetRandomCard();
+            _card.SetID(_data.cardID);
+
+            RemoveCardInDeck_ClientRpc(_data.cardID);
         }
+    }
+
+    [ClientRpc]
+    void RemoveCardInDeck_ClientRpc(int _id)
+    {
+        PlayerDeckComponent _deck = GetComponent<PlayerDeckComponent>();
+        _deck.RemoveCard(_id);
     }
 
     [ClientRpc]

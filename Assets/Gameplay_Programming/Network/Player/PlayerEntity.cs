@@ -43,11 +43,7 @@ public class PlayerEntity : NetworkBehaviour
 
     }
 
-    void InitInputs()
-    {
-        InputsComponent.Click.started += (_context) => InteractComponent.OnPlayerClick();
-        InputsComponent.Click.canceled += (_context) => InteractComponent.OnPlayerRelease();
-    }
+    #region Init
 
     public void Init()
     {
@@ -59,6 +55,14 @@ public class PlayerEntity : NetworkBehaviour
         InitInputs();
         GameManager.Instance.SetButtonVisibleFromPlayerTurn(player);
     }
+
+    void InitInputs()
+    {
+        InputsComponent.Click.started += (_context) => InteractComponent.OnPlayerClick();
+        InputsComponent.Click.canceled += (_context) => InteractComponent.OnPlayerRelease();
+    }
+
+    #endregion
 
     /// <summary>
     /// Called by the UI "End Turn Button"
@@ -72,5 +76,13 @@ public class PlayerEntity : NetworkBehaviour
     void ChangeTurn_ServerRPC()
     {
         GameManager.Instance.ChangeTurn();
+    }
+
+    /// <summary>
+    /// Called by a Card when it's destroyed and will call his owner
+    /// </summary>
+    public void DestroyCard(int _cardToDestroyID)
+    {
+        GameManager.Instance.DestroyCard_ServerRpc(_cardToDestroyID);
     }
 }

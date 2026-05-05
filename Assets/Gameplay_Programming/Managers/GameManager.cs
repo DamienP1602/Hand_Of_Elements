@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
@@ -29,7 +30,7 @@ public class GameManager : Singleton<GameManager>
     public GameWidget PlayerWidget => playerWidgetPrefab;
 
     public PlayerEnum PlayerTurnTag => playerTurn.Value;
-
+    
     void Start()
     {
         Invoke(nameof(InitPlayers_ClientRPC), Time.deltaTime);
@@ -79,6 +80,8 @@ public class GameManager : Singleton<GameManager>
         return players.Find(_player => _player.PlayerTag == playerTurn.Value);
     }
 
+    public PlayerEnum GetOtherPlayerTag(PlayerEnum _value) => _value == PlayerEnum.Player_One ? PlayerEnum.Player_Two : PlayerEnum.Player_One;
+
     #endregion
 
     public void ChangeTurn()
@@ -87,10 +90,11 @@ public class GameManager : Singleton<GameManager>
         playerTurn.Value = _newTurn;
 
         PlayerEntity _player = GetPlayerFromTurn();
-        if (_player.DeckComponent.CardCount == 0) return;
-
-        _player.HandComponent.DrawCard(1);
-        _player.HandComponent.SetCardInHand_ClientRpc();
+        if (_player.DeckComponent.CardCount > 0)
+        {
+            _player.HandComponent.DrawCard(1);
+            _player.HandComponent.SetCardInHand_ClientRpc();
+        }
 
         widget.SetButtonIsVisible(false);
         Invoke(nameof(CheckButtonInteractable_ClientRpc), 0.1f);
@@ -133,5 +137,24 @@ public class GameManager : Singleton<GameManager>
 
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(secondPlayerPosition, 1.0f);
+    }
+
+    /// <summary>
+    /// Server Function
+    /// </summary>
+    public void AttackCard(int _targetedCardID, PlayerEnum _ownerTag)
+    {
+        BoardCardComponent _selectedCard = board.GetSelectedCard(_ownerTag);
+        BoardSlotComponent _targetedCard = board.GetCardFromID(GetOtherPlayerTag(_ownerTag), _targetedCardID);
+
+        _selectedCard.AttackCard(_targetedCard.Card);
+    }
+
+    [ServerRpc]
+    public void DestroyCard_ServerRpc(int _cardToDestroyID)
+    {
+        PlayerEnum _cardOwner = board.GetOwnerOfCard(_cardToDestroyID);
+        BoardSlotComponent _slot = board.GetCardFromID(_cardOwner, _cardToDestroyID);
+        _slot.Card.NetworkObject.Despawn(true);
     }
 }

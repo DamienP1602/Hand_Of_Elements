@@ -134,6 +134,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   ownerTag: 0
+  needToSelectACard: 0
 --- !u!114 &2261687693739972999
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -161,8 +162,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  cardsInDeck:
-    UpdateTraits:
-      MinSecondsBetweenUpdates: 0
-      MaxSecondsBetweenUpdates: 0
-    m_InternalValue: 0000000001000000020000000300000004000000050000000600000007000000
+  cardsInDeck: 06000000050000000700000001000000

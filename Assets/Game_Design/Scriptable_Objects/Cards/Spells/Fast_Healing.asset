@@ -12,8 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1f2123f9f594a14ab0c9c91591bcc6d, type: 3}
   m_Name: Fast_Healing
   m_EditorClassIdentifier: 
-  cardID: 0
+  cardID: 3
   cardName: Fast Healing
   cardElement: 1
   cardCost: 1
+  effect:
+    selectionMode: 0
+    effectMode: 1
+    cardReference: {fileID: 0}
+    amount: 10
+    elementaryCombo: 1
   description: Restaures 10 Health to a target.

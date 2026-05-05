@@ -9,17 +9,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1f2123f9f594a14ab0c9c91591bcc6d, type: 3}
-  m_Name: Gust
+  m_Script: {fileID: 11500000, guid: 4c8e7bd1d286b25499e20359c7a5d484, type: 3}
+  m_Name: Wild_Summon
   m_EditorClassIdentifier: 
-  cardID: 2
-  cardName: Gust
-  cardElement: 3
-  cardCost: 1
+  cardID: 0
+  cardName: Wild Summon
+  cardElement: 2
+  cardCost: 0
   effect:
     selectionMode: 0
-    effectMode: 2
+    effectMode: 0
     cardReference: {fileID: 0}
-    amount: 10
-    elementaryCombo: 1
-  description: Deals 10 damages to a target.
+    amount: 0
+    elementaryCombo: 0
+  attackAmount: 10
+  healthAmount: 10
+  isInvocation: 1

@@ -4,6 +4,7 @@ using UnityEngine;
 public class SoldierCardData : BaseCardData
 {
     [Header("Soldier Data")]
-    public int damages;
-    public int health;
+    public int attackAmount;
+    public int healthAmount;
+    public bool isInvocation;
 }

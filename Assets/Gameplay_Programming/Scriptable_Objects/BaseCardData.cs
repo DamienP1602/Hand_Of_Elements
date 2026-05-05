@@ -19,6 +19,9 @@ public class BaseCardData : ScriptableObject
     public CardElement cardElement;
     public int cardCost;
 
+    [Header("Effect")]
+    public CardEffectData effect;
+
 #if UNITY_EDITOR
     [MenuItem("CardTools/Sort Card IDs")]
     public static void SortID()
@@ -32,8 +35,13 @@ public class BaseCardData : ScriptableObject
             if (_card)
             {
                 _card.cardID = _i;
+                EditorUtility.SetDirty(_card);
+                AssetDatabase.SaveAssetIfDirty(_card);
+                Debug.Log(_card.cardName + " -> " + _card.cardID.ToString());
             }
         }
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
     }
 #endif
 }

@@ -1,61 +1,81 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class CardManager : Singleton<CardManager>
 {
-    [field:SerializeField] public HandCardComponent handCardPrefab { get; private set; }
-    [field:SerializeField] public BoardCardComponent boardCardPrefab { get; private set; }
+    [field: SerializeField] public HandCardComponent handCardPrefab { get; private set; }
+    [field: SerializeField] public BoardCardComponent boardCardPrefab { get; private set; }
 
-    [field:SerializeField] public Vector3 cardShowPositon { get; private set; }
+    [field: SerializeField] public Vector3 cardShowPositon { get; private set; }
 
     [Header("Card Lists")]
     [SerializeField] List<BaseCardData> allCards;
-    Dictionary<int, BaseCardData> cardsDictionary = new Dictionary<int, BaseCardData>();
 
     #region Getters
 
     public BaseCardData GetCard(int _id)
     {
-        if (_id < 0 || _id >= cardsDictionary.Count) return null;
+        if (_id < 0 || _id >= allCards.Count)
+        {
+            return null;
+        }
 
-        return cardsDictionary[_id];
+        return FindCardAt(_id);
+    }
+
+    public bool IsSoldierID(int _id)
+    {
+        if (_id < 0 || _id >= allCards.Count) return false;
+
+        return FindCardAt(_id) is SoldierCardData;
+    }
+
+    BaseCardData FindCardAt(int _id)
+    {
+        foreach (BaseCardData _data in allCards)
+        {
+            if (_data.cardID == _id)
+                return _data;
+        }
+        return null;
     }
 
     #endregion
 
-    protected override void Awake()
-    {
-        base.Awake();
+    #region Menu
 
-        foreach (BaseCardData _card in allCards)
+    [ContextMenu("Put All Card")]
+    public void PutCardInList()
+    {
+        object[] _cards = Resources.FindObjectsOfTypeAll(typeof(BaseCardData));
+
+        allCards.Clear();
+        foreach (object _card in _cards)
         {
-            cardsDictionary[_card.cardID] = _card;
+            BaseCardData _castedCard = _card as BaseCardData;
+            allCards.Add(_castedCard);
         }
     }
+
+    #endregion
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireCube(transform.position + cardShowPositon, Vector3.one);
-    }
-
-    public bool IsSoldierID(int _id)
-    {
-        if (_id < 0 || _id >= cardsDictionary.Count) return false;
-
-        return cardsDictionary[_id] is SoldierCardData;
     }
 }

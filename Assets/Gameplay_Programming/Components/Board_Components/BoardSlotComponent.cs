@@ -26,18 +26,24 @@ public class BoardSlotComponent : NetworkBehaviour
 
     }
 
+    #region Init
+
     public void Init(PlayerEnum _playerTag, int _index)
     {
         playerTag.Value = _playerTag;
-        slotIndex.Value  = _index;
+        slotIndex.Value = _index;
     }
+
+    #endregion
+
+    #region Server Functions
 
     /// <summary>
     /// Server Function
     /// </summary>
-    public void PutCardInSlot(Vector3 _startingPos,int _cardID)
+    public void PutCardInSlot(Vector3 _startingPos, int _cardID)
     {
-        card = Instantiate(CardManager.Instance.boardCardPrefab, _startingPos,Quaternion.identity);
+        card = Instantiate(CardManager.Instance.boardCardPrefab, _startingPos, Quaternion.identity);
         card.NetworkObject.Spawn();
         card.NetworkObject.TrySetParent(transform, true);
 
@@ -45,6 +51,18 @@ public class BoardSlotComponent : NetworkBehaviour
 
         PutCardInSlot_ClientRpc();
     }
+
+    /// <summary>
+    /// Server Fuction
+    /// </summary>
+    public void DestroyCard()
+    {
+        card.NetworkObject.Despawn(true);
+    }
+
+    #endregion
+
+    #region ClientRpc
 
     [ClientRpc]
     void PutCardInSlot_ClientRpc()
@@ -56,6 +74,8 @@ public class BoardSlotComponent : NetworkBehaviour
             card.transform.position = cardPosition + transform.position;
         }
     }
+
+    #endregion
 
     private void OnDrawGizmos()
     {

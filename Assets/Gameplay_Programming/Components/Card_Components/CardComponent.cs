@@ -7,15 +7,18 @@ public class CardComponent : NetworkBehaviour
     public CardMovementComponent MovementComponent { get; private set; }
     public CardOverlayComponent OverlayComponent { get; private set; }
 
+    [Header("Card Network Parameters")]
     [SerializeField] protected NetworkVariable<int> cardID = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     [SerializeField] protected NetworkVariable<bool> isHovered = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     [SerializeField] protected NetworkVariable<bool> isSelected = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
+    [Header("Card Parameters")]
     [SerializeField] protected BaseCardData data;
 
     public int ID => cardID.Value;
     public bool IsHovered => isHovered.Value;
     public bool IsSelected => isSelected.Value;
+    public BaseCardData Data => data;
 
     protected virtual void Awake()
     {
@@ -24,6 +27,20 @@ public class CardComponent : NetworkBehaviour
 
         cardID.OnValueChanged += (_oldVal, _newVal) => InitCard();
     }
+
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
+
+    #region Setters
 
     public void SetID(int _id)
     {
@@ -40,19 +57,9 @@ public class CardComponent : NetworkBehaviour
         isSelected.Value = _value;
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
+    #endregion
 
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
-    public void InitCard()
+    public virtual void InitCard()
     {
         data = CardManager.Instance.GetCard(ID);
         OverlayComponent.SetData(data);

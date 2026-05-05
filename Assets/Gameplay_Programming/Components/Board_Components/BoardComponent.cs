@@ -39,6 +39,8 @@ public class BoardComponent : MonoBehaviour
         UpdateSelectedCard();
     }
 
+    #region Update
+
     void UpdateHoveredCards()
     {
         List<BoardSlotComponent> _allSlots = GetAllSlots();
@@ -70,6 +72,10 @@ public class BoardComponent : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Init
+
     public void SetPlayerBoardSide(PlayerEntity _player)
     {
         Vector3 _offset = Vector3.forward * (_player.IsOwner ? 4.5f : -4.5f) + Vector3.down * 2.0f;
@@ -81,44 +87,13 @@ public class BoardComponent : MonoBehaviour
             playerTwoSide.position = _newPos;
     }
 
-    public BoardSlotComponent GetSlot(PlayerEnum _playerTag, int _index)
-    {
-        if (_index < 0 || _index >= playerOneSlots.Count) return null;
+    #endregion
 
-        switch (_playerTag)
-        {
-            case PlayerEnum.Player_One:
-                return playerOneSlots[_index];
-            case PlayerEnum.Player_Two:
-                return playerTwoSlots[_index];
-        }
-
-        return null;
-    }
-
-    public Vector3 GetDeckPosition(PlayerEnum _playerTag)
-    {
-        return _playerTag == PlayerEnum.Player_One ? playerOneDeck.position : playerTwoDeck.position;
-    }
-
-    public int GetSlotIndex(BoardCardComponent _card, PlayerEnum _playerTag)
-    {
-        List<BoardSlotComponent> _slots = GetSlotsFromTag(_playerTag);
-
-        int _size = _slots.Count;
-        for (int _i = 0; _i < _size; _i++)
-        {
-            BoardSlotComponent _slot = _slots[_i];
-            if (_slot.Card == _card)
-                return _i;
-        }
-        return -1;
-    }
+    #region Server Functions
 
     /// <summary>
     /// Server Function
     /// </summary>
-    /// <param name="_enum"></param>
     public void UnhoverCards(PlayerEnum _playerTag)
     {
         List<BoardSlotComponent> _slots = GetSlotsFromTag(_playerTag);
@@ -181,6 +156,44 @@ public class BoardComponent : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Getters
+
+    public Vector3 GetDeckPosition(PlayerEnum _playerTag)
+    {
+        return _playerTag == PlayerEnum.Player_One ? playerOneDeck.position : playerTwoDeck.position;
+    }
+
+    public BoardSlotComponent GetSlot(PlayerEnum _playerTag, int _index)
+    {
+        if (_index < 0 || _index >= playerOneSlots.Count) return null;
+
+        switch (_playerTag)
+        {
+            case PlayerEnum.Player_One:
+                return playerOneSlots[_index];
+            case PlayerEnum.Player_Two:
+                return playerTwoSlots[_index];
+        }
+
+        return null;
+    }
+
+    public int GetSlotIndex(BoardCardComponent _card, PlayerEnum _playerTag)
+    {
+        List<BoardSlotComponent> _slots = GetSlotsFromTag(_playerTag);
+
+        int _size = _slots.Count;
+        for (int _i = 0; _i < _size; _i++)
+        {
+            BoardSlotComponent _slot = _slots[_i];
+            if (_slot.Card == _card)
+                return _i;
+        }
+        return -1;
+    }
+
     public PlayerEnum GetOwnerOfCard(BoardCardComponent _boardCard)
     {
         List<BoardSlotComponent> _allSlots = GetAllSlots();
@@ -196,6 +209,22 @@ public class BoardComponent : MonoBehaviour
         return PlayerEnum.Player_NONE;
     }
 
+    public PlayerEnum GetOwnerOfCard(int _cardID)
+    {
+        List<BoardSlotComponent> _allSlots = GetAllSlots();
+
+        foreach (BoardSlotComponent _slot in _allSlots)
+        {
+            if (_slot.IsEmpty) continue;
+
+            if (_slot.Card.ID == _cardID)
+                return _slot.PlayerTag;
+        }
+
+        return PlayerEnum.Player_NONE;
+    }
+
+
     public BoardCardComponent GetSelectedCard(PlayerEnum _playerTag)
     {
         List<BoardSlotComponent> _slots = GetSlotsFromTag(_playerTag);
@@ -210,6 +239,24 @@ public class BoardComponent : MonoBehaviour
         return null;
     }
 
+    public BoardSlotComponent GetCardFromID(PlayerEnum _playerTag, int _targetedCardID)
+    {
+        List<BoardSlotComponent> _slots = GetSlotsFromTag(_playerTag);
+
+        foreach (BoardSlotComponent _slot in _slots)
+        {
+            if (_slot.IsEmpty) continue;
+
+            if (_slot.Card.ID == _targetedCardID)
+                return _slot;
+        }
+        return null;
+    }
+
+    #endregion
+
+    #region Setters
+
     public void SetCardCanAttack(PlayerEnum _playerTag)
     {
         List<BoardSlotComponent> _slots = GetSlotsFromTag(_playerTag);
@@ -221,4 +268,6 @@ public class BoardComponent : MonoBehaviour
             _slot.Card.SetCanAttack(true);
         }
     }
+
+    #endregion
 }

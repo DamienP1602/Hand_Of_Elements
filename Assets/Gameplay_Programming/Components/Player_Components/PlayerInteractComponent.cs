@@ -5,6 +5,7 @@ public class PlayerInteractComponent : NetworkBehaviour
 {
     Ray PointOnScreen => Camera.main.ScreenPointToRay(Input.mousePosition);
     [SerializeField] PlayerEnum ownerTag;
+    [SerializeField] bool needToSelectACard;
 
     private void Start()
     {
@@ -13,6 +14,8 @@ public class PlayerInteractComponent : NetworkBehaviour
     }
 
     public void SetOwnerTag(PlayerEnum _value) => ownerTag = _value;
+
+    public void SetSelectCard(bool _value) => needToSelectACard = _value;
 
     void OnHoverUpdate()
     {
@@ -56,9 +59,16 @@ public class PlayerInteractComponent : NetworkBehaviour
             }
             if (_hit.collider.gameObject.GetComponent<BoardCardComponent>() is BoardCardComponent _boardCard)
             {
+                if (needToSelectACard)
+                {
+                    PlayerEnum _ownerType = GameManager.Instance.Board.GetOwnerOfCard(_boardCard);
+                    int _cardID = GameManager.Instance.Board.GetSlotIndex(_boardCard, _ownerType);
+                    SelectCardForEffect_ServerRpc(_cardID,_ownerType);
+                    return;
+                }
                 if (_boardCard)
                 {
-                    OnSelectCardBoard_ServerRpc(GameManager.Instance.Board.GetSlotIndex(_boardCard, ownerTag), ownerTag);
+                    SelectCardBoard_ServerRpc(GameManager.Instance.Board.GetSlotIndex(_boardCard, ownerTag), ownerTag);
                 }
             }
         }
@@ -68,19 +78,32 @@ public class PlayerInteractComponent : NetworkBehaviour
     {
         if (Physics.Raycast(PointOnScreen, out RaycastHit _hit, 15.0f))
         {
+            #region Owner Verification
             if (ownerTag != GameManager.Instance.PlayerTurnTag)
                 OnReleaseCards_ServerRpc(ownerTag);
+            #endregion
 
+            #region Variables
+            PlayerEntity _player = GameManager.Instance.GetPlayerFromTurn();
+            HandCardComponent _selectedCard = _player.HandComponent.GetSelectedCard();
+            #endregion
+
+            #region if Spell selected
+            if (_selectedCard && _selectedCard.Data is SpellCardData _spell)
+            {
+                LaunchEffect_ServerRpc(_selectedCard.ID,ownerTag);
+                return;
+            }
+            #endregion
+
+            #region Put card on board
             if (_hit.collider.gameObject.GetComponent<BoardSlotComponent>() is BoardSlotComponent _slot)
             {
                 if (_slot.PlayerTag == ownerTag)
                 {
                     if (_slot.IsEmpty)
                     {
-                        PlayerEntity _player = GameManager.Instance.GetPlayerFromTurn();
-                        HandCardComponent _card = _player.HandComponent.GetSelectedCard();
-
-                        if (_card && CardManager.Instance.IsSoldierID(_card.ID))
+                        if (_selectedCard && CardManager.Instance.IsSoldierID(_selectedCard.ID))
                         {
                             PutCardOnBoard_ServerRpc(ownerTag, _slot.GetSlotIndex);
                             return;
@@ -88,17 +111,22 @@ public class PlayerInteractComponent : NetworkBehaviour
                     }
                 }
             }
+            #endregion
+
+            #region Attack Card
             if (_hit.collider.gameObject.GetComponent<BoardCardComponent>() is BoardCardComponent _boardCard)
             {
                 if (GameManager.Instance.Board.GetOwnerOfCard(_boardCard) != ownerTag)
                 {
-                    BoardCardComponent _selectedCard = GameManager.Instance.Board.GetSelectedCard(ownerTag);
-                    if (_selectedCard && !_selectedCard.CanAttack)
+                    BoardCardComponent _boardCardSelected = GameManager.Instance.Board.GetSelectedCard(ownerTag);
+                    if (_boardCardSelected && _boardCardSelected.CanAttack)
                     {
-                        GameManager.Instance.debugWidget.SetDebugText("Attack");
+                        AttackCardBoard_ServerRpc(_boardCard.ID, ownerTag);
                     }
                 }
             }
+            #endregion
+
             OnReleaseCards_ServerRpc(ownerTag);
         }
     }
@@ -155,9 +183,27 @@ public class PlayerInteractComponent : NetworkBehaviour
     }
 
     [ServerRpc]
-    void OnSelectCardBoard_ServerRpc(int _id, PlayerEnum _tag)
+    void SelectCardBoard_ServerRpc(int _id, PlayerEnum _tag)
     {
         GameManager.Instance.Board.SelectCard(_id, _tag);
+    }
+
+    [ServerRpc]
+    void AttackCardBoard_ServerRpc(int _targetedCard, PlayerEnum _ownerTag)
+    {
+        GameManager.Instance.AttackCard(_targetedCard, _ownerTag);
+    }
+
+    [ServerRpc]
+    void LaunchEffect_ServerRpc(int _cardID,PlayerEnum _ownerTag)
+    {
+        SpellManager.Instance.LaunchEffect(_cardID, _ownerTag);
+    }
+
+    [ServerRpc]
+    void SelectCardForEffect_ServerRpc(int _targetedCard, PlayerEnum _owner)
+    {
+
     }
     #endregion
 
