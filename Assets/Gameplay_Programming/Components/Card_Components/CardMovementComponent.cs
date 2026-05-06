@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class CardMovementComponent : MonoBehaviour
@@ -18,27 +16,18 @@ public class CardMovementComponent : MonoBehaviour
     [SerializeField] Vector3 destination;
     [SerializeField] Vector3 initialPosition;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
 
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (canMove)
             MoveTo();
     }
 
-    public void SetDestination(Vector3 _destination)
-    {
-        initialPosition = transform.position;
-        destination = _destination;
-
-        currentMovementSpeed = maxMovementSpeed;
-        canMove = true;
-    }
+    #region Update
 
     public void MoveTo()
     {
@@ -50,6 +39,21 @@ public class CardMovementComponent : MonoBehaviour
         if (transform.position == destination)
             canMove = false;
     }
+
+    #endregion
+
+    #region Functions
+
+    public void SetDestination(Vector3 _destination)
+    {
+        initialPosition = transform.position;
+        destination = _destination;
+
+        currentMovementSpeed = maxMovementSpeed;
+        canMove = true;
+    }
+
+    #endregion
 
     private void OnDrawGizmos()
     {

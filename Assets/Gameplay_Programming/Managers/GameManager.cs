@@ -25,22 +25,44 @@ public class GameManager : Singleton<GameManager>
     [Header("Debug Data")]
     public DebugWidget debugWidget;
 
+    #region Getters
+
     public BoardComponent Board => board;
     public List<PlayerEntity> GetAllPlayers => players;
     public GameWidget PlayerWidget => playerWidgetPrefab;
 
     public PlayerEnum PlayerTurnTag => playerTurn.Value;
-    
+
+    public PlayerEntity GetOtherPlayer(PlayerEnum _type)
+    {
+        return players.Find(_player => _player.PlayerTag != _type);
+    }
+
+    public PlayerEntity GetPlayer(PlayerEnum _type)
+    {
+        return players.Find(_player => _player.PlayerTag == _type);
+    }
+
+    public PlayerEntity GetPlayerFromTurn()
+    {
+        return players.Find(_player => _player.PlayerTag == playerTurn.Value);
+    }
+
+    public PlayerEnum GetOtherPlayerTag(PlayerEnum _value) => _value == PlayerEnum.Player_One ? PlayerEnum.Player_Two : PlayerEnum.Player_One;
+
+    #endregion
+
     void Start()
     {
         Invoke(nameof(InitPlayers_ClientRPC), Time.deltaTime);
     }
 
-    // Update is called once per frame
     void Update()
     {
 
     }
+
+    #region ClientRpc
 
     [ClientRpc]
     void InitPlayers_ClientRPC()
@@ -63,27 +85,23 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-    #region GetPlayer
-
-    public PlayerEntity GetOtherPlayer(PlayerEnum _type)
+    [ClientRpc]
+    void CheckButtonInteractable_ClientRpc()
     {
-        return players.Find(_player => _player.PlayerTag != _type);
+        NetworkObject _obj = NetworkManager.Singleton.LocalClient.PlayerObject;
+        if (_obj.GetComponent<PlayerEntity>() is PlayerEntity _player)
+        {
+            SetButtonVisibleFromPlayerTurn(_player.PlayerTag);
+        }
     }
-
-    public PlayerEntity GetPlayer(PlayerEnum _type)
-    {
-        return players.Find(_player => _player.PlayerTag == _type);
-    }
-
-    public PlayerEntity GetPlayerFromTurn()
-    {
-        return players.Find(_player => _player.PlayerTag == playerTurn.Value);
-    }
-
-    public PlayerEnum GetOtherPlayerTag(PlayerEnum _value) => _value == PlayerEnum.Player_One ? PlayerEnum.Player_Two : PlayerEnum.Player_One;
 
     #endregion
 
+    #region Server Functions
+
+    /// <summary>
+    /// Server Function
+    /// </summary>
     public void ChangeTurn()
     {
         PlayerEnum _newTurn = playerTurn.Value == PlayerEnum.Player_One ? PlayerEnum.Player_Two : PlayerEnum.Player_One;
@@ -102,21 +120,9 @@ public class GameManager : Singleton<GameManager>
         board.SetCardCanAttack(playerTurn.Value);
     }
 
-    [ClientRpc]
-    void CheckButtonInteractable_ClientRpc()
-    {
-        NetworkObject _obj = NetworkManager.Singleton.LocalClient.PlayerObject;
-        if (_obj.GetComponent<PlayerEntity>() is PlayerEntity _player)
-        {
-            SetButtonVisibleFromPlayerTurn(_player.PlayerTag);
-        }
-    }
-
-    public void SetButtonVisibleFromPlayerTurn(PlayerEnum _player)
-    {
-        widget.SetButtonIsVisible(_player == playerTurn.Value);
-    }
-
+    /// <summary>
+    /// Server Function
+    /// </summary>
     public void PutCardOnBoard(PlayerEnum _type, int _boardSlotIndex)
     {
         PlayerEntity _player = GetPlayer(_type);
@@ -130,15 +136,6 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(firstPlayerPosition, 1.0f);
-
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(secondPlayerPosition, 1.0f);
-    }
-
     /// <summary>
     /// Server Function
     /// </summary>
@@ -150,11 +147,33 @@ public class GameManager : Singleton<GameManager>
         _selectedCard.AttackCard(_targetedCard.Card);
     }
 
-    [ServerRpc]
-    public void DestroyCard_ServerRpc(int _cardToDestroyID)
+    /// <summary>
+    /// Server Function
+    /// </summary>
+    public void DestroyCard(int _cardToDestroyID)
     {
         PlayerEnum _cardOwner = board.GetOwnerOfCard(_cardToDestroyID);
         BoardSlotComponent _slot = board.GetCardFromID(_cardOwner, _cardToDestroyID);
         _slot.Card.NetworkObject.Despawn(true);
     }
+
+    #endregion
+
+    #region Functions
+
+    public void SetButtonVisibleFromPlayerTurn(PlayerEnum _player)
+    {
+        widget.SetButtonIsVisible(_player == playerTurn.Value);
+    }
+
+    #endregion
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(firstPlayerPosition, 1.0f);
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(secondPlayerPosition, 1.0f);
+    }    
 }

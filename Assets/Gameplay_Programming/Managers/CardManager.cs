@@ -44,6 +44,22 @@ public class CardManager : Singleton<CardManager>
 
     #endregion
 
+    void Start()
+    {
+
+    }
+
+    void Update()
+    {
+
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireCube(transform.position + cardShowPositon, Vector3.one);
+    }
+
     #region Menu
 
     [ContextMenu("Put All Card")]
@@ -60,22 +76,4 @@ public class CardManager : Singleton<CardManager>
     }
 
     #endregion
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawWireCube(transform.position + cardShowPositon, Vector3.one);
-    }
 }

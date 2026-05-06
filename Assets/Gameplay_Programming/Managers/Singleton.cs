@@ -7,10 +7,15 @@ public class Singleton<T> : NetworkBehaviour where T : NetworkBehaviour
 {
     static T instance = null;
 
+    #region Getters
+
     public static T Instance => instance;
+
+    #endregion
 
     protected virtual void Awake() => InitSingleton();
 
+    #region Inits
 
     void InitSingleton()
     {
@@ -21,4 +26,6 @@ public class Singleton<T> : NetworkBehaviour where T : NetworkBehaviour
         }
         instance = this as T;
     }
+
+    #endregion
 }

@@ -1,7 +1,4 @@
-using NUnit.Framework;
-using System.Collections.Generic;
 using Unity.Netcode;
-using UnityEditor;
 using UnityEngine;
 
 public enum PlayerEnum
@@ -23,7 +20,11 @@ public class PlayerEntity : NetworkBehaviour
     [Header("Player Parameters")]
     [SerializeField] PlayerEnum player;
 
+    #region Getters
+
     public PlayerEnum PlayerTag => player;
+
+    #endregion
 
     private void Awake()
     {
@@ -43,7 +44,7 @@ public class PlayerEntity : NetworkBehaviour
 
     }
 
-    #region Init
+    #region Inits
 
     public void Init()
     {
@@ -64,6 +65,8 @@ public class PlayerEntity : NetworkBehaviour
 
     #endregion
 
+    #region ByPass Functions
+
     /// <summary>
     /// Called by the UI "End Turn Button"
     /// </summary>
@@ -72,17 +75,29 @@ public class PlayerEntity : NetworkBehaviour
         ChangeTurn_ServerRPC();
     }
 
+    /// <summary>
+    /// Called by a Card when it's destroyed and will call his owner
+    /// </summary>
+    public void DestroyCard(int _cardToDestroyID)
+    {
+        DestroyCard_ServerRpc(_cardToDestroyID);
+    }
+
+    #endregion
+
+    #region ServerRpc
+
     [ServerRpc]
     void ChangeTurn_ServerRPC()
     {
         GameManager.Instance.ChangeTurn();
     }
 
-    /// <summary>
-    /// Called by a Card when it's destroyed and will call his owner
-    /// </summary>
-    public void DestroyCard(int _cardToDestroyID)
+    [ServerRpc]
+    void DestroyCard_ServerRpc(int _cardToDestroyID)
     {
-        GameManager.Instance.DestroyCard_ServerRpc(_cardToDestroyID);
+        GameManager.Instance.DestroyCard(_cardToDestroyID);
     }
+
+    #endregion
 }

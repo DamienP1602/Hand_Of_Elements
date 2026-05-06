@@ -6,16 +6,17 @@ public class GameWidget : MonoBehaviour
 {
     [SerializeField] Button endTurnButton;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         endTurnButton.onClick.AddListener(ChangeTurn);
     }
-    // Update is called once per frame
+
     void Update()
     {
 
     }
+
+    #region Functions
 
     void ChangeTurn()
     {
@@ -31,4 +32,6 @@ public class GameWidget : MonoBehaviour
     {
         endTurnButton.gameObject.SetActive(_value);
     }
+
+    #endregion
 }

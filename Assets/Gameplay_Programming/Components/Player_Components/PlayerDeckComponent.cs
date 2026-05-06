@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PlayerDeckComponent : NetworkBehaviour
 {
-    //[SerializeField] NetworkVariable<List<int>> cardsInDeck = new NetworkVariable<List<int>>(new List<int>(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     [SerializeField] List<int> cardsInDeck = new List<int>();
 
     #region Getters
@@ -32,6 +31,8 @@ public class PlayerDeckComponent : NetworkBehaviour
 
     }
 
+    #region Functions
+
     public void RemoveCard(int _id)
     {
         foreach (int _card in cardsInDeck)
@@ -43,4 +44,7 @@ public class PlayerDeckComponent : NetworkBehaviour
             }
         }
     }
+
+    #endregion
+
 }

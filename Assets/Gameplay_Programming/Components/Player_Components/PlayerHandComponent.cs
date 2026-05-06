@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Reflection;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -104,7 +102,7 @@ public class PlayerHandComponent : NetworkBehaviour
 
     #endregion
 
-    #region Card Hovered
+    #region Server Functions
 
     /// <summary>
     /// Server Function
@@ -134,10 +132,9 @@ public class PlayerHandComponent : NetworkBehaviour
         }
     }
 
-    #endregion
-
-    #region Card Selected
-
+    /// <summary>
+    /// Server Functions
+    /// </summary>
     public void SelectCard(int _id)
     {
         HandCardComponent _card = GetCard(_id);
@@ -147,15 +144,9 @@ public class PlayerHandComponent : NetworkBehaviour
         _card.SetIsSelected(true);
     }
 
-    [ClientRpc]
-    void SelectCard_ClientRpc(int _index)
-    {
-        HandCardComponent _card = GetCard(_index);
-        if (!_card) return;
-
-        _card.GetComponent<BoxCollider>().enabled = false;
-    }
-
+    /// <summary>
+    /// Server Function
+    /// </summary>
     public void ReleaseCard()
     {
         HandCardComponent _card = GetSelectedCard();
@@ -165,16 +156,9 @@ public class PlayerHandComponent : NetworkBehaviour
         _card.SetIsSelected(false);
     }
 
-    [ClientRpc]
-    void ReleaseCard_ClientRpc()
-    {
-        HandCardComponent _card = GetSelectedCard();
-        if (!_card) return;
-
-        _card.GetComponent<BoxCollider>().enabled = true;
-        UpdateCardPosition();
-    }
-
+    /// <summary>
+    /// Server Function
+    /// </summary>
     public void RemoveSelectedCard()
     {
         HandCardComponent _card = GetSelectedCard();
@@ -183,10 +167,6 @@ public class PlayerHandComponent : NetworkBehaviour
         _card.NetworkObject.Despawn(true);
         Invoke(nameof(SetCardInHand_ClientRpc),0.1f);
     }
-
-    #endregion
-
-    #region Card Draw
 
     /// <summary>
     /// Server Function
@@ -205,6 +185,29 @@ public class PlayerHandComponent : NetworkBehaviour
 
             RemoveCardInDeck_ClientRpc(_data.cardID);
         }
+    }
+
+    #endregion
+
+    #region ClientRpc
+
+    [ClientRpc]
+    void SelectCard_ClientRpc(int _index)
+    {
+        HandCardComponent _card = GetCard(_index);
+        if (!_card) return;
+
+        _card.GetComponent<BoxCollider>().enabled = false;
+    }
+
+    [ClientRpc]
+    void ReleaseCard_ClientRpc()
+    {
+        HandCardComponent _card = GetSelectedCard();
+        if (!_card) return;
+
+        _card.GetComponent<BoxCollider>().enabled = true;
+        UpdateCardPosition();
     }
 
     [ClientRpc]
@@ -229,9 +232,10 @@ public class PlayerHandComponent : NetworkBehaviour
         UpdateCardPosition();
     }
 
-    /// <summary>
-    /// Will put the card in the right position;
-    /// </summary>
+    #endregion
+
+    #region Functions
+
     void UpdateCardPosition()
     {
         int _size = cardsInHand.Count;
@@ -244,5 +248,6 @@ public class PlayerHandComponent : NetworkBehaviour
             _card.MovementComponent.SetDestination(transform.position + new Vector3(_indexOffset * 3.0f, 0.0f, 0.0f));
         }
     }
+
     #endregion
 }

@@ -20,26 +20,6 @@ public class CardComponent : NetworkBehaviour
     public bool IsSelected => isSelected.Value;
     public BaseCardData Data => data;
 
-    protected virtual void Awake()
-    {
-        MovementComponent = GetComponent<CardMovementComponent>();
-        OverlayComponent = GetComponent<CardOverlayComponent>();
-
-        cardID.OnValueChanged += (_oldVal, _newVal) => InitCard();
-    }
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     #region Setters
 
     public void SetID(int _id)
@@ -59,9 +39,31 @@ public class CardComponent : NetworkBehaviour
 
     #endregion
 
+    protected virtual void Awake()
+    {
+        MovementComponent = GetComponent<CardMovementComponent>();
+        OverlayComponent = GetComponent<CardOverlayComponent>();
+
+        cardID.OnValueChanged += (_oldVal, _newVal) => InitCard();
+    }
+
+    void Start()
+    {
+
+    }
+
+    void Update()
+    {
+
+    }
+
+    #region Inits
+
     public virtual void InitCard()
     {
         data = CardManager.Instance.GetCard(ID);
         OverlayComponent.SetData(data);
     }
+
+    #endregion
 }

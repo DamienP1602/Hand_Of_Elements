@@ -42,11 +42,12 @@ public class NetworkConnectionWidget : NetworkBehaviour
         NetworkManager.Singleton.OnConnectionEvent += OnConnection;
     }
 
-    // Update is called once per frame
     void Update()
     {
 
     }
+
+    #region Host Functions
 
     void OnConnection(NetworkManager _manager, ConnectionEventData _data)
     {
@@ -127,6 +128,10 @@ public class NetworkConnectionWidget : NetworkBehaviour
         NetworkManager.Singleton.StartHost();
     }
 
+    #endregion
+
+    #region Client Functions
+
     async void LaunchClient()
     {
         // Connection to the Unity Servers
@@ -148,4 +153,5 @@ public class NetworkConnectionWidget : NetworkBehaviour
         NetworkManager.Singleton.StartClient();
     }
 
+    #endregion
 }

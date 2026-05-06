@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -13,17 +11,17 @@ public class CardOverlayComponent : MonoBehaviour
 
     BaseCardData data;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
 
     }
 
-    // Update is called once per frame
     void Update()
     {
         
     }
+
+    #region Setters
 
     public void SetData(BaseCardData _data)
     {
@@ -44,6 +42,10 @@ public class CardOverlayComponent : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Functions
+
     public void UpdateHealth(int _healthAmount)
     {
         healthText.text = _healthAmount.ToString();
@@ -58,4 +60,8 @@ public class CardOverlayComponent : MonoBehaviour
                 healthText.color = Color.white;
         }
     }
+
+    #endregion
+
+
 }

@@ -1,4 +1,3 @@
-using System;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -11,21 +10,29 @@ public class BoardCardComponent : CardComponent
     [SerializeField] int attackAmount;
     [SerializeField] int healthAmount;
 
+    #region Getters
+
     public bool CanAttack => canAttack.Value;
+
+    #endregion
+
+    #region Setters
 
     public void SetCanAttack(bool _value) => canAttack.Value = _value;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    #endregion
+
     void Start()
     {
 
     }
 
-    // Update is called once per frame
     void Update()
     {
 
     }
+
+    #region Inits
 
     public override void InitCard()
     {
@@ -36,6 +43,10 @@ public class BoardCardComponent : CardComponent
         attackAmount = _soldier.attackAmount;
         healthAmount = _soldier.healthAmount;
     }
+
+    #endregion
+
+    #region Server Functions
 
     /// <summary>
     /// Server Function
@@ -50,14 +61,9 @@ public class BoardCardComponent : CardComponent
         CheckDeath();
     }
 
-    [ClientRpc]
-    void RemoveHealth_ClientRpc(int _amount)
-    {
-        healthAmount -= _amount;
-        healthAmount = Mathf.Clamp(healthAmount, 0, int.MaxValue);
-        OverlayComponent.UpdateHealth(healthAmount);
-    }
-
+    /// <summary>
+    /// Server Function
+    /// </summary>
     void CheckDeath()
     {
         if (healthAmount == 0)
@@ -69,4 +75,18 @@ public class BoardCardComponent : CardComponent
             }
         }
     }
+
+    #endregion
+
+    #region ClientRpc
+
+    [ClientRpc]
+    void RemoveHealth_ClientRpc(int _amount)
+    {
+        healthAmount -= _amount;
+        healthAmount = Mathf.Clamp(healthAmount, 0, int.MaxValue);
+        OverlayComponent.UpdateHealth(healthAmount);
+    }
+
+    #endregion
 }

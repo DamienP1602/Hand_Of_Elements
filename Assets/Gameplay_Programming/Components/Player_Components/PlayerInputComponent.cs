@@ -5,7 +5,11 @@ public class PlayerInputComponent : MonoBehaviour
 {
     IAA_Player inputs;
 
+    #region Getters
+
     public InputAction Click { get; private set; }
+
+    #endregion
 
     private void Awake()
     {
@@ -23,5 +27,4 @@ public class PlayerInputComponent : MonoBehaviour
     {
         Click.Disable();
     }
-
 }

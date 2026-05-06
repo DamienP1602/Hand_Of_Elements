@@ -7,15 +7,21 @@ public class PlayerInteractComponent : NetworkBehaviour
     [SerializeField] PlayerEnum ownerTag;
     [SerializeField] bool needToSelectACard;
 
+    #region Setters
+
+    public void SetOwnerTag(PlayerEnum _value) => ownerTag = _value;
+
+    public void SetSelectCard(bool _value) => needToSelectACard = _value;
+
+    #endregion
+
     private void Start()
     {
         if (IsOwner)
             InvokeRepeating(nameof(OnHoverUpdate), 0.1f, 0.1f);
     }
 
-    public void SetOwnerTag(PlayerEnum _value) => ownerTag = _value;
-
-    public void SetSelectCard(bool _value) => needToSelectACard = _value;
+    #region Updates
 
     void OnHoverUpdate()
     {
@@ -44,6 +50,10 @@ public class PlayerInteractComponent : NetworkBehaviour
                 UnhoverCardBoard_ServerRpc(ownerTag);
         }
     }
+
+    #endregion
+
+    #region Functions
 
     public void OnPlayerClick()
     {
@@ -131,7 +141,10 @@ public class PlayerInteractComponent : NetworkBehaviour
         }
     }
 
-    #region Hand
+    #endregion
+
+    #region ServerRpc
+
     [ServerRpc]
     void HoverCardHand_ServerRpc(int _id)
     {
@@ -161,9 +174,7 @@ public class PlayerInteractComponent : NetworkBehaviour
 
         GameManager.Instance.Board.ReleaseCards(_playerTag);
     }
-    #endregion
 
-    #region Board
     [ServerRpc]
     void PutCardOnBoard_ServerRpc(PlayerEnum _ownerType, int _index)
     {
