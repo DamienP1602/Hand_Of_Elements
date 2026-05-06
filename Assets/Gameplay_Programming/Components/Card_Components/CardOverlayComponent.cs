@@ -33,8 +33,8 @@ public class CardOverlayComponent : MonoBehaviour
 
         if (_data is SoldierCardData _soldier)
         {
-            healthText.text = _soldier.healthAmount.ToString();
             damageText.text = _soldier.attackAmount.ToString();
+            healthText.text = _soldier.healthAmount.ToString();
         }
         else if (_data is SpellCardData _spell)
         {
@@ -55,6 +55,21 @@ public class CardOverlayComponent : MonoBehaviour
             if (_healthAmount < _soldier.healthAmount)
                 healthText.color = Color.red;
             else if (_healthAmount > _soldier.healthAmount)
+                healthText.color = Color.green;
+            else
+                healthText.color = Color.white;
+        }
+    }
+
+    public void UpdateAttack(int _attackAmount)
+    {
+        damageText.text = _attackAmount.ToString();
+
+        if (data is SoldierCardData _soldier)
+        {
+            if (_attackAmount < _soldier.healthAmount)
+                healthText.color = Color.red;
+            else if (_attackAmount > _soldier.healthAmount)
                 healthText.color = Color.green;
             else
                 healthText.color = Color.white;

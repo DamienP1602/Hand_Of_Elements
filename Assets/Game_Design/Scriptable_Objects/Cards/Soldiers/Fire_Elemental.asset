@@ -22,6 +22,6 @@ MonoBehaviour:
     cardReference: {fileID: 0}
     amount: 0
     elementaryCombo: 0
-  attackAmount: 10
+  attackAmount: 20
   healthAmount: 40
   isInvocation: 0

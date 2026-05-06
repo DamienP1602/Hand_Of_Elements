@@ -1,10 +1,16 @@
+using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
 public class PlayerHandComponent : NetworkBehaviour
 {
+    [Header("debug")]
+    public bool showDebug;
+
+    [Header("Parameters")]
     [SerializeField] List<HandCardComponent> cardsInHand;
+    [SerializeField] Vector3 selectedCardPosition;
 
     #region Getter
 
@@ -162,10 +168,10 @@ public class PlayerHandComponent : NetworkBehaviour
     public void RemoveSelectedCard()
     {
         HandCardComponent _card = GetSelectedCard();
-        if (!_card) return; 
+        if (!_card) return;
 
         _card.NetworkObject.Despawn(true);
-        Invoke(nameof(SetCardInHand_ClientRpc),0.1f);
+        Invoke(nameof(SetCardInHand_ClientRpc), 0.1f);
     }
 
     /// <summary>
@@ -179,7 +185,7 @@ public class PlayerHandComponent : NetworkBehaviour
             _card.NetworkObject.Spawn();
             _card.NetworkObject.TrySetParent(gameObject, true);
 
-            PlayerDeckComponent _deck = GetComponent<PlayerDeckComponent>();            
+            PlayerDeckComponent _deck = GetComponent<PlayerDeckComponent>();
             BaseCardData _data = _deck.GetRandomCard();
             _card.SetID(_data.cardID);
 
@@ -232,6 +238,27 @@ public class PlayerHandComponent : NetworkBehaviour
         UpdateCardPosition();
     }
 
+
+    [ClientRpc]
+    public void SelectCardVisual_ClientRpc()
+    {
+        HandCardComponent _card = GetSelectedCard();
+        if (!_card) return;
+
+        if (IsOwner)
+        {
+            MeshRenderer _mesh = _card.GetComponentInChildren<MeshRenderer>();
+            Canvas _canva = _card.GetComponentInChildren<Canvas>();
+            _mesh.enabled = false;
+            _canva.enabled = false;
+        }
+        else
+        {
+            _card.MovementComponent.SetDestination(transform.position + selectedCardPosition);
+        }
+
+    }
+
     #endregion
 
     #region Functions
@@ -250,4 +277,12 @@ public class PlayerHandComponent : NetworkBehaviour
     }
 
     #endregion
+
+    private void OnDrawGizmos()
+    {
+        if (!showDebug) return;
+
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawWireSphere(transform.position + selectedCardPosition, 0.5f);
+    }
 }

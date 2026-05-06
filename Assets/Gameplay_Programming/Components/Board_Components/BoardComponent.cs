@@ -95,7 +95,7 @@ public class BoardComponent : MonoBehaviour
         return null;
     }
 
-    public BoardSlotComponent GetCardFromID(PlayerEnum _playerTag, int _targetedCardID)
+    public BoardSlotComponent GetCardFromCardID(PlayerEnum _playerTag, int _targetedCardID)
     {
         List<BoardSlotComponent> _slots = GetSlotsFromTag(_playerTag);
 

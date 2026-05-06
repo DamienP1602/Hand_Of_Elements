@@ -49,10 +49,10 @@ public class PlayerEntity : NetworkBehaviour
     public void Init()
     {
         player = OwnerClientId == 0 ? PlayerEnum.Player_One : PlayerEnum.Player_Two;
+        InteractComponent.SetOwnerTag(player);
 
         if (!IsOwner) return;
 
-        InteractComponent.SetOwnerTag(player);
         InitInputs();
         GameManager.Instance.SetButtonVisibleFromPlayerTurn(player);
     }
@@ -76,11 +76,19 @@ public class PlayerEntity : NetworkBehaviour
     }
 
     /// <summary>
-    /// Called by a Card when it's destroyed and will call his owner
+    /// Called by a Card when it's destroyed
     /// </summary>
-    public void DestroyCard(int _cardToDestroyID)
+    public void DestroyCard(int _cardToDestroyID,PlayerEnum _ownerTag)
     {
-        DestroyCard_ServerRpc(_cardToDestroyID);
+        DestroyCard_ServerRpc(_cardToDestroyID, _ownerTag);
+    }
+
+    /// <summary>
+    /// Called by a Card when it's been played
+    /// </summary>
+    public void InitCard(int _ID)
+    {
+        InitCard_ServerRpc(_ID);
     }
 
     #endregion
@@ -94,9 +102,15 @@ public class PlayerEntity : NetworkBehaviour
     }
 
     [ServerRpc]
-    void DestroyCard_ServerRpc(int _cardToDestroyID)
+    void DestroyCard_ServerRpc(int _cardToDestroyID, PlayerEnum _ownerTag)
     {
-        GameManager.Instance.DestroyCard(_cardToDestroyID);
+        GameManager.Instance.DestroyCard(_cardToDestroyID,_ownerTag);
+    }
+
+    [ServerRpc]
+    void InitCard_ServerRpc(int _cardToInit)
+    {
+        GameManager.Instance.InitCard(_cardToInit);
     }
 
     #endregion

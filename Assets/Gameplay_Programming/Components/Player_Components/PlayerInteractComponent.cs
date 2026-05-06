@@ -5,13 +5,13 @@ public class PlayerInteractComponent : NetworkBehaviour
 {
     Ray PointOnScreen => Camera.main.ScreenPointToRay(Input.mousePosition);
     [SerializeField] PlayerEnum ownerTag;
-    [SerializeField] bool needToSelectACard;
+    [SerializeField] NetworkVariable<bool> needToSelectACard = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     #region Setters
 
     public void SetOwnerTag(PlayerEnum _value) => ownerTag = _value;
 
-    public void SetSelectCard(bool _value) => needToSelectACard = _value;
+    public void SetSelectCard(bool _value) => needToSelectACard.Value = _value;
 
     #endregion
 
@@ -69,8 +69,8 @@ public class PlayerInteractComponent : NetworkBehaviour
             }
             if (_hit.collider.gameObject.GetComponent<BoardCardComponent>() is BoardCardComponent _boardCard)
             {
-                if (needToSelectACard)
-                {
+                if (needToSelectACard.Value)
+                {                    
                     PlayerEnum _ownerType = GameManager.Instance.Board.GetOwnerOfCard(_boardCard);
                     int _cardID = GameManager.Instance.Board.GetSlotIndex(_boardCard, _ownerType);
                     SelectCardForEffect_ServerRpc(_cardID,_ownerType);
@@ -209,12 +209,15 @@ public class PlayerInteractComponent : NetworkBehaviour
     void LaunchEffect_ServerRpc(int _cardID,PlayerEnum _ownerTag)
     {
         SpellManager.Instance.LaunchEffect(_cardID, _ownerTag);
+
+        PlayerEntity _player = GameManager.Instance.GetPlayer(_ownerTag);
+        _player.HandComponent.SelectCardVisual_ClientRpc();
     }
 
     [ServerRpc]
     void SelectCardForEffect_ServerRpc(int _targetedCard, PlayerEnum _owner)
     {
-
+        SpellManager.Instance.LaunchEffectSelection(_targetedCard, _owner);
     }
     #endregion
 

@@ -133,8 +133,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  ownerTag: 0
-  needToSelectACard: 0
+  ownerTag: 2
+  needToSelectACard:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
 --- !u!114 &2261687693739972999
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -148,7 +152,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+  showDebug: 0
   cardsInHand: []
+  selectedCardPosition: {x: 0, y: 0, z: -3}
 --- !u!114 &4118169201543858551
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -162,4 +168,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  cardsInDeck: 06000000050000000700000001000000
+  cardsInDeck: 060000000300000004000000

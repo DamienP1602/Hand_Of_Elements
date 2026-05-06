@@ -1,9 +1,38 @@
 using System;
+using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 public class SpellManager : Singleton<SpellManager>
 {
+    [Serializable]
+    struct TargetedData : INetworkSerializable
+    {
+        public int cardID;
+        public PlayerEnum cardOwnerTag;
+
+        public TargetedData(int _id, PlayerEnum _tag)
+        {
+            cardID = _id;
+            cardOwnerTag = _tag;
+        }
+
+        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+        {
+            serializer.SerializeValue(ref cardID);
+            serializer.SerializeValue(ref cardOwnerTag);
+        }
+    }
+
+    [Header("Parameters")]
     [SerializeField] CardEffectData currentEffect;
+    [SerializeField] CardComponent card;
+    [SerializeField] PlayerEntity playerOwner;
+
+    [Header("Targets")]
+    [SerializeField] List<TargetedData> targets = new();
+    [SerializeField] PlayerEntity playerTarget;
+
 
     #region Server Functions
 
@@ -12,29 +41,114 @@ public class SpellManager : Singleton<SpellManager>
     /// </summary>
     public void LaunchEffect(int _cardID, PlayerEnum _ownerType)
     {
-        PlayerEntity _player = GameManager.Instance.GetPlayer(_ownerType);
-        HandCardComponent _card = _player.HandComponent.GetSelectedCard();
-        currentEffect = _card.Data.effect;
+        // Reset Targets
+        targets.Clear();
+        playerTarget = null;
 
-        if (currentEffect.selectionMode == CardEffectData.CardEffectSelectionMode.SingleTarget)
+        // Set Parameters
+        playerOwner = GameManager.Instance.GetPlayer(_ownerType);
+        card = playerOwner.HandComponent.GetSelectedCard();
+        currentEffect = card.Data.effect;
+        
+        // Check for selection mode
+        switch (currentEffect.selectionMode)
         {
-            _player.InteractComponent.SetSelectCard(true);
-            return;
+            case CardEffectData.CardEffectSelectionMode.SingleTarget:
+                SetCardSelection(playerOwner);
+                return;
+            case CardEffectData.CardEffectSelectionMode.Self:
+                SelectSelf(_ownerType);
+                break;
+            case CardEffectData.CardEffectSelectionMode.Opponent:
+                SelectOpponent(_ownerType);
+                break;
         }
-        else
-        {
+        
+        // If can play the effect, play it
+        CastEffect();
 
-        }
+        // Remove card from Hand
+        playerOwner.HandComponent.RemoveSelectedCard();
     }
 
     /// <summary>
     /// Server Function
     /// </summary>
-    public void ComputeEffect(int _selectedCardID, PlayerEnum _ownerType)
+    public void LaunchEffectSelection(int _selectedCardID, PlayerEnum _ownerType)
     {
-        BoardSlotComponent _card = GameManager.Instance.Board.GetCardFromID(_ownerType, _selectedCardID);
+        // Stop Card Selection
+        playerOwner.InteractComponent.SetSelectCard(false);
 
+        // Set Targets
+        targets.Add(new TargetedData(_selectedCardID, _ownerType));
+
+        // Play the effect
+        CastEffect();
+
+        // Remove card from Hand
+        playerOwner.HandComponent.RemoveSelectedCard();
     }
+
+    /// <summary>
+    /// Server Function
+    /// </summary>
+    void CastEffect()
+    {
+        switch (currentEffect.effectMode)
+        {
+            case CardEffectData.CardEffectMode.Summon:
+                break;
+            case CardEffectData.CardEffectMode.Heal:
+                RestaureHealth(targets, currentEffect.amount);
+                break;
+            case CardEffectData.CardEffectMode.InstantDamage:
+                DealDamages(targets, currentEffect.amount);
+                break;
+            case CardEffectData.CardEffectMode.Debuff:
+                break;
+        }
+    }
+
+    #region Effect Functions
+
+    void DealDamages(List<TargetedData> _targets, int _amount)
+    {
+        foreach (TargetedData _target in _targets)
+        {
+            BoardSlotComponent _slot = GameManager.Instance.Board.GetSlot(_target.cardOwnerTag, _target.cardID);
+            _slot.Card.RemoveHealth(_amount);
+        }
+    }
+
+    void RestaureHealth(List<TargetedData> _targets, int _amount)
+    {
+        foreach (TargetedData _target in _targets)
+        {
+            BoardSlotComponent _slot = GameManager.Instance.Board.GetSlot(_target.cardOwnerTag, _target.cardID);
+            _slot.Card.RestaureHealth(_amount);
+        }
+    }
+
+    #endregion
+
+    #region Selection Functions
+
+    void SetCardSelection(PlayerEntity _player)
+    {
+        _player.InteractComponent.SetSelectCard(true);
+    }
+
+    void SelectSelf(PlayerEnum _tag)
+    {
+        playerTarget = GameManager.Instance.GetPlayer(_tag);
+    }
+
+    void SelectOpponent(PlayerEnum _tag)
+    {
+        playerTarget = GameManager.Instance.GetOtherPlayer(_tag);
+    }
+
+    #endregion
 
     #endregion
 }

@@ -48,6 +48,12 @@ public class GameManager : Singleton<GameManager>
         return players.Find(_player => _player.PlayerTag == playerTurn.Value);
     }
 
+    public PlayerEntity GetLocalPlayer()
+    {
+        NetworkObject _obj = NetworkManager.Singleton.LocalClient.PlayerObject;
+        return _obj.GetComponent<PlayerEntity>();
+    }
+
     public PlayerEnum GetOtherPlayerTag(PlayerEnum _value) => _value == PlayerEnum.Player_One ? PlayerEnum.Player_Two : PlayerEnum.Player_One;
 
     #endregion
@@ -88,11 +94,8 @@ public class GameManager : Singleton<GameManager>
     [ClientRpc]
     void CheckButtonInteractable_ClientRpc()
     {
-        NetworkObject _obj = NetworkManager.Singleton.LocalClient.PlayerObject;
-        if (_obj.GetComponent<PlayerEntity>() is PlayerEntity _player)
-        {
-            SetButtonVisibleFromPlayerTurn(_player.PlayerTag);
-        }
+        PlayerEntity _player = GetLocalPlayer();
+        SetButtonVisibleFromPlayerTurn(_player.PlayerTag);
     }
 
     #endregion
@@ -142,7 +145,7 @@ public class GameManager : Singleton<GameManager>
     public void AttackCard(int _targetedCardID, PlayerEnum _ownerTag)
     {
         BoardCardComponent _selectedCard = board.GetSelectedCard(_ownerTag);
-        BoardSlotComponent _targetedCard = board.GetCardFromID(GetOtherPlayerTag(_ownerTag), _targetedCardID);
+        BoardSlotComponent _targetedCard = board.GetCardFromCardID(GetOtherPlayerTag(_ownerTag), _targetedCardID);
 
         _selectedCard.AttackCard(_targetedCard.Card);
     }
@@ -150,11 +153,20 @@ public class GameManager : Singleton<GameManager>
     /// <summary>
     /// Server Function
     /// </summary>
-    public void DestroyCard(int _cardToDestroyID)
+    public void DestroyCard(int _cardToDestroySlotID, PlayerEnum _ownerTag)
     {
-        PlayerEnum _cardOwner = board.GetOwnerOfCard(_cardToDestroyID);
-        BoardSlotComponent _slot = board.GetCardFromID(_cardOwner, _cardToDestroyID);
+        BoardSlotComponent _slot = board.GetSlot(_ownerTag, _cardToDestroySlotID);
         _slot.Card.NetworkObject.Despawn(true);
+    }
+
+    /// <summary>
+    /// Server Function
+    /// </summary>
+    public void InitCard(int _cardToInit)
+    {
+        PlayerEnum _cardOwner = board.GetOwnerOfCard(_cardToInit);
+        BoardSlotComponent _slot = board.GetCardFromCardID(_cardOwner, _cardToInit);
+        _slot.Card.InitStats();
     }
 
     #endregion
@@ -175,5 +187,7 @@ public class GameManager : Singleton<GameManager>
 
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(secondPlayerPosition, 1.0f);
-    }    
+    }
+
+
 }

@@ -1,14 +1,15 @@
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class BoardCardComponent : CardComponent
 {
     [Header("Board Card Network Parameters")]
     [SerializeField] NetworkVariable<bool> canAttack = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    [SerializeField] NetworkVariable<int> attackAmount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    [SerializeField] NetworkVariable<int> healthAmount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
-    [Header("Board Card Parameters")]
-    [SerializeField] int attackAmount;
-    [SerializeField] int healthAmount;
+    SoldierCardData castedData;
 
     #region Getters
 
@@ -24,7 +25,8 @@ public class BoardCardComponent : CardComponent
 
     void Start()
     {
-
+        healthAmount.OnValueChanged += (_old, _new) => UpdateHealthAmount(_new);
+        castedData = data as SoldierCardData;
     }
 
     void Update()
@@ -38,10 +40,17 @@ public class BoardCardComponent : CardComponent
     {
         base.InitCard();
 
-        SoldierCardData _soldier = data as SoldierCardData;
+        PlayerEntity _localPlayer = GameManager.Instance.GetLocalPlayer();
+        _localPlayer.InitCard(ID);
+    }
 
-        attackAmount = _soldier.attackAmount;
-        healthAmount = _soldier.healthAmount;
+    public void InitStats()
+    {
+        if (!castedData)
+            castedData = data as SoldierCardData;
+
+        attackAmount.Value = castedData.attackAmount;
+        healthAmount.Value = castedData.healthAmount;
     }
 
     #endregion
@@ -53,39 +62,45 @@ public class BoardCardComponent : CardComponent
     /// </summary>
     public void AttackCard(BoardCardComponent _target)
     {
-        _target.RemoveHealth_ClientRpc(attackAmount);
+        _target.RemoveHealth(attackAmount.Value);
 
-        RemoveHealth_ClientRpc(_target.attackAmount);
+        RemoveHealth(_target.attackAmount.Value);
         SetCanAttack(false);
-
-        CheckDeath();
     }
 
     /// <summary>
     /// Server Function
     /// </summary>
-    void CheckDeath()
+    public void RemoveHealth(int _amount)
     {
-        if (healthAmount == 0)
-        {
-            NetworkObject _obj = NetworkManager.Singleton.LocalClient.PlayerObject;
-            if (_obj.GetComponent<PlayerEntity>() is PlayerEntity _player)
-            {
-                _player.DestroyCard(ID);
-            }
-        }
+        int _newValue = healthAmount.Value - _amount;
+        _newValue = Mathf.Clamp(_newValue, 0, castedData.healthAmount);
+        healthAmount.Value = _newValue;
+    }
+
+    /// <summary>
+    /// Server Function
+    /// </summary>
+    public void RestaureHealth(int _amount)
+    {
+        int _newValue = healthAmount.Value + _amount;
+        _newValue = Mathf.Clamp(_newValue, 0, castedData.healthAmount);
+        healthAmount.Value = _newValue;
     }
 
     #endregion
 
-    #region ClientRpc
+    #region Functions
 
-    [ClientRpc]
-    void RemoveHealth_ClientRpc(int _amount)
+    void UpdateHealthAmount(int _newAmount)
     {
-        healthAmount -= _amount;
-        healthAmount = Mathf.Clamp(healthAmount, 0, int.MaxValue);
-        OverlayComponent.UpdateHealth(healthAmount);
+        OverlayComponent.UpdateHealth(_newAmount);
+        if (_newAmount == 0)
+        {
+            PlayerEntity _localPlayer = GameManager.Instance.GetLocalPlayer();
+            PlayerEnum _ownerTag = GameManager.Instance.Board.GetOwnerOfCard(this);
+            _localPlayer.DestroyCard(GameManager.Instance.Board.GetSlotIndex(this, _ownerTag),_ownerTag);
+        }
     }
 
     #endregion

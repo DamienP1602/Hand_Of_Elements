@@ -20,12 +20,8 @@ public class GameWidget : MonoBehaviour
 
     void ChangeTurn()
     {
-        NetworkObject _obj = NetworkManager.Singleton.LocalClient.PlayerObject;
-
-        if (_obj.GetComponent<PlayerEntity>() is PlayerEntity _player)
-        {
-            _player.ChangeTurn();
-        }
+        PlayerEntity _player = GameManager.Instance.GetLocalPlayer();
+        _player.ChangeTurn();
     }
 
     public void SetButtonIsVisible(bool _value)
