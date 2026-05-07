@@ -5,14 +5,19 @@ using UnityEngine;
 
 public class PlayerHandComponent : NetworkBehaviour
 {
-    [Header("debug")]
+    [Header("Debug")]
     public bool showDebug;
 
     [Header("Parameters")]
     [SerializeField] List<HandCardComponent> cardsInHand;
     [SerializeField] Vector3 selectedCardPosition;
-
+    [SerializeField] LayerMask boardLayer;
+    [SerializeField] HandCardComponent selectedSpell;
+    [SerializeField] float cardsOffset;
+     
     #region Getter
+
+    Vector3 SelectedPosition => selectedCardPosition + transform.position;
 
     public HandCardComponent GetSelectedCard()
     {
@@ -95,15 +100,16 @@ public class PlayerHandComponent : NetworkBehaviour
         if (IsOwner)
         {
             Ray _ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit[] _hits = Physics.RaycastAll(_ray, 20.0f);
-            if (Physics.Raycast(_ray, out RaycastHit _hit, 20.0f))
+            RaycastHit[] _hits = Physics.RaycastAll(_ray, 20.0f, boardLayer);
+            if (_hits.Length > 0)
             {
+                RaycastHit _hit = _hits[0];
                 Vector3 _point = _hit.point;
-                _card.transform.position = new Vector3(_point.x, 2.0f, _point.z);
+                _card.transform.position = _point;
             }
         }
         else
-            _card.GetComponentInChildren<MeshRenderer>().material.color = Color.green;
+            _card.MovementComponent.SetDestination(SelectedPosition);
     }
 
     #endregion
@@ -247,6 +253,7 @@ public class PlayerHandComponent : NetworkBehaviour
 
         if (IsOwner)
         {
+            selectedSpell = _card;
             MeshRenderer _mesh = _card.GetComponentInChildren<MeshRenderer>();
             Canvas _canva = _card.GetComponentInChildren<Canvas>();
             _mesh.enabled = false;
@@ -254,15 +261,35 @@ public class PlayerHandComponent : NetworkBehaviour
         }
         else
         {
-            _card.MovementComponent.SetDestination(transform.position + selectedCardPosition);
+            _card.MovementComponent.SetDestination(SelectedPosition);
         }
 
+    }
+
+    [ClientRpc]
+    public void UnselectCardVisual_ClientRpc()
+    {
+        if (IsOwner)
+        {
+            if (!selectedSpell) return;
+
+            MeshRenderer _mesh = selectedSpell.GetComponentInChildren<MeshRenderer>();
+            Canvas _canva = selectedSpell.GetComponentInChildren<Canvas>();
+            _mesh.enabled = true;
+            _canva.enabled = true;
+            selectedSpell = null;
+        }
+        else
+        {
+            UpdateCardPosition();
+        }
     }
 
     #endregion
 
     #region Functions
 
+    [ContextMenu("Update Card Position")]
     void UpdateCardPosition()
     {
         int _size = cardsInHand.Count;
@@ -272,7 +299,7 @@ public class PlayerHandComponent : NetworkBehaviour
             if (!_card) continue;
 
             float _indexOffset = _i - (_size / 2) + (_size % 2 != 0 ? 0.0f : 0.5f);
-            _card.MovementComponent.SetDestination(transform.position + new Vector3(_indexOffset * 3.0f, 0.0f, 0.0f));
+            _card.MovementComponent.SetDestination(transform.position + new Vector3(_indexOffset * cardsOffset, 0.0f, 0.0f));
         }
     }
 
@@ -283,6 +310,6 @@ public class PlayerHandComponent : NetworkBehaviour
         if (!showDebug) return;
 
         Gizmos.color = Color.magenta;
-        Gizmos.DrawWireSphere(transform.position + selectedCardPosition, 0.5f);
+        Gizmos.DrawWireSphere(SelectedPosition, 0.5f);
     }
 }

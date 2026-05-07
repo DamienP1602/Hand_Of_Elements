@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1f2123f9f594a14ab0c9c91591bcc6d, type: 3}
   m_Name: Living_Earth
   m_EditorClassIdentifier: 
-  cardID: 8
+  cardID: 5
   cardName: Living Earth
   cardElement: 2
   cardCost: 1

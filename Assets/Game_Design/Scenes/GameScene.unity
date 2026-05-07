@@ -630,6 +630,10 @@ MonoBehaviour:
     cardReference: {fileID: 0}
     amount: 0
     elementaryCombo: 0
+  card: {fileID: 0}
+  playerOwner: {fileID: 0}
+  targets: []
+  playerTarget: {fileID: 0}
 --- !u!114 &1045765579
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1008,7 +1012,7 @@ Camera:
   near clip plane: 0.3
   far clip plane: 10
   field of view: 90
-  orthographic: 1
+  orthographic: 0
   orthographic size: 9.5
   m_Depth: -1
   m_CullingMask:
@@ -1060,13 +1064,57 @@ PrefabInstance:
       propertyPath: GlobalObjectIdHash
       value: 938097157
       objectReference: {fileID: 0}
+    - target: {fileID: 2243913948151746108, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
+      propertyPath: cardPosition.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2416814599553634059, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
+      propertyPath: m_Size.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2528895565544791858, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
+      propertyPath: cardPosition.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2563095619643968228, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
+      propertyPath: cardPosition.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2609172028008301258, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
+      propertyPath: m_Size.y
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 2755800644374282456, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
       propertyPath: m_Name
       value: Board
       objectReference: {fileID: 0}
+    - target: {fileID: 2755800644374282456, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 3327232384444082647, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 761862527
+      objectReference: {fileID: 0}
+    - target: {fileID: 3486018328643996823, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
+      propertyPath: m_Size.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3680039638689560712, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
+      propertyPath: m_Size.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3883623850131948547, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
+      propertyPath: cardPosition.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4054254596174887903, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
+      propertyPath: m_Size.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4481969206514945254, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
+      propertyPath: m_Size.y
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4720089845800890323, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
       propertyPath: GlobalObjectIdHash
@@ -1084,6 +1132,14 @@ PrefabInstance:
       propertyPath: GlobalObjectIdHash
       value: 3330553300
       objectReference: {fileID: 0}
+    - target: {fileID: 5881335742382525154, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
+      propertyPath: m_Size.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5906721543479336857, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
+      propertyPath: m_Size.y
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 6595420127584444927, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 264236305
@@ -1091,6 +1147,14 @@ PrefabInstance:
     - target: {fileID: 6789255161122171966, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 2862857409
+      objectReference: {fileID: 0}
+    - target: {fileID: 7485973689195610376, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7676645358918157844, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
+      propertyPath: cardPosition.y
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 7783027820136988410, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1131,6 +1195,38 @@ PrefabInstance:
     - target: {fileID: 7783027820136988410, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7866866644849053242, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
+      propertyPath: m_Size.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7900784295596153836, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
+      propertyPath: m_Size.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8013883375129103317, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
+      propertyPath: cardPosition.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8110542392407738424, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
+      propertyPath: cardPosition.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8574523259391475457, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
+      propertyPath: cardPosition.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8887905791172690141, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
+      propertyPath: m_Size.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9056572717361757270, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
+      propertyPath: cardPosition.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 9141633627685537865, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
+      propertyPath: cardPosition.y
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

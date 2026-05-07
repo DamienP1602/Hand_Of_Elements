@@ -154,7 +154,12 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   showDebug: 0
   cardsInHand: []
-  selectedCardPosition: {x: 0, y: 0, z: -3}
+  selectedCardPosition: {x: 0, y: 0, z: -4}
+  boardLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  selectedSpell: {fileID: 0}
+  cardsOffset: 2
 --- !u!114 &4118169201543858551
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -168,4 +173,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  cardsInDeck: 060000000300000004000000
+  cardsInDeck: 0000000001000000030000000400000005000000060000000700000008000000

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1f2123f9f594a14ab0c9c91591bcc6d, type: 3}
   m_Name: Fire_Ball
   m_EditorClassIdentifier: 
-  cardID: 4
+  cardID: 6
   cardName: Fire Ball
   cardElement: 0
   cardCost: 1

@@ -167,21 +167,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerOneSide: {fileID: 8491503687904777257}
+  playerOneDeck: {fileID: 729002041624822032}
   playerOneSlots:
   - {fileID: 2528895565544791858}
   - {fileID: 2563095619643968228}
   - {fileID: 2243913948151746108}
   - {fileID: 9141633627685537865}
   - {fileID: 3883623850131948547}
-  playerOneDeck: {fileID: 729002041624822032}
   playerTwoSide: {fileID: 2691600061172721813}
+  playerTwoDeck: {fileID: 3809487729189561794}
   playerTwoSlots:
   - {fileID: 9056572717361757270}
   - {fileID: 8110542392407738424}
   - {fileID: 8574523259391475457}
   - {fileID: 7676645358918157844}
   - {fileID: 8013883375129103317}
-  playerTwoDeck: {fileID: 3809487729189561794}
 --- !u!65 &5906721543479336857
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -498,6 +498,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2600668974724145375, guid: 25e85f567feba8a419d130e54670b747, type: 3}
+      propertyPath: cardPosition.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2600668974724145375, guid: 25e85f567feba8a419d130e54670b747, type: 3}
       propertyPath: playerTag.m_InternalValue
       value: 0
       objectReference: {fileID: 0}
@@ -585,6 +589,10 @@ PrefabInstance:
     - target: {fileID: 1520001459525633844, guid: 25e85f567feba8a419d130e54670b747, type: 3}
       propertyPath: SceneMigrationSynchronization
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2600668974724145375, guid: 25e85f567feba8a419d130e54670b747, type: 3}
+      propertyPath: cardPosition.y
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2600668974724145375, guid: 25e85f567feba8a419d130e54670b747, type: 3}
       propertyPath: playerTag.m_InternalValue
@@ -676,6 +684,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2600668974724145375, guid: 25e85f567feba8a419d130e54670b747, type: 3}
+      propertyPath: cardPosition.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2600668974724145375, guid: 25e85f567feba8a419d130e54670b747, type: 3}
       propertyPath: playerTag.m_InternalValue
       value: 0
       objectReference: {fileID: 0}
@@ -763,6 +775,10 @@ PrefabInstance:
     - target: {fileID: 1520001459525633844, guid: 25e85f567feba8a419d130e54670b747, type: 3}
       propertyPath: SceneMigrationSynchronization
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2600668974724145375, guid: 25e85f567feba8a419d130e54670b747, type: 3}
+      propertyPath: cardPosition.y
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2600668974724145375, guid: 25e85f567feba8a419d130e54670b747, type: 3}
       propertyPath: playerTag.m_InternalValue
@@ -854,6 +870,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2600668974724145375, guid: 25e85f567feba8a419d130e54670b747, type: 3}
+      propertyPath: cardPosition.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2600668974724145375, guid: 25e85f567feba8a419d130e54670b747, type: 3}
       propertyPath: playerTag.m_InternalValue
       value: 1
       objectReference: {fileID: 0}
@@ -941,6 +961,10 @@ PrefabInstance:
     - target: {fileID: 1520001459525633844, guid: 25e85f567feba8a419d130e54670b747, type: 3}
       propertyPath: SceneMigrationSynchronization
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2600668974724145375, guid: 25e85f567feba8a419d130e54670b747, type: 3}
+      propertyPath: cardPosition.y
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2600668974724145375, guid: 25e85f567feba8a419d130e54670b747, type: 3}
       propertyPath: playerTag.m_InternalValue
@@ -1032,6 +1056,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2600668974724145375, guid: 25e85f567feba8a419d130e54670b747, type: 3}
+      propertyPath: cardPosition.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2600668974724145375, guid: 25e85f567feba8a419d130e54670b747, type: 3}
       propertyPath: playerTag.m_InternalValue
       value: 1
       objectReference: {fileID: 0}
@@ -1119,6 +1147,10 @@ PrefabInstance:
     - target: {fileID: 1520001459525633844, guid: 25e85f567feba8a419d130e54670b747, type: 3}
       propertyPath: SceneMigrationSynchronization
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2600668974724145375, guid: 25e85f567feba8a419d130e54670b747, type: 3}
+      propertyPath: cardPosition.y
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2600668974724145375, guid: 25e85f567feba8a419d130e54670b747, type: 3}
       propertyPath: playerTag.m_InternalValue
@@ -1210,6 +1242,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2600668974724145375, guid: 25e85f567feba8a419d130e54670b747, type: 3}
+      propertyPath: cardPosition.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2600668974724145375, guid: 25e85f567feba8a419d130e54670b747, type: 3}
       propertyPath: playerTag.m_InternalValue
       value: 1
       objectReference: {fileID: 0}
@@ -1297,6 +1333,10 @@ PrefabInstance:
     - target: {fileID: 1520001459525633844, guid: 25e85f567feba8a419d130e54670b747, type: 3}
       propertyPath: SceneMigrationSynchronization
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2600668974724145375, guid: 25e85f567feba8a419d130e54670b747, type: 3}
+      propertyPath: cardPosition.y
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2600668974724145375, guid: 25e85f567feba8a419d130e54670b747, type: 3}
       propertyPath: playerTag.m_InternalValue

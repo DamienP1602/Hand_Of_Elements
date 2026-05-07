@@ -26,19 +26,16 @@ public class BaseCardData : ScriptableObject
     [MenuItem("CardTools/Sort Card IDs")]
     public static void SortID()
     {
-        object[] _cards = Resources.FindObjectsOfTypeAll(typeof(BaseCardData));
+        BaseCardData[] _cards = Resources.FindObjectsOfTypeAll<BaseCardData>();
 
-        int _size = _cards.Length;
-        for (int _i = 0; _i < _size; _i++)
+        int _ID = 0;
+        foreach (BaseCardData _data in _cards)
         {
-            BaseCardData _card = _cards[_i] as BaseCardData;
-            if (_card)
-            {
-                _card.cardID = _i;
-                EditorUtility.SetDirty(_card);
-                AssetDatabase.SaveAssetIfDirty(_card);
-                Debug.Log(_card.cardName + " -> " + _card.cardID.ToString());
-            }
+            _data.cardID = _ID;
+            EditorUtility.SetDirty(_data);
+            Debug.Log(_data.name + " -> " + _ID.ToString());
+
+            _ID++;
         }
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();

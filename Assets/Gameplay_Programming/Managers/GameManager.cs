@@ -121,6 +121,13 @@ public class GameManager : Singleton<GameManager>
         Invoke(nameof(CheckButtonInteractable_ClientRpc), 0.1f);
 
         board.SetCardCanAttack(playerTurn.Value);
+
+        foreach (PlayerEntity _entity in players)
+        {
+            _entity.InteractComponent.SetSelectCard(false);
+            _entity.HandComponent.ReleaseCard();
+            _entity.HandComponent.UnselectCardVisual_ClientRpc();
+        }
     }
 
     /// <summary>
@@ -188,6 +195,4 @@ public class GameManager : Singleton<GameManager>
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(secondPlayerPosition, 1.0f);
     }
-
-
 }

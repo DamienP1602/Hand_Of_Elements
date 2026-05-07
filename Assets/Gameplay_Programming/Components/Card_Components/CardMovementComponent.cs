@@ -46,6 +46,8 @@ public class CardMovementComponent : MonoBehaviour
 
     public void SetDestination(Vector3 _destination)
     {
+        if (_destination == transform.position) return;
+
         initialPosition = transform.position;
         destination = _destination;
 

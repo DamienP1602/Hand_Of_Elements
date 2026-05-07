@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c8e7bd1d286b25499e20359c7a5d484, type: 3}
   m_Name: Air_Elemental
   m_EditorClassIdentifier: 
-  cardID: 6
+  cardID: 8
   cardName: Air Elemental
   cardElement: 3
   cardCost: 0

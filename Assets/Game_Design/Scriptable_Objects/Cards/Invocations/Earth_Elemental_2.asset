@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c8e7bd1d286b25499e20359c7a5d484, type: 3}
   m_Name: Earth_Elemental_2
   m_EditorClassIdentifier: 
-  cardID: 1
+  cardID: 2
   cardName: Earth Elemental
   cardElement: 2
   cardCost: 0
