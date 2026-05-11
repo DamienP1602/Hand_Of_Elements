@@ -157,44 +157,8 @@ public class BoardComponent : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        UpdateHoveredCards();
-        UpdateSelectedCard();
+
     }
-
-    #region Update
-
-    void UpdateHoveredCards()
-    {
-        List<BoardSlotComponent> _allSlots = GetAllSlots();
-
-        foreach (BoardSlotComponent _slot in _allSlots)
-        {
-            if (_slot.IsEmpty || _slot.Card.IsSelected)
-                continue;
-
-            if (_slot.Card.IsHovered)
-                _slot.Card.GetComponentInChildren<MeshRenderer>().material.color = Color.red;
-            else
-                _slot.Card.GetComponentInChildren<MeshRenderer>().material.color = Color.white;
-        }
-    }
-
-    void UpdateSelectedCard()
-    {
-        List<BoardSlotComponent> _allSlots = GetAllSlots();
-
-        foreach (BoardSlotComponent _slot in _allSlots)
-        {
-            if (_slot.IsEmpty) continue;
-
-            if (_slot.Card.IsSelected)
-            {
-                _slot.Card.GetComponentInChildren<MeshRenderer>().material.color = Color.green;
-            }
-        }
-    }
-
-    #endregion
 
     #region Server Functions
 
@@ -261,6 +225,21 @@ public class BoardComponent : MonoBehaviour
 
             _slot.Card.SetIsSelected(false);
         }
+    }
+
+    /// <summary>
+    /// Server Function
+    /// </summary>
+    public BoardSlotComponent GetFirstEmptySlot(PlayerEnum _playerTag)
+    {
+        List<BoardSlotComponent> _slots = GetSlotsFromTag(_playerTag);
+
+        foreach (BoardSlotComponent _slot in _slots)
+        {
+            if (_slot.IsEmpty)
+                return _slot;
+        }
+        return null;
     }
 
     #endregion

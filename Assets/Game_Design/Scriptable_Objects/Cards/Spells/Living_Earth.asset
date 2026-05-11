@@ -17,9 +17,9 @@ MonoBehaviour:
   cardElement: 2
   cardCost: 1
   effect:
-    selectionMode: 0
+    selectionMode: 1
     effectMode: 0
-    cardReference: {fileID: 0}
+    cardReference: {fileID: 11400000, guid: b47c609aca544184eaa7d946b986c17c, type: 2}
     amount: 1
     elementaryCombo: 1
   description: Summon a Minor Elemental 10/10.

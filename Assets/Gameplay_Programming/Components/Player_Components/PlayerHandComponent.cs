@@ -67,27 +67,10 @@ public class PlayerHandComponent : NetworkBehaviour
 
     void Update()
     {
-        HoveredUpdate();
         UpdateSelectedCard();
     }
 
     #region Update
-
-    /// <summary>
-    /// Will draw in blue the hovered Card
-    /// </summary>
-    void HoveredUpdate()
-    {
-        foreach (HandCardComponent _card in cardsInHand)
-        {
-            if (!_card) continue;
-
-            if (_card.IsHovered)
-                _card.GetComponentInChildren<MeshRenderer>().material.color = Color.red;
-            else
-                _card.GetComponentInChildren<MeshRenderer>().material.color = Color.white;
-        }
-    }
 
     /// <summary>
     /// Will move the selected Card to the mouse Position
@@ -254,9 +237,7 @@ public class PlayerHandComponent : NetworkBehaviour
         if (IsOwner)
         {
             selectedSpell = _card;
-            MeshRenderer _mesh = _card.GetComponentInChildren<MeshRenderer>();
             Canvas _canva = _card.GetComponentInChildren<Canvas>();
-            _mesh.enabled = false;
             _canva.enabled = false;
         }
         else
@@ -273,9 +254,7 @@ public class PlayerHandComponent : NetworkBehaviour
         {
             if (!selectedSpell) return;
 
-            MeshRenderer _mesh = selectedSpell.GetComponentInChildren<MeshRenderer>();
             Canvas _canva = selectedSpell.GetComponentInChildren<Canvas>();
-            _mesh.enabled = true;
             _canva.enabled = true;
             selectedSpell = null;
         }

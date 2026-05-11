@@ -97,12 +97,13 @@ public class SpellManager : Singleton<SpellManager>
         switch (currentEffect.effectMode)
         {
             case CardEffectData.CardEffectMode.Summon:
+                SummonCard();
                 break;
             case CardEffectData.CardEffectMode.Heal:
-                RestaureHealth(targets, currentEffect.amount);
+                RestaureHealth();
                 break;
             case CardEffectData.CardEffectMode.InstantDamage:
-                DealDamages(targets, currentEffect.amount);
+                DealDamages();
                 break;
             case CardEffectData.CardEffectMode.Debuff:
                 break;
@@ -111,22 +112,31 @@ public class SpellManager : Singleton<SpellManager>
 
     #region Effect Functions
 
-    void DealDamages(List<TargetedData> _targets, int _amount)
+    void DealDamages()
     {
-        foreach (TargetedData _target in _targets)
+        foreach (TargetedData _target in targets)
         {
             BoardSlotComponent _slot = GameManager.Instance.Board.GetSlot(_target.cardOwnerTag, _target.cardID);
-            _slot.Card.RemoveHealth(_amount);
+            _slot.Card.RemoveHealth(currentEffect.amount);
         }
     }
 
-    void RestaureHealth(List<TargetedData> _targets, int _amount)
+    void RestaureHealth()
     {
-        foreach (TargetedData _target in _targets)
+        foreach (TargetedData _target in targets)
         {
             BoardSlotComponent _slot = GameManager.Instance.Board.GetSlot(_target.cardOwnerTag, _target.cardID);
-            _slot.Card.RestaureHealth(_amount);
+            _slot.Card.RestaureHealth(currentEffect.amount);
         }
+    }
+
+    void SummonCard()
+    {
+        PlayerEnum _ownerTag = playerTarget.PlayerTag;
+        BoardSlotComponent _slot = GameManager.Instance.Board.GetFirstEmptySlot(_ownerTag);
+        if (!_slot) return;
+
+        _slot.PutCardInSlot(_slot.transform.position,currentEffect.cardReference.cardID);
     }
 
     #endregion
