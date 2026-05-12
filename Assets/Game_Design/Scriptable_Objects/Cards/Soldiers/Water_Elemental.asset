@@ -15,7 +15,7 @@ MonoBehaviour:
   cardID: 0
   cardName: Water Elemental
   cardElement: 1
-  cardCost: 0
+  cardCost: 2
   effect:
     selectionMode: 0
     effectMode: 0

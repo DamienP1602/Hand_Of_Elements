@@ -20,9 +20,13 @@ public class PlayerEntity : NetworkBehaviour
     [Header("Player Parameters")]
     [SerializeField] PlayerEnum player;
 
+    [Header("Network Variables")]
+    [SerializeField] NetworkVariable<int> arcaneAmount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+
     #region Getters
 
     public PlayerEnum PlayerTag => player;
+    public int ArcaneAmount => arcaneAmount.Value;
 
     #endregion
 
@@ -52,6 +56,8 @@ public class PlayerEntity : NetworkBehaviour
         InteractComponent.SetOwnerTag(player);
 
         if (!IsOwner) return;
+
+        DrawInitCards_ServerRpc();
 
         InitInputs();
         GameManager.Instance.SetButtonVisibleFromPlayerTurn(player);
@@ -112,6 +118,31 @@ public class PlayerEntity : NetworkBehaviour
     {
         GameManager.Instance.InitCard(_cardToInit);
     }
+
+    [ServerRpc]
+    void DrawInitCards_ServerRpc()
+    {
+        GameManager.Instance.DrawFirstCards(this);
+    }
+
+    #endregion
+
+    #region Server Functions
+
+    /// <summary>
+    /// Server Function
+    /// </summary>
+    public void AddArcane(int _amount) => arcaneAmount.Value += _amount;
+
+    /// <summary>
+    /// Server Function
+    /// </summary>
+    public void RemoveArcane(int _amount) => arcaneAmount.Value -= _amount;
+
+    /// <summary>
+    /// Server Function
+    /// </summary>
+    public void SetArcaneAmount(int _amount) => arcaneAmount.Value = _amount;
 
     #endregion
 }

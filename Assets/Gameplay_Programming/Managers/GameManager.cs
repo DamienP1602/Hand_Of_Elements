@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
+using Unity.Services.Authentication;
 using UnityEngine;
 
 public class GameManager : Singleton<GameManager>
@@ -15,6 +16,7 @@ public class GameManager : Singleton<GameManager>
 
     [Header("Turn Data")]
     [SerializeField] NetworkVariable<PlayerEnum> playerTurn = new NetworkVariable<PlayerEnum>(PlayerEnum.Player_One, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    [SerializeField] NetworkVariable<int> turnAmount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     [Header("Board Data")]
     [SerializeField] BoardComponent board;
@@ -110,12 +112,16 @@ public class GameManager : Singleton<GameManager>
         PlayerEnum _newTurn = playerTurn.Value == PlayerEnum.Player_One ? PlayerEnum.Player_Two : PlayerEnum.Player_One;
         playerTurn.Value = _newTurn;
 
+        if (_newTurn == PlayerEnum.Player_One)
+            turnAmount.Value++;
+
         PlayerEntity _player = GetPlayerFromTurn();
         if (_player.DeckComponent.CardCount > 0)
         {
             _player.HandComponent.DrawCard(1);
             _player.HandComponent.SetCardInHand_ClientRpc();
         }
+        _player.SetArcaneAmount(Mathf.Clamp(turnAmount.Value, 0, 10));
 
         widget.SetButtonIsVisible(false);
         Invoke(nameof(CheckButtonInteractable_ClientRpc), 0.1f);
@@ -139,8 +145,17 @@ public class GameManager : Singleton<GameManager>
         HandCardComponent _card = _player.HandComponent.GetSelectedCard();
         BoardSlotComponent _slot = board.GetSlot(_type, _boardSlotIndex);
 
+        if (_player.ArcaneAmount < _card.Data.cardCost)
+        {
+            _player.InteractComponent.SetSelectCard(false);
+            _player.HandComponent.ReleaseCard();
+            _player.HandComponent.UnselectCardVisual_ClientRpc();
+            return;
+        }
+
         if (_card && _slot)
         {
+            _player.RemoveArcane(_card.Data.cardCost);
             _slot.PutCardInSlot(_card.transform.position, _card.ID);
             _player.HandComponent.RemoveSelectedCard();
         }
@@ -174,6 +189,19 @@ public class GameManager : Singleton<GameManager>
         PlayerEnum _cardOwner = board.GetOwnerOfCard(_cardToInit);
         BoardSlotComponent _slot = board.GetCardFromCardID(_cardOwner, _cardToInit);
         _slot.Card.InitStats();
+    }
+
+    /// <summary>
+    /// Server Function
+    /// </summary>
+    public void DrawFirstCards(PlayerEntity _player)
+    {
+        _player.HandComponent.DrawCard(3);
+
+        foreach (PlayerEntity _entity in players)
+        {
+            _entity.HandComponent.SetCardInHand_ClientRpc();
+        }
     }
 
     #endregion

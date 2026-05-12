@@ -15,7 +15,7 @@ MonoBehaviour:
   cardID: 8
   cardName: Air Elemental
   cardElement: 3
-  cardCost: 0
+  cardCost: 2
   effect:
     selectionMode: 0
     effectMode: 0

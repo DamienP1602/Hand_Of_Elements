@@ -15,7 +15,7 @@ MonoBehaviour:
   cardID: 7
   cardName: Fire Elemental
   cardElement: 0
-  cardCost: 0
+  cardCost: 2
   effect:
     selectionMode: 0
     effectMode: 0
