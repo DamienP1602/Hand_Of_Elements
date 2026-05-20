@@ -12,14 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1f2123f9f594a14ab0c9c91591bcc6d, type: 3}
   m_Name: Living_Earth
   m_EditorClassIdentifier: 
-  cardID: 5
+  cardID: 10
   cardName: Living Earth
   cardElement: 2
   cardCost: 1
+  hasEffect: 1
+  isHiddenEffect: 0
   effect:
     selectionMode: 1
     effectMode: 0
+    effectModifier: 0
     cardReference: {fileID: 11400000, guid: b47c609aca544184eaa7d946b986c17c, type: 2}
     amount: 1
-    elementaryCombo: 1
+  hasElementaryCombo: 1
+  overrideFirstEffect: 1
+  elementaryComboEffect:
+    selectionMode: 3
+    effectMode: 0
+    effectModifier: 0
+    cardReference: {fileID: 11400000, guid: b47c609aca544184eaa7d946b986c17c, type: 2}
+    amount: 1
   description: Summon a Minor Elemental 10/10.
+  elementaryComboDescription: Summon another one.

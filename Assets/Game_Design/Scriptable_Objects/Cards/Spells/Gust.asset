@@ -12,14 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1f2123f9f594a14ab0c9c91591bcc6d, type: 3}
   m_Name: Gust
   m_EditorClassIdentifier: 
-  cardID: 4
+  cardID: 7
   cardName: Gust
   cardElement: 3
   cardCost: 1
+  hasEffect: 1
+  isHiddenEffect: 0
   effect:
     selectionMode: 0
     effectMode: 2
+    effectModifier: 0
     cardReference: {fileID: 0}
     amount: 10
-    elementaryCombo: 1
+  hasElementaryCombo: 1
+  overrideFirstEffect: 1
+  elementaryComboEffect:
+    selectionMode: 3
+    effectMode: 2
+    effectModifier: 0
+    cardReference: {fileID: 0}
+    amount: 20
   description: Deals 10 damages to a target.
+  elementaryComboDescription: Deals 10 extra damages.

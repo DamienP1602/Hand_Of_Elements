@@ -1,13 +1,26 @@
+using System;
 using TMPro;
 using UnityEngine;
 
 public class CardOverlayComponent : MonoBehaviour
 {
+    [Header("Base Parameters")]
     [SerializeField] TMP_Text healthText;
     [SerializeField] TMP_Text damageText;
     [SerializeField] TMP_Text nameText;
-    [SerializeField] TMP_Text typeText;
-    [SerializeField] TMP_Text descriptionText;
+
+    [Header("Single Description")]
+    [SerializeField] GameObject singleDescriptionObject;
+    [SerializeField] TMP_Text singleDescription;
+
+    [Header("Hidden Description")]
+    [SerializeField] GameObject hiddenDescriptionObject;
+    [SerializeField] TMP_Text hiddenDescription;
+
+    [Header("Elementary Combo Description")]
+    [SerializeField] GameObject comboDescriptionObject;
+    [SerializeField] TMP_Text firstDescription;
+    [SerializeField] TMP_Text comboDescription;
 
     BaseCardData data;
 
@@ -18,7 +31,7 @@ public class CardOverlayComponent : MonoBehaviour
 
     void Update()
     {
-        
+
     }
 
     #region Setters
@@ -28,17 +41,16 @@ public class CardOverlayComponent : MonoBehaviour
         if (!_data) return;
         data = _data;
 
-        nameText.text = _data.cardName;
-        typeText.text = _data.cardElement.ToString();
-
         if (_data is SoldierCardData _soldier)
         {
             damageText.text = _soldier.attackAmount.ToString();
             healthText.text = _soldier.healthAmount.ToString();
         }
-        else if (_data is SpellCardData _spell)
+
+        if (GetComponent<HandCardComponent>())
         {
-            descriptionText.text = _spell.description;
+            nameText.text = _data.cardName;
+            SetText();
         }
     }
 
@@ -76,7 +88,28 @@ public class CardOverlayComponent : MonoBehaviour
         }
     }
 
+    void SetText()
+    {
+        if (!data.hasEffect)
+            return;
+
+        if (data.hasElementaryCombo)
+        {
+            comboDescriptionObject.SetActive(true);
+            firstDescription.text = data.description;
+            comboDescription.text = data.elementaryComboDescription;
+        }
+        else if (data.isHiddenEffect)
+        {
+            hiddenDescriptionObject.SetActive(true);
+            hiddenDescription.text = data.description;
+        }
+        else
+        {
+            singleDescriptionObject.SetActive(true);
+            singleDescription.text = data.description;
+        }
+    }
+
     #endregion
-
-
 }

@@ -9,21 +9,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4c8e7bd1d286b25499e20359c7a5d484, type: 3}
-  m_Name: Fire_Elemental
+  m_Script: {fileID: 11500000, guid: f1f2123f9f594a14ab0c9c91591bcc6d, type: 3}
+  m_Name: Sigil_Forced_Invocation
   m_EditorClassIdentifier: 
-  cardID: 4
-  cardName: Fire Elemental
-  cardElement: 0
-  cardCost: 2
-  hasEffect: 0
-  isHiddenEffect: 0
+  cardID: 1
+  cardName: 'Sigil : Forced Invocation'
+  cardElement: 2
+  cardCost: 4
+  hasEffect: 1
+  isHiddenEffect: 1
   effect:
-    selectionMode: 0
+    selectionMode: 1
     effectMode: 0
     effectModifier: 0
-    cardReference: {fileID: 0}
-    amount: 0
+    cardReference: {fileID: 11400000, guid: e286a234a4d589f4a9e23aba40e4dd0b, type: 2}
+    amount: 2
   hasElementaryCombo: 0
   overrideFirstEffect: 0
   elementaryComboEffect:
@@ -32,8 +32,5 @@ MonoBehaviour:
     effectModifier: 0
     cardReference: {fileID: 0}
     amount: 0
-  description: 
+  description: "At the start of your next turn,\t\n\nSummon 2 Earth Elementals."
   elementaryComboDescription: 
-  attackAmount: 20
-  healthAmount: 40
-  isInvocation: 0

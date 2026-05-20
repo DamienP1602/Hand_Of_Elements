@@ -12,16 +12,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c8e7bd1d286b25499e20359c7a5d484, type: 3}
   m_Name: Water_Elemental
   m_EditorClassIdentifier: 
-  cardID: 0
+  cardID: 2
   cardName: Water Elemental
   cardElement: 1
   cardCost: 2
+  hasEffect: 0
+  isHiddenEffect: 0
   effect:
     selectionMode: 0
     effectMode: 0
+    effectModifier: 0
     cardReference: {fileID: 0}
     amount: 0
-    elementaryCombo: 0
+  hasElementaryCombo: 0
+  overrideFirstEffect: 0
+  elementaryComboEffect:
+    selectionMode: 0
+    effectMode: 0
+    effectModifier: 0
+    cardReference: {fileID: 0}
+    amount: 0
+  description: 
+  elementaryComboDescription: 
   attackAmount: 20
   healthAmount: 40
   isInvocation: 0

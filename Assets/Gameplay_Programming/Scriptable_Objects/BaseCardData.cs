@@ -20,7 +20,14 @@ public class BaseCardData : ScriptableObject
     public int cardCost;
 
     [Header("Effect")]
+    public bool hasEffect;
+    public bool isHiddenEffect;
     public CardEffectData effect;
+    public bool hasElementaryCombo;
+    public bool overrideFirstEffect;
+    public CardEffectData elementaryComboEffect;
+    [Multiline] public string description;
+    [Multiline] public string elementaryComboDescription;
 
 #if UNITY_EDITOR
     [MenuItem("CardTools/Sort Card IDs")]

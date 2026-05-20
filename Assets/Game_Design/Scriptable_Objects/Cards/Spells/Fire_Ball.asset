@@ -12,14 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1f2123f9f594a14ab0c9c91591bcc6d, type: 3}
   m_Name: Fire_Ball
   m_EditorClassIdentifier: 
-  cardID: 6
+  cardID: 9
   cardName: Fire Ball
   cardElement: 0
   cardCost: 1
+  hasEffect: 1
+  isHiddenEffect: 0
   effect:
     selectionMode: 0
     effectMode: 2
+    effectModifier: 0
     cardReference: {fileID: 0}
     amount: 10
-    elementaryCombo: 1
+  hasElementaryCombo: 1
+  overrideFirstEffect: 0
+  elementaryComboEffect:
+    selectionMode: 3
+    effectMode: 3
+    effectModifier: 0
+    cardReference: {fileID: 0}
+    amount: 1
   description: Deals 10 Damages to a target.
+  elementaryComboDescription: Put 1 Burn Token on it.

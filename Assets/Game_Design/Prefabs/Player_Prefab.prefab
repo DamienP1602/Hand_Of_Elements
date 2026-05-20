@@ -164,7 +164,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   selectedSpell: {fileID: 0}
-  cardsOffset: 2
+  cardsOffset: 3
 --- !u!114 &4118169201543858551
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,4 +178,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  cardsInDeck: 000000000100000002000000
+  cardsInDeck: 000000000100000008000000

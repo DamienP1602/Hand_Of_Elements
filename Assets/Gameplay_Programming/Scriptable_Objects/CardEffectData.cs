@@ -8,7 +8,8 @@ public struct CardEffectData
     {
         SingleTarget,
         Self,
-        Opponent
+        Opponent,
+        NoMoreTarget
     }
 
     [Serializable]
@@ -20,9 +21,17 @@ public struct CardEffectData
         Debuff
     }
 
+    [Serializable]
+    public enum CardEffectModifier
+    {
+        Burn,
+        AntiHeal,
+        MagicShield
+    }
+
     public CardEffectSelectionMode selectionMode;
     public CardEffectMode effectMode;
+    public CardEffectModifier effectModifier;
     public BaseCardData cardReference;
     public int amount;
-    public bool elementaryCombo;
 }

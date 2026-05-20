@@ -9,14 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4c8e7bd1d286b25499e20359c7a5d484, type: 3}
-  m_Name: Fire_Elemental
+  m_Script: {fileID: 11500000, guid: f1f2123f9f594a14ab0c9c91591bcc6d, type: 3}
+  m_Name: Swamp_Surging
   m_EditorClassIdentifier: 
-  cardID: 4
-  cardName: Fire Elemental
-  cardElement: 0
-  cardCost: 2
-  hasEffect: 0
+  cardID: 0
+  cardName: Swamp Surging
+  cardElement: 1
+  cardCost: 5
+  hasEffect: 1
   isHiddenEffect: 0
   effect:
     selectionMode: 0
@@ -32,8 +32,7 @@ MonoBehaviour:
     effectModifier: 0
     cardReference: {fileID: 0}
     amount: 0
-  description: 
+  description: 'Restaures 30 health to all allies.
+
+    Deals 30 damages to all opponents.'
   elementaryComboDescription: 
-  attackAmount: 20
-  healthAmount: 40
-  isInvocation: 0
