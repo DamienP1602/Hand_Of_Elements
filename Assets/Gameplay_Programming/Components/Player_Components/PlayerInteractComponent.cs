@@ -35,7 +35,10 @@ public class PlayerInteractComponent : NetworkBehaviour
                     if (_hand.Contains(_card))
                     {
                         if (_card != _hand.GetSelectedCard())
+                        {
                             HoverCardHand_ServerRpc(_hand.GetIndexOf(_card));
+                            GameManager.Instance.PlayerWidget.ShowVisualCard(_card);
+                        }
                     }
                 }
             }

@@ -1,10 +1,11 @@
-using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CardOverlayComponent : MonoBehaviour
 {
     [Header("Base Parameters")]
+    [SerializeField] Image background;
     [SerializeField] TMP_Text healthText;
     [SerializeField] TMP_Text damageText;
     [SerializeField] TMP_Text nameText;
@@ -36,7 +37,7 @@ public class CardOverlayComponent : MonoBehaviour
 
     #region Setters
 
-    public void SetData(BaseCardData _data)
+    public void SetData(BaseCardData _data,bool _forceInit = false)
     {
         if (!_data) return;
         data = _data;
@@ -47,7 +48,7 @@ public class CardOverlayComponent : MonoBehaviour
             healthText.text = _soldier.healthAmount.ToString();
         }
 
-        if (GetComponent<HandCardComponent>())
+        if (GetComponent<HandCardComponent>() || _forceInit)
         {
             nameText.text = _data.cardName;
             SetText();
@@ -109,6 +110,32 @@ public class CardOverlayComponent : MonoBehaviour
             singleDescriptionObject.SetActive(true);
             singleDescription.text = data.description;
         }
+    }
+
+    /// <summary>
+    /// Temp
+    /// </summary>
+    public void SetColorFromType()
+    {
+        Color _color = Color.white;
+        switch (data.cardElement)
+        {
+            case CardElement.Fire:
+                _color = Color.red; 
+                break;
+            case CardElement.Water:
+                _color = Color.blue;
+                break;
+            case CardElement.Earth:
+                _color = Color.green;
+                break;
+            case CardElement.Air:
+                _color = Color.cyan;
+                break;
+            default:
+                break;
+        }
+        background.color = _color;
     }
 
     #endregion

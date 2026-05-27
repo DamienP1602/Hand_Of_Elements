@@ -41,6 +41,8 @@ public class BoardCardComponent : CardComponent
 
         PlayerEntity _localPlayer = GameManager.Instance.GetLocalPlayer();
         _localPlayer.InitCard(ID);
+
+
     }
 
     public void InitStats()
