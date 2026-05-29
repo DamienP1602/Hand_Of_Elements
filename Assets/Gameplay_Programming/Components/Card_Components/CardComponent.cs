@@ -63,7 +63,6 @@ public class CardComponent : NetworkBehaviour
     {
         data = CardManager.Instance.GetCard(ID);
         OverlayComponent.SetData(data);
-        OverlayComponent.SetColorFromType();
     }
 
     #endregion

@@ -6,7 +6,7 @@ public class PlayerInteractComponent : NetworkBehaviour
     Ray PointOnScreen => Camera.main.ScreenPointToRay(Input.mousePosition);
     [SerializeField] PlayerEnum ownerTag;
     [SerializeField] NetworkVariable<bool> needToSelectACard = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-
+    PlayerEntity owner;
     #region Setters
 
     public void SetOwnerTag(PlayerEnum _value) => ownerTag = _value;
@@ -20,6 +20,12 @@ public class PlayerInteractComponent : NetworkBehaviour
         if (IsOwner)
             InvokeRepeating(nameof(OnHoverUpdate), 0.1f, 0.1f);
     }
+
+    #region Init
+
+    public void SetOwner(PlayerEntity _entity) => owner = _entity;
+
+    #endregion
 
     #region Updates
 
@@ -37,7 +43,6 @@ public class PlayerInteractComponent : NetworkBehaviour
                         if (_card != _hand.GetSelectedCard())
                         {
                             HoverCardHand_ServerRpc(_hand.GetIndexOf(_card));
-                            GameManager.Instance.PlayerWidget.ShowVisualCard(_card);
                         }
                     }
                 }
@@ -73,10 +78,10 @@ public class PlayerInteractComponent : NetworkBehaviour
             if (_hit.collider.gameObject.GetComponent<BoardCardComponent>() is BoardCardComponent _boardCard)
             {
                 if (needToSelectACard.Value)
-                {                    
+                {
                     PlayerEnum _ownerType = GameManager.Instance.Board.GetOwnerOfCard(_boardCard);
                     int _cardID = GameManager.Instance.Board.GetSlotIndex(_boardCard, _ownerType);
-                    SelectCardForEffect_ServerRpc(_cardID,_ownerType);
+                    SelectCardForEffect_ServerRpc(_cardID, _ownerType);
                     return;
                 }
                 if (_boardCard)
@@ -104,7 +109,7 @@ public class PlayerInteractComponent : NetworkBehaviour
             #region if Spell selected
             if (_selectedCard && _selectedCard.Data is SpellCardData _spell)
             {
-                LaunchEffect_ServerRpc(_selectedCard.ID,ownerTag);
+                LaunchEffect_ServerRpc(_selectedCard.ID, ownerTag);
                 return;
             }
             #endregion
@@ -209,7 +214,7 @@ public class PlayerInteractComponent : NetworkBehaviour
     }
 
     [ServerRpc]
-    void LaunchEffect_ServerRpc(int _cardID,PlayerEnum _ownerTag)
+    void LaunchEffect_ServerRpc(int _cardID, PlayerEnum _ownerTag)
     {
         SpellManager.Instance.LaunchEffect(_cardID, _ownerTag);
 

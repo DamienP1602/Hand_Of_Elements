@@ -16,6 +16,7 @@ public class PlayerEntity : NetworkBehaviour
     public PlayerInteractComponent InteractComponent { get; private set; }
     public PlayerHandComponent HandComponent { get; private set; }
     public PlayerDeckComponent DeckComponent { get; private set; }
+    public PlayerInterfaceComponent InterfaceComponent { get; private set; }
 
     [Header("Player Parameters")]
     [SerializeField] PlayerEnum player;
@@ -36,6 +37,7 @@ public class PlayerEntity : NetworkBehaviour
         InteractComponent = GetComponent<PlayerInteractComponent>();
         HandComponent = GetComponent<PlayerHandComponent>();
         DeckComponent = GetComponent<PlayerDeckComponent>();
+        InterfaceComponent = GetComponentInChildren<PlayerInterfaceComponent>(true);
     }
 
     void Start()
@@ -58,6 +60,8 @@ public class PlayerEntity : NetworkBehaviour
         if (!IsOwner) return;
 
         DrawInitCards_ServerRpc();
+
+        InteractComponent.SetOwner(this);
 
         InitInputs();
         GameManager.Instance.SetButtonVisibleFromPlayerTurn(player);

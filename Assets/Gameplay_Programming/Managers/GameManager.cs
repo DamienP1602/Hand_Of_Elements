@@ -196,7 +196,7 @@ public class GameManager : Singleton<GameManager>
     /// </summary>
     public void DrawFirstCards(PlayerEntity _player)
     {
-        _player.HandComponent.DrawCard(3);
+        _player.HandComponent.DrawCard(4);
 
         foreach (PlayerEntity _entity in players)
         {

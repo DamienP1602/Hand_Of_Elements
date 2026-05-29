@@ -127,9 +127,47 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1954490447}
     m_Modifications:
+    - target: {fileID: 2352464013104371749, guid: cf0e0d3f84f60d34f90538a5dd1095b4, type: 3}
+      propertyPath: m_text
+      value: '
+
+'
+      objectReference: {fileID: 0}
+    - target: {fileID: 3157567676045808320, guid: cf0e0d3f84f60d34f90538a5dd1095b4, type: 3}
+      propertyPath: m_text
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3252374380825702997, guid: cf0e0d3f84f60d34f90538a5dd1095b4, type: 3}
+      propertyPath: m_text
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 4497605650851226470, guid: cf0e0d3f84f60d34f90538a5dd1095b4, type: 3}
+      propertyPath: m_text
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 4497605650851226470, guid: cf0e0d3f84f60d34f90538a5dd1095b4, type: 3}
+      propertyPath: m_fontSize
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 4841205796423164677, guid: cf0e0d3f84f60d34f90538a5dd1095b4, type: 3}
+      propertyPath: m_text
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 4841205796423164677, guid: cf0e0d3f84f60d34f90538a5dd1095b4, type: 3}
+      propertyPath: m_fontSize
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 6294330696123624889, guid: cf0e0d3f84f60d34f90538a5dd1095b4, type: 3}
+      propertyPath: m_text
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 7243319618578511400, guid: cf0e0d3f84f60d34f90538a5dd1095b4, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 3798250805
+      objectReference: {fileID: 0}
+    - target: {fileID: 7471172769114893139, guid: cf0e0d3f84f60d34f90538a5dd1095b4, type: 3}
+      propertyPath: m_text
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 7541796452159807661, guid: cf0e0d3f84f60d34f90538a5dd1095b4, type: 3}
       propertyPath: m_LocalPosition.x
@@ -171,12 +209,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7768839116718341348, guid: cf0e0d3f84f60d34f90538a5dd1095b4, type: 3}
+      propertyPath: m_text
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 8364175587975272295, guid: cf0e0d3f84f60d34f90538a5dd1095b4, type: 3}
       propertyPath: m_Name
       value: Game_Widget
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 2517268987713760631, guid: cf0e0d3f84f60d34f90538a5dd1095b4, type: 3}
+    - {fileID: 7284226900057319477, guid: cf0e0d3f84f60d34f90538a5dd1095b4, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cf0e0d3f84f60d34f90538a5dd1095b4, type: 3}
@@ -822,6 +866,7 @@ MonoBehaviour:
   secondPlayerPosition: {x: 0, y: 2, z: 7}
   players: []
   playerWidgetPrefab: {fileID: 3141785380944912019, guid: cf0e0d3f84f60d34f90538a5dd1095b4, type: 3}
+  playerInterfaceWidget: {fileID: 6204212354508710562, guid: 04026ac8f257fd541bdb3c3b1d18e305, type: 3}
   playerTurn:
     UpdateTraits:
       MinSecondsBetweenUpdates: 0

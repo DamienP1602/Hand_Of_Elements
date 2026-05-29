@@ -53,6 +53,8 @@ public class CardOverlayComponent : MonoBehaviour
             nameText.text = _data.cardName;
             SetText();
         }
+
+        SetColorFromType();
     }
 
     #endregion
@@ -94,6 +96,8 @@ public class CardOverlayComponent : MonoBehaviour
         if (!data.hasEffect)
             return;
 
+        ResetText();
+
         if (data.hasElementaryCombo)
         {
             comboDescriptionObject.SetActive(true);
@@ -112,6 +116,13 @@ public class CardOverlayComponent : MonoBehaviour
         }
     }
 
+    void ResetText()
+    {
+        comboDescriptionObject.SetActive(false);
+        hiddenDescriptionObject.SetActive(false);
+        singleDescriptionObject.SetActive(false);
+    }
+
     /// <summary>
     /// Temp
     /// </summary>
@@ -121,16 +132,16 @@ public class CardOverlayComponent : MonoBehaviour
         switch (data.cardElement)
         {
             case CardElement.Fire:
-                _color = Color.red; 
+                _color = new Color(1.0f, 0.2f, 0.2f);
                 break;
             case CardElement.Water:
-                _color = Color.blue;
+                _color = new Color(0.5f,0.5f, 1.0f);
                 break;
             case CardElement.Earth:
-                _color = Color.green;
+                _color = new Color(0.5f, 1.0f, 0.5f);
                 break;
             case CardElement.Air:
-                _color = Color.cyan;
+                _color = new Color(0.5f, 1.0f, 1.0f);
                 break;
             default:
                 break;
