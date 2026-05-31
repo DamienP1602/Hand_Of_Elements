@@ -866,7 +866,6 @@ MonoBehaviour:
   secondPlayerPosition: {x: 0, y: 2, z: 7}
   players: []
   playerWidgetPrefab: {fileID: 3141785380944912019, guid: cf0e0d3f84f60d34f90538a5dd1095b4, type: 3}
-  playerInterfaceWidget: {fileID: 6204212354508710562, guid: 04026ac8f257fd541bdb3c3b1d18e305, type: 3}
   playerTurn:
     UpdateTraits:
       MinSecondsBetweenUpdates: 0
@@ -1130,7 +1129,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2243913948151746108, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
       propertyPath: cardPosition.y
-      value: 0.51
+      value: 0.75
       objectReference: {fileID: 0}
     - target: {fileID: 2416814599553634059, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
       propertyPath: m_Size.y
@@ -1138,11 +1137,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2528895565544791858, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
       propertyPath: cardPosition.y
-      value: 0.51
+      value: 0.75
       objectReference: {fileID: 0}
     - target: {fileID: 2563095619643968228, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
       propertyPath: cardPosition.y
-      value: 0.51
+      value: 0.75
       objectReference: {fileID: 0}
     - target: {fileID: 2609172028008301258, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
       propertyPath: m_Size.y
@@ -1170,7 +1169,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3883623850131948547, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
       propertyPath: cardPosition.y
-      value: 0.51
+      value: 0.75
       objectReference: {fileID: 0}
     - target: {fileID: 4054254596174887903, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
       propertyPath: m_Size.y
@@ -1230,7 +1229,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7676645358918157844, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
       propertyPath: cardPosition.y
-      value: 0.51
+      value: 0.75
       objectReference: {fileID: 0}
     - target: {fileID: 7783027820136988410, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1286,15 +1285,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8013883375129103317, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
       propertyPath: cardPosition.y
-      value: 0.51
+      value: 0.75
       objectReference: {fileID: 0}
     - target: {fileID: 8110542392407738424, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
       propertyPath: cardPosition.y
-      value: 0.51
+      value: 0.75
       objectReference: {fileID: 0}
     - target: {fileID: 8574523259391475457, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
       propertyPath: cardPosition.y
-      value: 0.51
+      value: 0.75
       objectReference: {fileID: 0}
     - target: {fileID: 8887905791172690141, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
       propertyPath: m_Size.y
@@ -1302,11 +1301,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9056572717361757270, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
       propertyPath: cardPosition.y
-      value: 0.51
+      value: 0.75
       objectReference: {fileID: 0}
     - target: {fileID: 9141633627685537865, guid: c1e508d3ea9659a49904a0bfcc15c760, type: 3}
       propertyPath: cardPosition.y
-      value: 0.51
+      value: 0.75
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

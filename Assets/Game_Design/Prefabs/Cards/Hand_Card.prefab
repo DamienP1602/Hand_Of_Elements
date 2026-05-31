@@ -888,6 +888,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abb0237976fd11e45851372249116bac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canva: {fileID: 3234489578306637394}
   background: {fileID: 2688332218829443666}
   healthText: {fileID: 2878858531074687990}
   damageText: {fileID: 218275997178701284}
@@ -899,6 +900,10 @@ MonoBehaviour:
   comboDescriptionObject: {fileID: 1299120949803133916}
   firstDescription: {fileID: 5256095522814327311}
   comboDescription: {fileID: 2265910541361887639}
+  scaleTarget: 1
+  scaleSpeed: 2
+  needToChangeScale: 0
+  currentScaleTime: 0
 --- !u!65 &6787687187192691052
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1360,7 +1365,7 @@ RectTransform:
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 5660676742483805949}
   - {fileID: 5955903465201267013}
@@ -1550,7 +1555,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4278190080
   m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -1568,7 +1573,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 0.12
+  m_fontSize: 0.15
   m_fontSizeBase: 0.12
   m_fontWeight: 400
   m_enableAutoSizing: 1

@@ -13,8 +13,12 @@ public class PlayerHandComponent : NetworkBehaviour
     [SerializeField] Vector3 selectedCardPosition;
     [SerializeField] LayerMask boardLayer;
     [SerializeField] HandCardComponent selectedSpell;
-    [SerializeField] float cardsOffset;
-     
+    [Header("Card In Hand Parameters")]
+    [SerializeField] float cardDistanceOffset = 1.9f;
+    [SerializeField] float cardsRotationOffset = 1.0f;
+    [SerializeField] float cardHoveredScale = 1.5f;
+    [SerializeField] float cardHoveredForwardOffset = 1.5f;
+
     #region Getter
 
     Vector3 SelectedPosition => selectedCardPosition + transform.position;
@@ -101,28 +105,40 @@ public class PlayerHandComponent : NetworkBehaviour
 
     /// <summary>
     /// Server Function
+    /// Also will put new position for the new hovered card and put in the default position for the old one
     /// </summary>
     public void SetHoveredCard(int _id)
     {
         HandCardComponent _cardToHover = GetCard(_id);
         if (!_cardToHover || _cardToHover.IsHovered) return;
 
-        foreach (HandCardComponent _card in cardsInHand)
+        int _handSize = cardsInHand.Count;
+        for (int _i = 0; _i < _handSize; _i++)
         {
-            _card.SetIsHovered(_card == _cardToHover);
+            HandCardComponent _card = cardsInHand[_i];
+            bool _isHovered = _card == _cardToHover;
+
+            _card.SetIsHovered(_isHovered);
+
+            HoverCardVisual_ClientRpc(_i, _isHovered);
         }
     }
 
     /// <summary>
     /// Server Function
+    /// Also will put the last hovered card to its default position in hand
     /// </summary>
     public void UnhoverCard()
     {
-        foreach (HandCardComponent _card in cardsInHand)
+        int _handSize = cardsInHand.Count;
+        for (int _i = 0; _i < _handSize; _i++)
         {
+            HandCardComponent _card = cardsInHand[_i];
             if (_card.IsHovered)
             {
                 _card.SetIsHovered(false);
+
+                HoverCardVisual_ClientRpc(_i, false);
             }
         }
     }
@@ -264,6 +280,24 @@ public class PlayerHandComponent : NetworkBehaviour
         }
     }
 
+    [ClientRpc]
+    void HoverCardVisual_ClientRpc(int _id, bool _isHovered)
+    {
+        HandCardComponent _cardToHover = GetCard(_id);
+
+        if (IsOwner)
+        {
+            Vector3 _initialPos = GetCardPosition(_id);
+            Vector3 _offset = _isHovered ? Vector3.forward * cardHoveredForwardOffset : Vector3.zero;
+            _cardToHover.MovementComponent.SetDestination(_initialPos + _offset);
+            _cardToHover.OverlayComponent.SetScaleTarget(_isHovered ? cardHoveredScale : 1.0f);
+        }
+        else
+        {
+            _cardToHover.OverlayComponent.SetScaleTarget(_isHovered ? 1.1f : 1.0f);
+        }
+    }
+
     #endregion
 
     #region Functions
@@ -277,9 +311,27 @@ public class PlayerHandComponent : NetworkBehaviour
             HandCardComponent _card = cardsInHand[_i];
             if (!_card) continue;
 
-            float _indexOffset = _i - (_size / 2) + (_size % 2 != 0 ? 0.0f : 0.5f);
-            _card.MovementComponent.SetDestination(transform.position + new Vector3(_indexOffset * cardsOffset, 0.0f, 0.0f));
+            float _xOffset = _i - (_size / 2) + (_size % 2 != 0 ? 0.0f : 0.5f);
+
+            _card.MovementComponent.SetDestination(transform.position + new Vector3(_xOffset * cardDistanceOffset, 0.0f,0.0f));
+
+            float _angle = (_xOffset * cardsRotationOffset) * (IsOwner ? 1.0f : -1.0f);
+            _card.transform.rotation = Quaternion.AngleAxis(_angle, transform.up);
         }
+    }
+
+    Vector3 GetCardPosition(int _index)
+    {
+        int _size = cardsInHand.Count;
+        for (int _i = 0; _i < _size; _i++)
+        {
+            if (_index != _i) continue;
+
+            float _xOffset = _i - (_size / 2) + (_size % 2 != 0 ? 0.0f : 0.5f);
+
+            return transform.position + new Vector3(_xOffset * cardDistanceOffset, 0.0f, 0.0f);
+        }
+        return Vector3.zero;
     }
 
     #endregion

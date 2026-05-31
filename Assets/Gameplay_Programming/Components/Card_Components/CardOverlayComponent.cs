@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class CardOverlayComponent : MonoBehaviour
 {
     [Header("Base Parameters")]
+    [SerializeField] Canvas canva;
     [SerializeField] Image background;
     [SerializeField] TMP_Text healthText;
     [SerializeField] TMP_Text damageText;
@@ -25,6 +26,12 @@ public class CardOverlayComponent : MonoBehaviour
 
     BaseCardData data;
 
+    [Header("Scale Parameters")]
+    [SerializeField] float scaleTarget = 1.0f;
+    [SerializeField] float scaleSpeed = 1.0f;
+    [SerializeField] bool needToChangeScale = false;
+    [SerializeField] float currentScaleTime = 0.0f;
+
     void Start()
     {
 
@@ -32,12 +39,28 @@ public class CardOverlayComponent : MonoBehaviour
 
     void Update()
     {
-
+        if (needToChangeScale)
+            UpdateScale();
     }
+
+    #region Update
+
+    void UpdateScale()
+    {
+        currentScaleTime += Time.deltaTime * scaleSpeed;
+        float _f = Mathf.Lerp(canva.transform.localScale.x, scaleTarget, currentScaleTime);
+        canva.transform.localScale = Vector3.one * _f;
+        GameManager.Instance.debugWidget.SetDebugText(_f.ToString());
+
+        if (currentScaleTime >= 1.0f)
+            needToChangeScale = false;
+    }
+
+    #endregion
 
     #region Setters
 
-    public void SetData(BaseCardData _data,bool _forceInit = false)
+    public void SetData(BaseCardData _data, bool _forceInit = false)
     {
         if (!_data) return;
         data = _data;
@@ -135,7 +158,7 @@ public class CardOverlayComponent : MonoBehaviour
                 _color = new Color(1.0f, 0.2f, 0.2f);
                 break;
             case CardElement.Water:
-                _color = new Color(0.5f,0.5f, 1.0f);
+                _color = new Color(0.5f, 0.5f, 1.0f);
                 break;
             case CardElement.Earth:
                 _color = new Color(0.5f, 1.0f, 0.5f);
@@ -147,6 +170,13 @@ public class CardOverlayComponent : MonoBehaviour
                 break;
         }
         background.color = _color;
+    }
+
+    public void SetScaleTarget(float _value)
+    {
+        scaleTarget = _value;
+        needToChangeScale = true;
+        currentScaleTime = 0.0f;
     }
 
     #endregion
