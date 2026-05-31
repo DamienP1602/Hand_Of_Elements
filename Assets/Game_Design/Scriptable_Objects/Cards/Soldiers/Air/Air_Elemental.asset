@@ -16,20 +16,21 @@ MonoBehaviour:
   cardName: Air Elemental
   cardElement: 3
   cardCost: 2
-  hasEffect: 0
+  hasEffect: 1
   isHiddenEffect: 0
   effect:
     selectionMode: 0
     effectMode: 0
     effectModifier: 0
+    triggerMode: 0
     cardReference: {fileID: 0}
     amount: 0
-  hasElementaryCombo: 0
-  overrideFirstEffect: 0
+  hasElementaryCombo: 1
   elementaryComboEffect:
     selectionMode: 0
     effectMode: 0
     effectModifier: 0
+    triggerMode: 0
     cardReference: {fileID: 0}
     amount: 0
   description: 

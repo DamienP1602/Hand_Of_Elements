@@ -24,7 +24,6 @@ public class BaseCardData : ScriptableObject
     public bool isHiddenEffect;
     public CardEffectData effect;
     public bool hasElementaryCombo;
-    public bool overrideFirstEffect;
     public CardEffectData elementaryComboEffect;
     [Multiline] public string description;
     [Multiline] public string elementaryComboDescription;

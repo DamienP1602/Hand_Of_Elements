@@ -1,15 +1,22 @@
 using System;
 
 [Serializable]
-public struct CardEffectData
+public class CardEffectData
 {
+    [Serializable]
+    public enum CardEffectTriggerMode
+    {
+        OnPlayed,
+        AtDeath
+    }
+
     [Serializable]
     public enum CardEffectSelectionMode
     {
+        NoTarget,
         SingleTarget,
         Self,
         Opponent,
-        NoMoreTarget
     }
 
     [Serializable]
@@ -32,6 +39,7 @@ public struct CardEffectData
     public CardEffectSelectionMode selectionMode;
     public CardEffectMode effectMode;
     public CardEffectModifier effectModifier;
+    public CardEffectTriggerMode triggerMode;
     public BaseCardData cardReference;
     public int amount;
 }

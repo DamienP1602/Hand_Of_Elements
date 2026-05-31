@@ -22,14 +22,15 @@ MonoBehaviour:
     selectionMode: 1
     effectMode: 0
     effectModifier: 0
+    triggerMode: 0
     cardReference: {fileID: 11400000, guid: e286a234a4d589f4a9e23aba40e4dd0b, type: 2}
     amount: 2
   hasElementaryCombo: 0
-  overrideFirstEffect: 0
   elementaryComboEffect:
     selectionMode: 0
     effectMode: 0
     effectModifier: 0
+    triggerMode: 0
     cardReference: {fileID: 0}
     amount: 0
   description: "At the start of your next turn,\t\n\nSummon 2 Earth Elementals."
