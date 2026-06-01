@@ -11,10 +11,13 @@ public class CardMovementComponent : MonoBehaviour
     [SerializeField] float currentMovementSpeed;
     [SerializeField,Tooltip("Reduce the current movement speed by this value each seconds")] float slowFactor;
     [SerializeField] bool canMove;
+    [SerializeField] bool canRotate;
+    [SerializeField] float rotationSpeed = 100.0f;
 
     [Header("Parameters")]
     [SerializeField] Vector3 destination;
     [SerializeField] Vector3 initialPosition;
+    [SerializeField] Quaternion rotationDestination;
 
     void Start()
     {
@@ -25,6 +28,9 @@ public class CardMovementComponent : MonoBehaviour
     {
         if (canMove)
             MoveTo();
+
+        if (canRotate)
+            RotateTo();
     }
 
     #region Update
@@ -40,6 +46,14 @@ public class CardMovementComponent : MonoBehaviour
             canMove = false;
     }
 
+    public void RotateTo()
+    {
+        transform.rotation = Quaternion.RotateTowards(transform.rotation,rotationDestination,Time.deltaTime * rotationSpeed);
+
+        if (transform.rotation == rotationDestination)
+            canRotate = false;
+    }
+
     #endregion
 
     #region Functions
@@ -53,6 +67,12 @@ public class CardMovementComponent : MonoBehaviour
 
         currentMovementSpeed = maxMovementSpeed;
         canMove = true;
+    }
+
+    public void SetRotationDestination(Quaternion _destination)
+    {
+        rotationDestination = _destination;
+        canRotate = true;
     }
 
     #endregion

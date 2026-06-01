@@ -23,11 +23,13 @@ public class PlayerEntity : NetworkBehaviour
 
     [Header("Network Variables")]
     [SerializeField] NetworkVariable<int> arcaneAmount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    [SerializeField] NetworkVariable<CardElement> lastElementPlayed = new NetworkVariable<CardElement>(CardElement.NONE, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     #region Getters
 
     public PlayerEnum PlayerTag => player;
     public int ArcaneAmount => arcaneAmount.Value;
+    public CardElement LastElementPlayed => lastElementPlayed.Value;
 
     #endregion
 
@@ -96,9 +98,10 @@ public class PlayerEntity : NetworkBehaviour
     /// <summary>
     /// Called by a Card when it's been played
     /// </summary>
-    public void InitCard(int _ID)
+    public void InitCard(int _ID, PlayerEnum _owner)
     {
-        InitCard_ServerRpc(_ID);
+        //GameManager.Instance.debugWidget.SetDebugText("Set card :" + _ID.ToString() + " to : " + _owner.ToString());
+        InitCard_ServerRpc(_ID, _owner);
     }
 
     #endregion
@@ -118,9 +121,10 @@ public class PlayerEntity : NetworkBehaviour
     }
 
     [ServerRpc]
-    void InitCard_ServerRpc(int _cardToInit)
+    void InitCard_ServerRpc(int _cardToInit,PlayerEnum _owner)
     {
-        GameManager.Instance.InitCard(_cardToInit);
+        //GameManager.Instance.debugWidget.AddDebugText("Server RPC init Card");
+        GameManager.Instance.InitCard(_cardToInit,_owner);
     }
 
     [ServerRpc]
@@ -147,6 +151,11 @@ public class PlayerEntity : NetworkBehaviour
     /// Server Function
     /// </summary>
     public void SetArcaneAmount(int _amount) => arcaneAmount.Value = _amount;
+
+    /// <summary>
+    /// Server Function
+    /// </summary>
+    public void SetElementCardPlayed(CardElement _element) => lastElementPlayed.Value = _element;
 
     #endregion
 }

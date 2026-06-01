@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.VFX;
+using static UnityEngine.GraphicsBuffer;
 
 public class SpellManager : Singleton<SpellManager>
 {
@@ -28,6 +30,7 @@ public class SpellManager : Singleton<SpellManager>
     [SerializeField] CardEffectData currentEffect;
     [SerializeField] CardComponent card;
     [SerializeField] PlayerEntity playerOwner;
+    [SerializeField] VisualSpellEffectComponent emptyVisualEffect;
 
     [Header("Targets")]
     [SerializeField] List<TargetedData> targets = new();
@@ -49,7 +52,7 @@ public class SpellManager : Singleton<SpellManager>
         playerOwner = GameManager.Instance.GetPlayer(_ownerType);
         card = playerOwner.HandComponent.GetSelectedCard();
         currentEffect = card.Data.effect;
-        
+
         // Check for selection mode
         switch (currentEffect.selectionMode)
         {
@@ -63,12 +66,17 @@ public class SpellManager : Singleton<SpellManager>
                 SelectOpponent(_ownerType);
                 break;
         }
-        
+
         // If can play the effect, play it
-        CastEffect();
+        if (currentEffect.effectAsset != null)
+            LaunchProjectile();
+        else
+            CastEffect();
 
         // Remove card from Hand
         playerOwner.HandComponent.RemoveSelectedCard();
+        playerOwner.RemoveArcane(card.Data.cardCost);
+        playerOwner.SetElementCardPlayed(card.Data.cardElement);
     }
 
     /// <summary>
@@ -83,60 +91,112 @@ public class SpellManager : Singleton<SpellManager>
         targets.Add(new TargetedData(_selectedCardID, _ownerType));
 
         // Play the effect
-        CastEffect();
+        if (currentEffect.effectAsset != null)
+            LaunchProjectile();
+        else
+            CastEffect();
 
         // Remove card from Hand
         playerOwner.HandComponent.RemoveSelectedCard();
+        playerOwner.RemoveArcane(card.Data.cardCost);
     }
 
     /// <summary>
     /// Server Function
     /// </summary>
-    void CastEffect()
+    public void CastEffect()
     {
         switch (currentEffect.effectMode)
         {
             case CardEffectData.CardEffectMode.Summon:
-                SummonCard();
+                SummonCard(currentEffect);
                 break;
             case CardEffectData.CardEffectMode.Heal:
-                RestaureHealth();
+                RestaureHealth(currentEffect);
                 break;
             case CardEffectData.CardEffectMode.InstantDamage:
-                DealDamages();
+                DealDamages(currentEffect);
                 break;
             case CardEffectData.CardEffectMode.Debuff:
+                AddDebuff(currentEffect);
                 break;
         }
+
+        if (card.Data.hasElementaryCombo)
+        {
+            if (playerOwner.LastElementPlayed == card.Data.cardElement)
+            {
+                CardEffectData _comboEffect = card.Data.elementaryComboEffect;
+                switch (_comboEffect.effectMode)
+                {
+                    case CardEffectData.CardEffectMode.Summon:
+                        SummonCard(_comboEffect);
+                        break;
+                    case CardEffectData.CardEffectMode.Heal:
+                        RestaureHealth(_comboEffect);
+                        break;
+                    case CardEffectData.CardEffectMode.InstantDamage:
+                        DealDamages(_comboEffect);
+                        break;
+                    case CardEffectData.CardEffectMode.Debuff:
+                        AddDebuff(_comboEffect);
+                        break;
+                }
+            }
+        }
+        playerOwner.SetElementCardPlayed(card.Data.cardElement);
+    }
+
+    void LaunchProjectile()
+    {
+        PlayerEntity _entity = GameManager.Instance.GetPlayerFromTurn();
+        VisualSpellEffectComponent _visual = Instantiate(emptyVisualEffect, _entity.transform);
+        _visual.NetworkObject.Spawn();
+        _visual.NetworkObject.TrySetParent(_entity.transform, true);
+        Invoke(nameof(InitEffect),0.1f);
+    }
+
+    void InitEffect()
+    {
+        InitEffect_ClientRpc(card.Data.cardID, targets.ToArray());
     }
 
     #region Effect Functions
 
-    void DealDamages()
+    void DealDamages(CardEffectData _effect)
     {
         foreach (TargetedData _target in targets)
         {
             BoardSlotComponent _slot = GameManager.Instance.Board.GetSlot(_target.cardOwnerTag, _target.cardID);
-            _slot.Card.RemoveHealth(currentEffect.amount);
+            _slot.Card.RemoveHealth(_effect.amount);
         }
     }
 
-    void RestaureHealth()
+    void RestaureHealth(CardEffectData _effect)
     {
         foreach (TargetedData _target in targets)
         {
             BoardSlotComponent _slot = GameManager.Instance.Board.GetSlot(_target.cardOwnerTag, _target.cardID);
-            _slot.Card.RestaureHealth(currentEffect.amount);
+            _slot.Card.RestaureHealth(_effect.amount);
         }
     }
 
-    void SummonCard()
+    void SummonCard(CardEffectData _effect)
     {
         PlayerEnum _ownerTag = playerTarget.PlayerTag;
         BoardSlotComponent _slot = GameManager.Instance.Board.GetFirstEmptySlot(_ownerTag);
         if (!_slot) return;
 
-        _slot.PutCardInSlot(_slot.transform.position,currentEffect.cardReference.cardID);
+        _slot.PutCardInSlot(_slot.transform.position, _effect.cardReference.cardID);
+    }
+
+    void AddDebuff(CardEffectData _effect)
+    {
+        foreach (TargetedData _target in targets)
+        {
+            BoardSlotComponent _slot = GameManager.Instance.Board.GetSlot(_target.cardOwnerTag, _target.cardID);
+            _slot.Card.AddDebuff(_effect.debuffType, _effect.amount);
+        }
     }
 
     #endregion
@@ -159,6 +219,39 @@ public class SpellManager : Singleton<SpellManager>
     }
 
     #endregion
+
+    #endregion
+
+    #region ClientRpc
+
+    [ClientRpc]
+    void InitEffect_ClientRpc(int _cardID, TargetedData[] _targets)
+    {
+        PlayerEntity _entity = GameManager.Instance.GetPlayerFromTurn();
+
+        VisualSpellEffectComponent[] _visuals = _entity.transform.GetComponentsInChildren<VisualSpellEffectComponent>(true);
+        if (_visuals.Length > 0)
+        {
+            BaseCardData _data = CardManager.Instance.GetCard(_cardID);
+
+            int _size = _visuals.Length;
+            for (int _i = 0; _i < _size; _i++)
+            {
+                VisualSpellEffectComponent _visual = _visuals[_i];
+                if (!_visual) continue;
+
+                _visual.transform.position = _entity.transform.position;
+
+                _visual.SetVisualAsset(_data.effect.effectAsset);
+
+                if (_targets.Length < _i)
+                    return;
+
+                BoardSlotComponent _slot = GameManager.Instance.Board.GetSlot(_targets[_i].cardOwnerTag, _targets[_i].cardID);
+                _visual.SetDestination(_slot.transform.position);
+            }
+        }
+    }
 
     #endregion
 }

@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -48,9 +49,8 @@ public class CardOverlayComponent : MonoBehaviour
     void UpdateScale()
     {
         currentScaleTime += Time.deltaTime * scaleSpeed;
-        float _f = Mathf.Lerp(canva.transform.localScale.x, scaleTarget, currentScaleTime);
-        canva.transform.localScale = Vector3.one * _f;
-        GameManager.Instance.debugWidget.SetDebugText(_f.ToString());
+        float _f = Mathf.Lerp(transform.localScale.x, scaleTarget, currentScaleTime);
+        transform.localScale = Vector3.one * _f;
 
         if (currentScaleTime >= 1.0f)
             needToChangeScale = false;

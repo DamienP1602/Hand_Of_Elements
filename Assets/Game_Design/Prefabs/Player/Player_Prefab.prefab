@@ -114,6 +114,11 @@ MonoBehaviour:
       MinSecondsBetweenUpdates: 0
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 1
+  lastElementPlayed:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 4
 --- !u!114 &3898805736163551846
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -182,7 +187,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  cardsInDeck: 0800000009000000070000000a0000000a0000000a0000000a0000000a0000000a0000000a000000
+  cardsInDeck: 0000000005000000
 --- !u!1001 &2702614414970712073
 PrefabInstance:
   m_ObjectHideFlags: 0

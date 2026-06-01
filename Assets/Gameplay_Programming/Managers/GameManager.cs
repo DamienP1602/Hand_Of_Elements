@@ -16,7 +16,7 @@ public class GameManager : Singleton<GameManager>
 
     [Header("Turn Data")]
     [SerializeField] NetworkVariable<PlayerEnum> playerTurn = new NetworkVariable<PlayerEnum>(PlayerEnum.Player_One, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-    [SerializeField] NetworkVariable<int> turnAmount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    [SerializeField] NetworkVariable<int> turnAmount = new NetworkVariable<int>(1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     [Header("Board Data")]
     [SerializeField] BoardComponent board;
@@ -109,30 +109,50 @@ public class GameManager : Singleton<GameManager>
     /// </summary>
     public void ChangeTurn()
     {
+        // Change Turn Value
         PlayerEnum _newTurn = playerTurn.Value == PlayerEnum.Player_One ? PlayerEnum.Player_Two : PlayerEnum.Player_One;
         playerTurn.Value = _newTurn;
 
+        // Increase maximum Arcane each time the player one is playing
         if (_newTurn == PlayerEnum.Player_One)
             turnAmount.Value++;
 
+        // Draw Card if the player has more than 0 Cards
         PlayerEntity _player = GetPlayerFromTurn();
         if (_player.DeckComponent.CardCount > 0)
         {
             _player.HandComponent.DrawCard(1);
             _player.HandComponent.SetCardInHand_ClientRpc();
         }
+
+        // Play turn based effect for the current player
+        List<BoardSlotComponent> _slots = board.GetSlotsFromTag(_newTurn);
+        foreach (BoardSlotComponent _slot in _slots)
+        {
+            if (!_slot.IsEmpty)
+            {
+                if (_slot.Card.HasDebuff(DebuffType.BurnToken))
+                    _slot.Card.TakeDamageFromBurn();
+            }
+        }
+
+        // Set new arcane amount clamped between 0 and 10
         _player.SetArcaneAmount(Mathf.Clamp(turnAmount.Value, 0, 10));
 
+        // Disable button and show it to the current player
         widget.SetButtonIsVisible(false);
         Invoke(nameof(CheckButtonInteractable_ClientRpc), 0.1f);
 
+        // Cards of the current player can attack this turn
         board.SetCardCanAttack(playerTurn.Value);
 
+        // Put values for both players
         foreach (PlayerEntity _entity in players)
         {
             _entity.InteractComponent.SetSelectCard(false);
             _entity.HandComponent.ReleaseCard();
             _entity.HandComponent.UnselectCardVisual_ClientRpc();
+            _entity.SetElementCardPlayed(CardElement.NONE);
         }
     }
 
@@ -157,6 +177,7 @@ public class GameManager : Singleton<GameManager>
         {
             _player.RemoveArcane(_card.Data.cardCost);
             _slot.PutCardInSlot(_card.transform.position, _card.ID);
+            _player.SetElementCardPlayed(_card.Data.cardElement); 
             _player.HandComponent.RemoveSelectedCard();
         }
     }
@@ -184,10 +205,9 @@ public class GameManager : Singleton<GameManager>
     /// <summary>
     /// Server Function
     /// </summary>
-    public void InitCard(int _cardToInit)
+    public void InitCard(int _cardToInit, PlayerEnum _owner)
     {
-        PlayerEnum _cardOwner = board.GetOwnerOfCard(_cardToInit);
-        BoardSlotComponent _slot = board.GetCardFromCardID(_cardOwner, _cardToInit);
+        BoardSlotComponent _slot = board.GetCardFromCardID(_owner, _cardToInit);
         _slot.Card.InitStats();
     }
 

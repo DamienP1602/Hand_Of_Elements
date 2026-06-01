@@ -874,8 +874,11 @@ MonoBehaviour:
   currentMovementSpeed: 0
   slowFactor: 7
   canMove: 0
+  canRotate: 0
+  rotationSpeed: 100
   destination: {x: 0, y: 0, z: 0}
   initialPosition: {x: 0, y: 0, z: 0}
+  rotationDestination: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &7051091250452970361
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1402,7 +1405,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_TargetDisplay: 0
 --- !u!114 &7006686122708466430
 MonoBehaviour:

@@ -8,7 +8,8 @@ public enum CardElement
     Fire,
     Water,
     Earth,
-    Air
+    Air,
+    NONE
 }
 
 public class BaseCardData : ScriptableObject
@@ -25,8 +26,9 @@ public class BaseCardData : ScriptableObject
     public CardEffectData effect;
     public bool hasElementaryCombo;
     public CardEffectData elementaryComboEffect;
-    [Multiline] public string description;
-    [Multiline] public string elementaryComboDescription;
+    public string description;
+    public string elementaryComboDescription;
+
 
 #if UNITY_EDITOR
     [MenuItem("CardTools/Sort Card IDs")]

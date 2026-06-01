@@ -10,30 +10,32 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1f2123f9f594a14ab0c9c91591bcc6d, type: 3}
-  m_Name: Swamp_Surging
+  m_Name: Gust
   m_EditorClassIdentifier: 
-  cardID: 0
-  cardName: Swamp Surging
-  cardElement: 1
-  cardCost: 5
+  cardID: 3
+  cardName: Gust
+  cardElement: 3
+  cardCost: 1
   hasEffect: 1
   isHiddenEffect: 0
   effect:
-    selectionMode: 0
-    effectMode: 0
+    selectionMode: 1
+    effectMode: 2
     effectModifier: 0
     triggerMode: 0
     cardReference: {fileID: 0}
-    amount: 0
-  hasElementaryCombo: 0
+    debuffType: 0
+    amount: 10
+    effectAsset: {fileID: -5277500384591850106, guid: bb870ecafc5e59a44ad4645e4b619956, type: 3}
+  hasElementaryCombo: 1
   elementaryComboEffect:
     selectionMode: 0
-    effectMode: 0
+    effectMode: 2
     effectModifier: 0
     triggerMode: 0
     cardReference: {fileID: 0}
-    amount: 0
-  description: 'Restaures 30 health to all allies.
-
-    Deals 30 damages to all opponents.'
-  elementaryComboDescription: 
+    debuffType: 0
+    amount: 10
+    effectAsset: {fileID: 0}
+  description: Deals 10 damages to a target.
+  elementaryComboDescription: Deals 10 extra damages.

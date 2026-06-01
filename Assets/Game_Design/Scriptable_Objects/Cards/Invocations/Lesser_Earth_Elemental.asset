@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c8e7bd1d286b25499e20359c7a5d484, type: 3}
   m_Name: Lesser_Earth_Elemental
   m_EditorClassIdentifier: 
-  cardID: 6
+  cardID: 2
   cardName: Lesser Earth Elemental
   cardElement: 2
   cardCost: 0
@@ -24,7 +24,9 @@ MonoBehaviour:
     effectModifier: 0
     triggerMode: 0
     cardReference: {fileID: 0}
+    debuffType: 0
     amount: 0
+    effectAsset: {fileID: 0}
   hasElementaryCombo: 0
   elementaryComboEffect:
     selectionMode: 0
@@ -32,7 +34,9 @@ MonoBehaviour:
     effectModifier: 0
     triggerMode: 0
     cardReference: {fileID: 0}
+    debuffType: 0
     amount: 0
+    effectAsset: {fileID: 0}
   description: 
   elementaryComboDescription: 
   attackAmount: 10

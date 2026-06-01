@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c8e7bd1d286b25499e20359c7a5d484, type: 3}
   m_Name: Air_Elemental
   m_EditorClassIdentifier: 
-  cardID: 5
+  cardID: 7
   cardName: Air Elemental
   cardElement: 3
   cardCost: 2
-  hasEffect: 1
+  hasEffect: 0
   isHiddenEffect: 0
   effect:
     selectionMode: 0
@@ -25,7 +25,7 @@ MonoBehaviour:
     triggerMode: 0
     cardReference: {fileID: 0}
     amount: 0
-  hasElementaryCombo: 1
+  hasElementaryCombo: 0
   elementaryComboEffect:
     selectionMode: 0
     effectMode: 0

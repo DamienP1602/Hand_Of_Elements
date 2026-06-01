@@ -10,28 +10,32 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1f2123f9f594a14ab0c9c91591bcc6d, type: 3}
-  m_Name: Living_Earth
+  m_Name: Fast_Healing
   m_EditorClassIdentifier: 
-  cardID: 10
-  cardName: Living Earth
-  cardElement: 2
+  cardID: 4
+  cardName: Fast Healing
+  cardElement: 1
   cardCost: 1
   hasEffect: 1
   isHiddenEffect: 0
   effect:
-    selectionMode: 1
-    effectMode: 0
+    selectionMode: 0
+    effectMode: 1
     effectModifier: 0
     triggerMode: 0
-    cardReference: {fileID: 11400000, guid: b47c609aca544184eaa7d946b986c17c, type: 2}
-    amount: 1
+    cardReference: {fileID: 0}
+    debuffType: 0
+    amount: 10
+    effectAsset: {fileID: 8071439057994587991, guid: 1831b6a710aa7184b8cb74445a80af9a, type: 3}
   hasElementaryCombo: 1
   elementaryComboEffect:
     selectionMode: 3
-    effectMode: 0
+    effectMode: 1
     effectModifier: 0
     triggerMode: 0
-    cardReference: {fileID: 11400000, guid: b47c609aca544184eaa7d946b986c17c, type: 2}
-    amount: 1
-  description: Summon a Minor Elemental 10/10.
-  elementaryComboDescription: Summon another one.
+    cardReference: {fileID: 0}
+    debuffType: 0
+    amount: 10
+    effectAsset: {fileID: 0}
+  description: Restaures 10 Health to a target.
+  elementaryComboDescription: Restaures 10 extra Health.

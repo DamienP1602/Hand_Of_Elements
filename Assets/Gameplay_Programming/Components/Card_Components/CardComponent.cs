@@ -11,6 +11,7 @@ public class CardComponent : NetworkBehaviour
     [SerializeField] protected NetworkVariable<int> cardID = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     [SerializeField] protected NetworkVariable<bool> isHovered = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     [SerializeField] protected NetworkVariable<bool> isSelected = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    [SerializeField] protected NetworkVariable<PlayerEnum> ownerTag = new NetworkVariable<PlayerEnum>(PlayerEnum.Player_NONE, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     [Header("Card Parameters")]
     [SerializeField] protected BaseCardData data;
@@ -22,9 +23,10 @@ public class CardComponent : NetworkBehaviour
 
     #region Setters
 
-    public void SetID(int _id)
+    public void Set(int _id, PlayerEnum _owner)
     {
         cardID.Value = _id;
+        ownerTag.Value = _owner;
     }
 
     public void SetIsHovered(bool _value)
@@ -44,7 +46,7 @@ public class CardComponent : NetworkBehaviour
         MovementComponent = GetComponent<CardMovementComponent>();
         OverlayComponent = GetComponent<CardOverlayComponent>();
 
-        cardID.OnValueChanged += (_oldVal, _newVal) => InitCard();
+        ownerTag.OnValueChanged += (_oldVal, _newVal) => InitCard();
     }
 
     void Start()

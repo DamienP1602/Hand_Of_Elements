@@ -184,15 +184,19 @@ public class PlayerHandComponent : NetworkBehaviour
     /// </summary>
     public void DrawCard(int _amount)
     {
+        PlayerEntity _owner = GetComponent<PlayerEntity>();
         for (int _i = 0; _i < _amount; _i++)
         {
-            HandCardComponent _card = Instantiate(CardManager.Instance.handCardPrefab, GameManager.Instance.Board.GetDeckPosition(GetComponent<PlayerEntity>().PlayerTag), Quaternion.identity);
+            PlayerDeckComponent _deck = GetComponent<PlayerDeckComponent>();
+            if (_deck.CardCount == 0)
+                return;
+
+            HandCardComponent _card = Instantiate(CardManager.Instance.handCardPrefab, GameManager.Instance.Board.GetDeckPosition(_owner.PlayerTag), Quaternion.identity);
             _card.NetworkObject.Spawn();
             _card.NetworkObject.TrySetParent(gameObject, true);
 
-            PlayerDeckComponent _deck = GetComponent<PlayerDeckComponent>();
             BaseCardData _data = _deck.GetRandomCard();
-            _card.SetID(_data.cardID);
+            _card.Set(_data.cardID, _owner.PlayerTag);
 
             RemoveCardInDeck_ClientRpc(_data.cardID);
         }
@@ -316,7 +320,7 @@ public class PlayerHandComponent : NetworkBehaviour
             _card.MovementComponent.SetDestination(transform.position + new Vector3(_xOffset * cardDistanceOffset, 0.0f,0.0f));
 
             float _angle = (_xOffset * cardsRotationOffset) * (IsOwner ? 1.0f : -1.0f);
-            _card.transform.rotation = Quaternion.AngleAxis(_angle, transform.up);
+            _card.MovementComponent.SetRotationDestination(Quaternion.AngleAxis(_angle, transform.up));
         }
     }
 

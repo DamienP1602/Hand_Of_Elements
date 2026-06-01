@@ -1,18 +1,50 @@
+using System;
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using static UnityEngine.UI.GridLayoutGroup;
 
 public class BoardCardComponent : CardComponent
 {
+    [Serializable]
+    public struct CardBoardEffect : INetworkSerializable
+    {
+        public DebuffType type;
+        public int amount;
+
+        public CardBoardEffect(DebuffType _type, int _amount)
+        {
+            type = _type;
+            amount = _amount;
+        }
+
+        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+        {
+            serializer.SerializeValue(ref type);
+            serializer.SerializeValue(ref amount);
+        }
+    }
+
     [Header("Board Card Network Parameters")]
     [SerializeField] NetworkVariable<bool> canAttack = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     [SerializeField] NetworkVariable<int> attackAmount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     [SerializeField] NetworkVariable<int> healthAmount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    [SerializeField] NetworkVariable<List<CardBoardEffect>> cardDebuffs = new NetworkVariable<List<CardBoardEffect>>(new(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     SoldierCardData castedData;
 
     #region Getters
 
     public bool CanAttack => canAttack.Value;
+    public bool HasDebuff(DebuffType _debuff)
+    {
+        foreach (CardBoardEffect _effect in cardDebuffs.Value)
+        {
+            if (_effect.type == _debuff)
+                return true;
+        }
+        return false;
+    }
 
     #endregion
 
@@ -40,9 +72,7 @@ public class BoardCardComponent : CardComponent
         base.InitCard();
 
         PlayerEntity _localPlayer = GameManager.Instance.GetLocalPlayer();
-        _localPlayer.InitCard(ID);
-
-
+        _localPlayer.InitCard(ID, ownerTag.Value);
     }
 
     public void InitStats()
@@ -89,6 +119,27 @@ public class BoardCardComponent : CardComponent
         healthAmount.Value = _newValue;
     }
 
+    /// <summary>
+    /// Server Function
+    /// </summary>
+    public void AddDebuff(DebuffType _debuff, int _amount)
+    {
+        cardDebuffs.Value.Add(new CardBoardEffect(_debuff,_amount));
+    }
+
+    /// <summary>
+    /// Server Fuction
+    /// </summary>
+    public void TakeDamageFromBurn()
+    {
+        foreach (CardBoardEffect _debuff in cardDebuffs.Value)
+        {
+            if (_debuff.type == DebuffType.BurnToken)
+                RemoveHealth(_debuff.amount * 10);
+        }
+        cardDebuffs.Value.Clear();
+    }
+
     #endregion
 
     #region Functions
@@ -100,7 +151,7 @@ public class BoardCardComponent : CardComponent
         {
             PlayerEntity _localPlayer = GameManager.Instance.GetLocalPlayer();
             PlayerEnum _ownerTag = GameManager.Instance.Board.GetOwnerOfCard(this);
-            _localPlayer.DestroyCard(GameManager.Instance.Board.GetSlotIndex(this, _ownerTag),_ownerTag);
+            _localPlayer.DestroyCard(GameManager.Instance.Board.GetSlotIndex(this, _ownerTag), _ownerTag);
         }
     }
 

@@ -10,28 +10,32 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1f2123f9f594a14ab0c9c91591bcc6d, type: 3}
-  m_Name: Sigil_Forced_Invocation
+  m_Name: Living_Earth
   m_EditorClassIdentifier: 
-  cardID: 1
-  cardName: 'Sigil : Forced Invocation'
+  cardID: 9
+  cardName: Living Earth
   cardElement: 2
-  cardCost: 4
+  cardCost: 1
   hasEffect: 1
-  isHiddenEffect: 1
+  isHiddenEffect: 0
   effect:
-    selectionMode: 1
+    selectionMode: 2
     effectMode: 0
     effectModifier: 0
     triggerMode: 0
-    cardReference: {fileID: 11400000, guid: e286a234a4d589f4a9e23aba40e4dd0b, type: 2}
-    amount: 2
-  hasElementaryCombo: 0
+    cardReference: {fileID: 11400000, guid: b47c609aca544184eaa7d946b986c17c, type: 2}
+    debuffType: 0
+    amount: 1
+    effectAsset: {fileID: 0}
+  hasElementaryCombo: 1
   elementaryComboEffect:
-    selectionMode: 0
+    selectionMode: 2
     effectMode: 0
     effectModifier: 0
     triggerMode: 0
-    cardReference: {fileID: 0}
-    amount: 0
-  description: "At the start of your next turn,\t\n\nSummon 2 Earth Elementals."
-  elementaryComboDescription: 
+    cardReference: {fileID: 11400000, guid: b47c609aca544184eaa7d946b986c17c, type: 2}
+    debuffType: 0
+    amount: 1
+    effectAsset: {fileID: 0}
+  description: Summon a Minor Elemental 10/10.
+  elementaryComboDescription: Summon another one.

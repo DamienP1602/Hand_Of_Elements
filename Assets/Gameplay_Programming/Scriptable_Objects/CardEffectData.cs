@@ -1,4 +1,12 @@
 using System;
+using UnityEngine.VFX;
+
+[Serializable]
+public enum DebuffType
+{
+    NONE,
+    BurnToken
+}
 
 [Serializable]
 public class CardEffectData
@@ -41,5 +49,7 @@ public class CardEffectData
     public CardEffectModifier effectModifier;
     public CardEffectTriggerMode triggerMode;
     public BaseCardData cardReference;
+    public DebuffType debuffType;
     public int amount;
+    public VisualEffectAsset effectAsset;
 }

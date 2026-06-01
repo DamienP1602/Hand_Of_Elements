@@ -1,6 +1,7 @@
 using System;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.VFX;
 using static CardEffectData;
 
 [CustomEditor(typeof(SoldierCardData))]
@@ -101,6 +102,8 @@ public class SoldierCardCustomInspector : Editor
                 DrawDebuff(_effect);
                 break;
         }
+
+        _effect.effectAsset = (VisualEffectAsset)EditorGUILayout.ObjectField("Visual Asset", _effect.effectAsset, typeof(VisualEffectAsset), false);
     }
 
     void DrawSummon(CardEffectData _effect)
@@ -129,7 +132,10 @@ public class SoldierCardCustomInspector : Editor
     void DrawDebuff(CardEffectData _effect)
     {
         DrawTitle("Debuff Data");
-        GUILayout.Label("WIP", GUILayout.Width(100.0f));
+
+        _effect.debuffType = (DebuffType)EditorGUILayout.EnumPopup("Turn Based Effect", _effect.debuffType);
+
+        _effect.amount = EditorGUILayout.IntField("Amount", _effect.amount);
     }
 
     void DrawTitle(string _label, float _space = 5.0f)

@@ -109,7 +109,7 @@ public class BoardComponent : MonoBehaviour
         return null;
     }
 
-    List<BoardSlotComponent> GetSlotsFromTag(PlayerEnum _tag) => _tag == PlayerEnum.Player_One ? playerOneSlots : playerTwoSlots;
+    public List<BoardSlotComponent> GetSlotsFromTag(PlayerEnum _tag) => _tag == PlayerEnum.Player_One ? playerOneSlots : playerTwoSlots;
 
     List<BoardSlotComponent> GetAllSlots()
     {

@@ -47,7 +47,7 @@ public class BoardSlotComponent : NetworkBehaviour
         card.NetworkObject.Spawn();
         card.NetworkObject.TrySetParent(transform, true);
 
-        card.SetID(_cardID);
+        card.Set(_cardID, PlayerTag);
 
         PutCardInSlot_ClientRpc();
     }

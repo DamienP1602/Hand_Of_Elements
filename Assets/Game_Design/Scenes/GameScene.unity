@@ -337,17 +337,16 @@ MonoBehaviour:
   <boardCardPrefab>k__BackingField: {fileID: 8967812732163145341, guid: 6c2097caf08e7dd45bab27c5c93f6a6e, type: 3}
   <cardShowPositon>k__BackingField: {x: 8.5, y: 4, z: 0}
   allCards:
-  - {fileID: 11400000, guid: b47c609aca544184eaa7d946b986c17c, type: 2}
-  - {fileID: 11400000, guid: 6a35c30123493ed43b923802715e2d9a, type: 2}
-  - {fileID: 11400000, guid: e286a234a4d589f4a9e23aba40e4dd0b, type: 2}
-  - {fileID: 11400000, guid: 99771dce0108d744cb72995f9d095a32, type: 2}
+  - {fileID: 11400000, guid: 28e8f60a319d4bf4fb7d95f0534de63f, type: 2}
   - {fileID: 11400000, guid: 6277c5e660f9cc7479dbc9fe4825e3c7, type: 2}
+  - {fileID: 11400000, guid: b47c609aca544184eaa7d946b986c17c, type: 2}
+  - {fileID: 11400000, guid: 975e092b70c97f9438efae98d7fb799f, type: 2}
   - {fileID: 11400000, guid: a53bfc5dd4d9038449b51424a4126a47, type: 2}
   - {fileID: 11400000, guid: 68e849b3c4ef67345b3f34bb14981e57, type: 2}
-  - {fileID: 11400000, guid: 975e092b70c97f9438efae98d7fb799f, type: 2}
+  - {fileID: 11400000, guid: e286a234a4d589f4a9e23aba40e4dd0b, type: 2}
+  - {fileID: 11400000, guid: 6a35c30123493ed43b923802715e2d9a, type: 2}
+  - {fileID: 11400000, guid: 99771dce0108d744cb72995f9d095a32, type: 2}
   - {fileID: 11400000, guid: c7f85a0253c3b3b4ca7fc640c9f7eca0, type: 2}
-  - {fileID: 11400000, guid: f2514c584f38e4340ac6557dccf31e21, type: 2}
-  - {fileID: 11400000, guid: 60d1f3590c19045489737079753b1bb4, type: 2}
 --- !u!114 &326008748
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -662,10 +661,14 @@ MonoBehaviour:
     selectionMode: 0
     effectMode: 0
     effectModifier: 0
+    triggerMode: 0
     cardReference: {fileID: 0}
+    debuffType: 0
     amount: 0
+    effectAsset: {fileID: 0}
   card: {fileID: 0}
   playerOwner: {fileID: 0}
+  emptyVisualEffect: {fileID: 8071439057994587991, guid: 869dc2a8924c7ce4d8656ed387989379, type: 3}
   targets: []
   playerTarget: {fileID: 0}
 --- !u!114 &1045765579
@@ -875,7 +878,7 @@ MonoBehaviour:
     UpdateTraits:
       MinSecondsBetweenUpdates: 0
       MaxSecondsBetweenUpdates: 0
-    m_InternalValue: 0
+    m_InternalValue: 1
   board: {fileID: 4876297380188011751}
   widget: {fileID: 200682899}
   debugWidget: {fileID: 281308496}
