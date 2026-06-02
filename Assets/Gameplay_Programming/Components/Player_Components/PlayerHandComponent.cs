@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -92,11 +93,15 @@ public class PlayerHandComponent : NetworkBehaviour
             {
                 RaycastHit _hit = _hits[0];
                 Vector3 _point = _hit.point;
-                _card.transform.position = _point;
+                _card.MovementComponent.SetDestination(_point);
+
             }
         }
         else
-            _card.MovementComponent.SetDestination(SelectedPosition);
+        {
+            if (GameManager.Instance.PlayerTurnTag == GetComponent<PlayerEntity>().PlayerTag)
+                _card.MovementComponent.SetDestination(SelectedPosition);
+        }
     }
 
     #endregion
@@ -257,8 +262,6 @@ public class PlayerHandComponent : NetworkBehaviour
         if (IsOwner)
         {
             selectedSpell = _card;
-            Canvas _canva = _card.GetComponentInChildren<Canvas>();
-            _canva.enabled = false;
         }
         else
         {
@@ -273,9 +276,6 @@ public class PlayerHandComponent : NetworkBehaviour
         if (IsOwner)
         {
             if (!selectedSpell) return;
-
-            Canvas _canva = selectedSpell.GetComponentInChildren<Canvas>();
-            _canva.enabled = true;
             selectedSpell = null;
         }
         else
@@ -292,9 +292,11 @@ public class PlayerHandComponent : NetworkBehaviour
         if (IsOwner)
         {
             Vector3 _initialPos = GetCardPosition(_id);
+            Quaternion _initialRotation = GetCardRotation(_id);
             Vector3 _offset = _isHovered ? Vector3.forward * cardHoveredForwardOffset : Vector3.zero;
             _cardToHover.MovementComponent.SetDestination(_initialPos + _offset);
             _cardToHover.OverlayComponent.SetScaleTarget(_isHovered ? cardHoveredScale : 1.0f);
+            _cardToHover.MovementComponent.SetRotationDestination(_isHovered ? Quaternion.identity : _initialRotation);
         }
         else
         {
@@ -317,7 +319,7 @@ public class PlayerHandComponent : NetworkBehaviour
 
             float _xOffset = _i - (_size / 2) + (_size % 2 != 0 ? 0.0f : 0.5f);
 
-            _card.MovementComponent.SetDestination(transform.position + new Vector3(_xOffset * cardDistanceOffset, 0.0f,0.0f));
+            _card.MovementComponent.SetDestination(transform.position + new Vector3(_xOffset * cardDistanceOffset, 0.0f, 0.0f));
 
             float _angle = (_xOffset * cardsRotationOffset) * (IsOwner ? 1.0f : -1.0f);
             _card.MovementComponent.SetRotationDestination(Quaternion.AngleAxis(_angle, transform.up));
@@ -336,6 +338,22 @@ public class PlayerHandComponent : NetworkBehaviour
             return transform.position + new Vector3(_xOffset * cardDistanceOffset, 0.0f, 0.0f);
         }
         return Vector3.zero;
+    }
+
+    Quaternion GetCardRotation(int _index)
+    {
+        int _size = cardsInHand.Count;
+        for (int _i = 0; _i < _size; _i++)
+        {
+            if (_index != _i) continue;
+
+            float _xOffset = _i - (_size / 2) + (_size % 2 != 0 ? 0.0f : 0.5f);
+
+            float _angle = (_xOffset * cardsRotationOffset) * (IsOwner ? 1.0f : -1.0f);
+            return Quaternion.AngleAxis(_angle, transform.up);
+        }
+
+        return Quaternion.identity;
     }
 
     #endregion

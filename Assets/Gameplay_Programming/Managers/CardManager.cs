@@ -3,6 +3,52 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
+[Serializable]
+public class CardDictionary
+{
+    [Serializable]
+    public struct Value
+    {
+        public int key;
+        public BaseCardData card;
+
+        public Value(int _key, BaseCardData _card)
+        {
+            key = _key;
+            card = _card;
+        }
+    }
+    [SerializeField] List<Value> values;
+
+    public void Add(int _key, BaseCardData _value)
+    {
+        values.Add(new Value(_key, _value));
+    }
+
+    public bool Contains(int _key)
+    {
+        foreach (Value _pair in values)
+        {
+            if (_pair.key == _key)
+                return true;
+        }
+        return false;
+    }
+
+    public BaseCardData this[int _key]
+    {
+        get 
+        {
+            foreach (Value _pair in values)
+            {
+                if (_pair.key == _key)
+                    return _pair.card;
+            }
+            return null;
+        }
+    }
+}
+
 public class CardManager : Singleton<CardManager>
 {
     [field: SerializeField] public HandCardComponent handCardPrefab { get; private set; }
@@ -11,42 +57,48 @@ public class CardManager : Singleton<CardManager>
     [field: SerializeField] public Vector3 cardShowPositon { get; private set; }
 
     [Header("Card Lists")]
-    [SerializeField] List<BaseCardData> allCards;
+    [SerializeField] MasterCardData masterCardFile;
+
+    [SerializeField] CardDictionary allCards;
 
     #region Getters
 
     public BaseCardData GetCard(int _id)
     {
-        if (_id < 0 || _id >= allCards.Count)
+        if (!allCards.Contains(_id))
         {
             return null;
         }
 
-        return FindCardAt(_id);
+        return allCards[_id];
     }
 
     public bool IsSoldierID(int _id)
     {
-        if (_id < 0 || _id >= allCards.Count) return false;
-
-        return FindCardAt(_id) is SoldierCardData;
-    }
-
-    BaseCardData FindCardAt(int _id)
-    {
-        foreach (BaseCardData _data in allCards)
+        if (!allCards.Contains(_id))
         {
-            if (_data.cardID == _id)
-                return _data;
+            return false;
         }
-        return null;
+
+        return allCards[_id] is SoldierCardData;
     }
 
     #endregion
+    protected override void Awake()
+    {
+        base.Awake();
+
+        Dictionary<int, BaseCardData> _cards = masterCardFile.GetAllCards();
+
+        foreach (KeyValuePair<int,BaseCardData> _card in _cards)
+        {
+            allCards.Add(_card.Key, _card.Value);
+        }
+    }
 
     void Start()
     {
-
+        
     }
 
     void Update()
@@ -60,20 +112,4 @@ public class CardManager : Singleton<CardManager>
         Gizmos.DrawWireCube(transform.position + cardShowPositon, Vector3.one);
     }
 
-    #region Menu
-
-    [ContextMenu("Put All Card")]
-    public void PutCardInList()
-    {
-        object[] _cards = Resources.FindObjectsOfTypeAll(typeof(BaseCardData));
-
-        allCards.Clear();
-        foreach (object _card in _cards)
-        {
-            BaseCardData _castedCard = _card as BaseCardData;
-            allCards.Add(_castedCard);
-        }
-    }
-
-    #endregion
 }

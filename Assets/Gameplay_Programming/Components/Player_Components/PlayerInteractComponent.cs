@@ -1,4 +1,5 @@
 using Unity.Netcode;
+using Unity.Services.Authentication;
 using UnityEngine;
 
 public class PlayerInteractComponent : NetworkBehaviour
@@ -89,6 +90,14 @@ public class PlayerInteractComponent : NetworkBehaviour
                     SelectCardBoard_ServerRpc(GameManager.Instance.Board.GetSlotIndex(_boardCard, ownerTag), ownerTag);
                 }
             }
+            if (needToSelectACard.Value)
+            {
+                SetSelectCard(false);
+                HandCardComponent _cardSelected = owner.HandComponent.GetSelectedCard();
+                _cardSelected.FadeComponent.SetFade(CardFadeComponent.FadeStatus.FadeIn);
+                owner.HandComponent.ReleaseCard();
+                owner.HandComponent.UnselectCardVisual_ClientRpc();
+            }
         }
     }
 
@@ -109,6 +118,7 @@ public class PlayerInteractComponent : NetworkBehaviour
             #region if Spell selected
             if (_selectedCard && _selectedCard.Data is SpellCardData _spell)
             {
+                _selectedCard.FadeComponent.SetFade(CardFadeComponent.FadeStatus.FadeOut);
                 LaunchEffect_ServerRpc(_selectedCard.ID, ownerTag);
                 return;
             }

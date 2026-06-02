@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c8e7bd1d286b25499e20359c7a5d484, type: 3}
+  m_Name: Fire_Elemental
+  m_EditorClassIdentifier: 
+  cardID: 0
+  cardName: Fire Elemental
+  cardElement: 0
+  cardCost: 2
+  hasEffect: 0
+  isHiddenEffect: 0
+  effect:
+    selectionMode: 1
+    effectMode: 3
+    effectModifier: 0
+    triggerMode: 0
+    cardReference: {fileID: 0}
+    debuffType: 1
+    amount: 2
+    effectAsset: {fileID: 8926484042661614526, guid: b1a70f576796f9f4e90ac9a9b604f614, type: 3}
+  hasElementaryCombo: 0
+  elementaryComboEffect:
+    selectionMode: 0
+    effectMode: 0
+    effectModifier: 0
+    triggerMode: 0
+    cardReference: {fileID: 0}
+    debuffType: 0
+    amount: 0
+    effectAsset: {fileID: 0}
+  description: 
+  elementaryComboDescription: 
+  attackAmount: 20
+  healthAmount: 20
+  isInvocation: 0

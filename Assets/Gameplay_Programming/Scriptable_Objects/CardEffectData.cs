@@ -52,4 +52,5 @@ public class CardEffectData
     public DebuffType debuffType;
     public int amount;
     public VisualEffectAsset effectAsset;
+    public bool isInstantEffect;
 }

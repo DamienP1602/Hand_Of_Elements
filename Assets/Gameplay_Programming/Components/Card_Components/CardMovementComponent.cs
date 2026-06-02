@@ -6,10 +6,7 @@ public class CardMovementComponent : MonoBehaviour
     [SerializeField] bool drawDebug;
 
     [Header("Movement Parameters")]
-    [SerializeField,Tooltip("Initial speed given when giving new destination")] float maxMovementSpeed;
-    [SerializeField,Tooltip("Slowest speed possible for the card")] float minMovementSpeed;
-    [SerializeField] float currentMovementSpeed;
-    [SerializeField,Tooltip("Reduce the current movement speed by this value each seconds")] float slowFactor;
+    [SerializeField] float movementSpeed;
     [SerializeField] bool canMove;
     [SerializeField] bool canRotate;
     [SerializeField] float rotationSpeed = 100.0f;
@@ -37,12 +34,9 @@ public class CardMovementComponent : MonoBehaviour
 
     public void MoveTo()
     {
-        transform.position = Vector3.MoveTowards(transform.position, destination, currentMovementSpeed * Time.deltaTime);
+        transform.position = Vector3.Lerp(transform.position, destination, movementSpeed * Time.deltaTime);
 
-        currentMovementSpeed -= slowFactor * Time.deltaTime;
-        currentMovementSpeed = Mathf.Clamp(currentMovementSpeed, minMovementSpeed, maxMovementSpeed);
-
-        if (transform.position == destination)
+        if (Vector3.Distance(transform.position,destination) < 0.01f)
             canMove = false;
     }
 
@@ -65,7 +59,6 @@ public class CardMovementComponent : MonoBehaviour
         initialPosition = transform.position;
         destination = _destination;
 
-        currentMovementSpeed = maxMovementSpeed;
         canMove = true;
     }
 

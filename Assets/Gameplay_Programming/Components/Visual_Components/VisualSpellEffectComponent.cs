@@ -1,3 +1,4 @@
+using System;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.VFX;
@@ -8,8 +9,10 @@ public class VisualSpellEffectComponent : NetworkBehaviour
 
     [SerializeField] Vector3 destination;
     [SerializeField] float moveSpeed = 3.0f;
+    Action actionToPlay;
 
     public void SetVisualAsset(VisualEffectAsset _asset) => VisualEffect.visualEffectAsset = _asset;
+    public void SetAction(Action _action) => actionToPlay += _action;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -41,7 +44,7 @@ public class VisualSpellEffectComponent : NetworkBehaviour
     [ServerRpc]
     void OnDestinationReached_ServerRpc()
     {
-        SpellManager.Instance.CastEffect();
+        actionToPlay?.Invoke();
         NetworkObject.Despawn(this);
     }
 }

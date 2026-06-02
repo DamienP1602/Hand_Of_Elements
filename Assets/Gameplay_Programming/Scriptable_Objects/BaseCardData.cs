@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEditor;
+using System.Collections.Generic;
 
 [Serializable]
 public enum CardElement
@@ -22,34 +23,11 @@ public class BaseCardData : ScriptableObject
 
     [Header("Effect")]
     public bool hasEffect;
+    // move to spell
     public bool isHiddenEffect;
     public CardEffectData effect;
     public bool hasElementaryCombo;
     public CardEffectData elementaryComboEffect;
     public string description;
     public string elementaryComboDescription;
-
-
-#if UNITY_EDITOR
-    [MenuItem("CardTools/Sort Card IDs")]
-    public static void SortID()
-    {
-        BaseCardData[] _cards = Resources.FindObjectsOfTypeAll<BaseCardData>();
-
-        int _ID = 0;
-        foreach (BaseCardData _data in _cards)
-        {
-            _data.cardID = _ID;
-            EditorUtility.SetDirty(_data);
-            Debug.Log(_data.name + " -> " + _ID.ToString());
-
-            _ID++;
-        }
-        AssetDatabase.SaveAssets();
-        AssetDatabase.Refresh();
-    }
-#endif
 }
-
-
-

@@ -188,4 +188,4 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   <VisualEffect>k__BackingField: {fileID: 137069309235000840}
   destination: {x: 0, y: 0, z: 0}
-  moveSpeed: 3
+  moveSpeed: 10

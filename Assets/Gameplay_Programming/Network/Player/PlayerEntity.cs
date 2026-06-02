@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -17,6 +18,7 @@ public class PlayerEntity : NetworkBehaviour
     public PlayerHandComponent HandComponent { get; private set; }
     public PlayerDeckComponent DeckComponent { get; private set; }
     public PlayerInterfaceComponent InterfaceComponent { get; private set; }
+    public PlayerPortraitComponent PortraitComponent { get; private set; }
 
     [Header("Player Parameters")]
     [SerializeField] PlayerEnum player;
@@ -24,6 +26,7 @@ public class PlayerEntity : NetworkBehaviour
     [Header("Network Variables")]
     [SerializeField] NetworkVariable<int> arcaneAmount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     [SerializeField] NetworkVariable<CardElement> lastElementPlayed = new NetworkVariable<CardElement>(CardElement.NONE, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    [SerializeField] NetworkVariable<List<int>> vfxIndexCreated = new NetworkVariable<List<int>>(new(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner); 
 
     #region Getters
 
@@ -40,6 +43,7 @@ public class PlayerEntity : NetworkBehaviour
         HandComponent = GetComponent<PlayerHandComponent>();
         DeckComponent = GetComponent<PlayerDeckComponent>();
         InterfaceComponent = GetComponentInChildren<PlayerInterfaceComponent>(true);
+        PortraitComponent = GetComponentInChildren<PlayerPortraitComponent>();
     }
 
     void Start()
@@ -64,9 +68,14 @@ public class PlayerEntity : NetworkBehaviour
         DrawInitCards_ServerRpc();
 
         InteractComponent.SetOwner(this);
+        InterfaceComponent.gameObject.SetActive(true);
+        arcaneAmount.OnValueChanged += (_old, _new) => InterfaceComponent.SetArcaneText(_new);
 
         InitInputs();
         GameManager.Instance.SetButtonVisibleFromPlayerTurn(player);
+
+        if (player == PlayerEnum.Player_One)
+            ChangeTurn_ServerRPC();
     }
 
     void InitInputs()
@@ -123,7 +132,6 @@ public class PlayerEntity : NetworkBehaviour
     [ServerRpc]
     void InitCard_ServerRpc(int _cardToInit,PlayerEnum _owner)
     {
-        //GameManager.Instance.debugWidget.AddDebugText("Server RPC init Card");
         GameManager.Instance.InitCard(_cardToInit,_owner);
     }
 
@@ -156,6 +164,11 @@ public class PlayerEntity : NetworkBehaviour
     /// Server Function
     /// </summary>
     public void SetElementCardPlayed(CardElement _element) => lastElementPlayed.Value = _element;
+
+    /// <summary>
+    /// Server Function
+    /// </summary>
+    public void AddNewVfxIndex(int _index) => vfxIndexCreated.Value.Add(_index);
 
     #endregion
 }

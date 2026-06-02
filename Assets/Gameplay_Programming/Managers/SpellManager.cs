@@ -31,6 +31,9 @@ public class SpellManager : Singleton<SpellManager>
     [SerializeField] CardComponent card;
     [SerializeField] PlayerEntity playerOwner;
     [SerializeField] VisualSpellEffectComponent emptyVisualEffect;
+    [SerializeField] int slotIndex;
+    [SerializeField] bool elementaryCombo = false;
+    [SerializeField] int vfxIndexes = 0;
 
     [Header("Targets")]
     [SerializeField] List<TargetedData> targets = new();
@@ -52,6 +55,7 @@ public class SpellManager : Singleton<SpellManager>
         playerOwner = GameManager.Instance.GetPlayer(_ownerType);
         card = playerOwner.HandComponent.GetSelectedCard();
         currentEffect = card.Data.effect;
+        elementaryCombo = false;
 
         // Check for selection mode
         switch (currentEffect.selectionMode)
@@ -67,16 +71,17 @@ public class SpellManager : Singleton<SpellManager>
                 break;
         }
 
-        // If can play the effect, play it
-        if (currentEffect.effectAsset != null)
-            LaunchProjectile();
-        else
-            CastEffect();
+        // Create visual Effect
+        CreateVisualEffect();
 
+        // todo move after 
         // Remove card from Hand
-        playerOwner.HandComponent.RemoveSelectedCard();
-        playerOwner.RemoveArcane(card.Data.cardCost);
-        playerOwner.SetElementCardPlayed(card.Data.cardElement);
+        if (card.Data is SpellCardData)
+        {
+            playerOwner.HandComponent.RemoveSelectedCard();
+            playerOwner.RemoveArcane(card.Data.cardCost);
+        }
+
     }
 
     /// <summary>
@@ -90,21 +95,74 @@ public class SpellManager : Singleton<SpellManager>
         // Set Targets
         targets.Add(new TargetedData(_selectedCardID, _ownerType));
 
-        // Play the effect
+        // Create visual Effect
+        CreateVisualEffect();
+
+        // todo move after 
+        // Remove card from Hand if it's a Spell
+        if (card.Data is SpellCardData)
+        {
+            playerOwner.HandComponent.RemoveSelectedCard();
+            playerOwner.RemoveArcane(card.Data.cardCost);
+        }
+    }
+
+    public void LaunchSoldierEffect(int _slotID,PlayerEnum _ownerType)
+    {
+        // Reset Targets
+        targets.Clear();
+        playerTarget = null;
+
+        // Set Parameters
+        playerOwner = GameManager.Instance.GetPlayer(_ownerType);
+        BoardSlotComponent _slot = GameManager.Instance.Board.GetSlot(_ownerType, _slotID);
+        card = _slot.Card;
+        slotIndex = _slot.GetSlotIndex;
+        currentEffect = card.Data.effect;
+
+        // Check for selection mode
+        switch (currentEffect.selectionMode)
+        {
+            case CardEffectData.CardEffectSelectionMode.SingleTarget:
+                SetCardSelection(playerOwner);
+                return;
+            case CardEffectData.CardEffectSelectionMode.Self:
+                SelectSelf(_ownerType);
+                break;
+            case CardEffectData.CardEffectSelectionMode.Opponent:
+                SelectOpponent(_ownerType);
+                break;
+        }
+
+        // If it has a visual effect, it will create and launch it to the target(s)
         if (currentEffect.effectAsset != null)
             LaunchProjectile();
+        // If not, it will cast the spell instantly
         else
             CastEffect();
-
-        // Remove card from Hand
-        playerOwner.HandComponent.RemoveSelectedCard();
-        playerOwner.RemoveArcane(card.Data.cardCost);
     }
+
 
     /// <summary>
     /// Server Function
     /// </summary>
-    public void CastEffect()
+    void CreateVisualEffect()
+    {
+        vfxIndexes++;
+        PlayerEntity _player = GameManager.Instance.GetPlayer(card.OwnerTag);
+        
+        VisualSpellEffectComponent _visualEffect = Instantiate(emptyVisualEffect);
+        _visualEffect.NetworkObject.Spawn();
+        _visualEffect.NetworkObject.TrySetParent(_player.transform);
+        _player.AddNewVfxIndex(vfxIndexes);
+    }
+
+
+
+    /// <summary>
+    /// Server Function
+    /// </summary>
+    void CastEffect()
     {
         switch (currentEffect.effectMode)
         {
@@ -126,25 +184,51 @@ public class SpellManager : Singleton<SpellManager>
         {
             if (playerOwner.LastElementPlayed == card.Data.cardElement)
             {
-                CardEffectData _comboEffect = card.Data.elementaryComboEffect;
-                switch (_comboEffect.effectMode)
-                {
-                    case CardEffectData.CardEffectMode.Summon:
-                        SummonCard(_comboEffect);
-                        break;
-                    case CardEffectData.CardEffectMode.Heal:
-                        RestaureHealth(_comboEffect);
-                        break;
-                    case CardEffectData.CardEffectMode.InstantDamage:
-                        DealDamages(_comboEffect);
-                        break;
-                    case CardEffectData.CardEffectMode.Debuff:
-                        AddDebuff(_comboEffect);
-                        break;
-                }
+                elementaryCombo = true;
+                LaunchProjectile();
             }
         }
         playerOwner.SetElementCardPlayed(card.Data.cardElement);
+    }
+
+    void CastComboEffect()
+    {
+        CardEffectData _comboEffect = card.Data.elementaryComboEffect;
+        switch (_comboEffect.effectMode)
+        {
+            case CardEffectData.CardEffectMode.Summon:
+                SummonCard(_comboEffect);
+                break;
+            case CardEffectData.CardEffectMode.Heal:
+                RestaureHealth(_comboEffect);
+                break;
+            case CardEffectData.CardEffectMode.InstantDamage:
+                DealDamages(_comboEffect);
+                break;
+            case CardEffectData.CardEffectMode.Debuff:
+                AddDebuff(_comboEffect);
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Server Function
+    /// </summary>
+    public bool CanLaunchEffect(CardEffectData _effect)
+    {
+        switch (_effect.selectionMode)
+        {
+            case CardEffectData.CardEffectSelectionMode.NoTarget:
+                return true;
+            case CardEffectData.CardEffectSelectionMode.SingleTarget:
+                return true;
+            case CardEffectData.CardEffectSelectionMode.Self:
+                return true;
+            case CardEffectData.CardEffectSelectionMode.Opponent:
+                return true;
+        }
+
+        return false;
     }
 
     void LaunchProjectile()
@@ -153,13 +237,25 @@ public class SpellManager : Singleton<SpellManager>
         VisualSpellEffectComponent _visual = Instantiate(emptyVisualEffect, _entity.transform);
         _visual.NetworkObject.Spawn();
         _visual.NetworkObject.TrySetParent(_entity.transform, true);
-        Invoke(nameof(InitEffect),0.1f);
+        Invoke(nameof(InitProjectileEffect), 0.1f);
     }
 
-    void InitEffect()
+    void InitProjectileEffect()
     {
-        InitEffect_ClientRpc(card.Data.cardID, targets.ToArray());
+        int _slotIndex = card.Data is SoldierCardData ? slotIndex : 0;
+        InitEffect_ClientRpc(card.Data.cardID, targets.ToArray(), _slotIndex);
     }
+
+    void CreateStandingEffect(Vector3 _pos)
+    {
+        PlayerEntity _entity = GameManager.Instance.GetPlayerFromTurn();
+        VisualSpellEffectComponent _visual = Instantiate(emptyVisualEffect, _entity.transform);
+        _visual.NetworkObject.Spawn();
+        _visual.NetworkObject.TrySetParent(_entity.transform, true);
+
+        InitStandingEffect_ClientRpc(card.Data.cardID, _pos);
+    }
+
 
     #region Effect Functions
 
@@ -188,6 +284,14 @@ public class SpellManager : Singleton<SpellManager>
         if (!_slot) return;
 
         _slot.PutCardInSlot(_slot.transform.position, _effect.cardReference.cardID);
+
+        //CreateStandingEffect();
+        VisualSpellEffectComponent _visualEffect = Instantiate(emptyVisualEffect, playerOwner.transform);
+        _visualEffect.NetworkObject.Spawn();
+        _visualEffect.NetworkObject.TrySetParent(playerOwner.transform,true);
+        _visualEffect.SetVisualAsset(_effect.effectAsset);
+        _visualEffect.transform.position = _slot.Card.transform.position;
+        Destroy(_visualEffect, 1.0f);
     }
 
     void AddDebuff(CardEffectData _effect)
@@ -222,10 +326,16 @@ public class SpellManager : Singleton<SpellManager>
 
     #endregion
 
+    #region ServerRpc
+
+
+
+    #endregion
+
     #region ClientRpc
 
     [ClientRpc]
-    void InitEffect_ClientRpc(int _cardID, TargetedData[] _targets)
+    void InitEffect_ClientRpc(int _cardID, TargetedData[] _targets, int _slotOfCard)
     {
         PlayerEntity _entity = GameManager.Instance.GetPlayerFromTurn();
 
@@ -233,6 +343,7 @@ public class SpellManager : Singleton<SpellManager>
         if (_visuals.Length > 0)
         {
             BaseCardData _data = CardManager.Instance.GetCard(_cardID);
+            CardEffectData _effect = elementaryCombo ? _data.elementaryComboEffect : _data.effect;
 
             int _size = _visuals.Length;
             for (int _i = 0; _i < _size; _i++)
@@ -240,17 +351,38 @@ public class SpellManager : Singleton<SpellManager>
                 VisualSpellEffectComponent _visual = _visuals[_i];
                 if (!_visual) continue;
 
-                _visual.transform.position = _entity.transform.position;
+                _visual.SetVisualAsset(_effect.effectAsset);
+                if (!_effect.isInstantEffect)
+                {
+                    if (_data is SpellCardData)
+                        _visual.transform.position = _entity.transform.position;
+                    else
+                    {
+                        BoardSlotComponent _cardSlot = GameManager.Instance.Board.GetSlot(_entity.PlayerTag, _slotOfCard);
+                        _visual.transform.position = _cardSlot.Card.transform.position;
+                    }
 
-                _visual.SetVisualAsset(_data.effect.effectAsset);
+                    if (_targets.Length < _i)
+                        return;
 
-                if (_targets.Length < _i)
-                    return;
+                    BoardSlotComponent _slot = GameManager.Instance.Board.GetSlot(_targets[_i].cardOwnerTag, _targets[_i].cardID);
+                    Vector3 _destination = _slot.IsEmpty ? _slot.transform.position : _slot.Card.transform.position;
+                    _visual.SetDestination(_destination);
 
-                BoardSlotComponent _slot = GameManager.Instance.Board.GetSlot(_targets[_i].cardOwnerTag, _targets[_i].cardID);
-                _visual.SetDestination(_slot.transform.position);
+                    _visual.SetAction(elementaryCombo ? CastComboEffect : CastEffect);
+                }
             }
         }
+
+
+    }
+
+    [ClientRpc]
+    void InitStandingEffect_ClientRpc(int _cardID,Vector3 _position)
+    {
+        PlayerEntity _entity = GameManager.Instance.GetPlayerFromTurn();
+
+        VisualSpellEffectComponent[] _visuals = _entity.transform.GetComponentsInChildren<VisualSpellEffectComponent>(true);
     }
 
     #endregion

@@ -1,8 +1,10 @@
+using TMPro;
 using UnityEngine;
 
 public class PlayerInterfaceComponent : MonoBehaviour
 {
     [SerializeField] CardOverlayComponent visualCard;
+    [SerializeField] TMP_Text arcaneAmount;
 
     public void ShowVisualCard(CardComponent _card)
     {
@@ -16,5 +18,12 @@ public class PlayerInterfaceComponent : MonoBehaviour
     public void HideVisual()
     {
         visualCard.gameObject.SetActive(false);
+    }
+
+    public void SetArcaneText(int _amount)
+    {
+        int _turnAmount = GameManager.Instance.PlayerTurnCount;
+        _turnAmount = Mathf.Clamp(_turnAmount, 0, 10);
+        arcaneAmount.text = _amount.ToString() + "/" + _turnAmount.ToString();
     }
 }

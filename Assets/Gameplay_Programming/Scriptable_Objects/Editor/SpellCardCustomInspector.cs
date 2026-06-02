@@ -37,9 +37,6 @@ public class SpellCardCustomInspector : Editor
         DrawTitle("Card Effect");
         DrawEffectDatas(_target.effect);
 
-        DrawTitle("Effect Description");
-        _target.description = EditorGUILayout.TextArea(_target.description);
-
         GUILayout.Space(20.0f);
 
         HorizontalGUI(() =>
@@ -56,10 +53,10 @@ public class SpellCardCustomInspector : Editor
         {
             DrawTitle("Elementary Combo Effect");
             DrawEffectDatas(_target.elementaryComboEffect);
-
-            DrawTitle("Elementary Combo Description");
-            _target.elementaryComboDescription = EditorGUILayout.TextArea(_target.elementaryComboDescription);
         }
+
+        DrawTitle("Card Description");
+        _target.description = EditorGUILayout.TextArea(_target.description);
     }
 
     void DrawEffectDatas(CardEffectData _effect)
@@ -87,6 +84,7 @@ public class SpellCardCustomInspector : Editor
         }
 
         _effect.effectAsset = (VisualEffectAsset)EditorGUILayout.ObjectField("Visual Asset", _effect.effectAsset, typeof(VisualEffectAsset), false);
+        _effect.isInstantEffect = EditorGUILayout.Toggle("In Effect Instant", _effect.isInstantEffect);
     }
 
     void DrawSummon(CardEffectData _effect)

@@ -15,8 +15,8 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] GameWidget playerWidgetPrefab;
 
     [Header("Turn Data")]
-    [SerializeField] NetworkVariable<PlayerEnum> playerTurn = new NetworkVariable<PlayerEnum>(PlayerEnum.Player_One, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-    [SerializeField] NetworkVariable<int> turnAmount = new NetworkVariable<int>(1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    [SerializeField] NetworkVariable<PlayerEnum> playerTurn = new NetworkVariable<PlayerEnum>(PlayerEnum.Player_Two, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    [SerializeField] NetworkVariable<int> turnAmount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     [Header("Board Data")]
     [SerializeField] BoardComponent board;
@@ -34,6 +34,7 @@ public class GameManager : Singleton<GameManager>
     public GameWidget PlayerWidget => playerWidgetPrefab;
 
     public PlayerEnum PlayerTurnTag => playerTurn.Value;
+    public int PlayerTurnCount => turnAmount.Value;
 
     public PlayerEntity GetOtherPlayer(PlayerEnum _type)
     {
@@ -79,13 +80,18 @@ public class GameManager : Singleton<GameManager>
 
         foreach (PlayerEntity _player in players)
         {
+            Vector3 _portraitOffset = Vector3.right * 9.0f - Vector3.up;
             if (_player.IsOwner)
             {
                 _player.transform.position = firstPlayerPosition;
+                _portraitOffset += Vector3.forward * 4.5f;
+                _player.PortraitComponent.transform.position = firstPlayerPosition + _portraitOffset;
             }
             else
             {
                 _player.transform.position = secondPlayerPosition;
+                _portraitOffset -= Vector3.forward * 4.5f;
+                _player.PortraitComponent.transform.position = secondPlayerPosition + _portraitOffset;
             }
 
             _player.Init();
@@ -179,6 +185,11 @@ public class GameManager : Singleton<GameManager>
             _slot.PutCardInSlot(_card.transform.position, _card.ID);
             _player.SetElementCardPlayed(_card.Data.cardElement); 
             _player.HandComponent.RemoveSelectedCard();
+
+            if (_card.Data.hasEffect && SpellManager.Instance.CanLaunchEffect(_card.Data.effect))
+            {
+                SpellManager.Instance.LaunchSoldierEffect(_slot.GetSlotIndex, _slot.PlayerTag);
+            }
         }
     }
 

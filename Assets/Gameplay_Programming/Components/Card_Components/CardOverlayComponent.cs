@@ -11,19 +11,7 @@ public class CardOverlayComponent : MonoBehaviour
     [SerializeField] TMP_Text healthText;
     [SerializeField] TMP_Text damageText;
     [SerializeField] TMP_Text nameText;
-
-    [Header("Single Description")]
-    [SerializeField] GameObject singleDescriptionObject;
-    [SerializeField] TMP_Text singleDescription;
-
-    [Header("Hidden Description")]
-    [SerializeField] GameObject hiddenDescriptionObject;
-    [SerializeField] TMP_Text hiddenDescription;
-
-    [Header("Elementary Combo Description")]
-    [SerializeField] GameObject comboDescriptionObject;
-    [SerializeField] TMP_Text firstDescription;
-    [SerializeField] TMP_Text comboDescription;
+    [SerializeField] TMP_Text description;
 
     BaseCardData data;
 
@@ -70,12 +58,17 @@ public class CardOverlayComponent : MonoBehaviour
             damageText.text = _soldier.attackAmount.ToString();
             healthText.text = _soldier.healthAmount.ToString();
         }
+        if (_data is SpellCardData _spell)
+        {
+            damageText.gameObject.SetActive(false);
+            healthText.gameObject.SetActive(false);
+        }
+
+        if (data.hasEffect)
+            description.text = data.description;
 
         if (GetComponent<HandCardComponent>() || _forceInit)
-        {
             nameText.text = _data.cardName;
-            SetText();
-        }
 
         SetColorFromType();
     }
@@ -112,39 +105,7 @@ public class CardOverlayComponent : MonoBehaviour
             else
                 healthText.color = Color.white;
         }
-    }
-
-    void SetText()
-    {
-        if (!data.hasEffect)
-            return;
-
-        ResetText();
-
-        if (data.hasElementaryCombo)
-        {
-            comboDescriptionObject.SetActive(true);
-            firstDescription.text = data.description;
-            comboDescription.text = data.elementaryComboDescription;
-        }
-        else if (data.isHiddenEffect)
-        {
-            hiddenDescriptionObject.SetActive(true);
-            hiddenDescription.text = data.description;
-        }
-        else
-        {
-            singleDescriptionObject.SetActive(true);
-            singleDescription.text = data.description;
-        }
-    }
-
-    void ResetText()
-    {
-        comboDescriptionObject.SetActive(false);
-        hiddenDescriptionObject.SetActive(false);
-        singleDescriptionObject.SetActive(false);
-    }
+    }    
 
     /// <summary>
     /// Temp

@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46403edd06c5d7947a369d7a9834c6fc, type: 3}
+  m_Name: Master File
+  m_EditorClassIdentifier: 
+  fireCards:
+  - {fileID: 11400000, guid: 99771dce0108d744cb72995f9d095a32, type: 2}
+  - {fileID: 11400000, guid: 68e849b3c4ef67345b3f34bb14981e57, type: 2}
+  waterCards:
+  - {fileID: 11400000, guid: 6277c5e660f9cc7479dbc9fe4825e3c7, type: 2}
+  - {fileID: 11400000, guid: a53bfc5dd4d9038449b51424a4126a47, type: 2}
+  earthCards:
+  - {fileID: 11400000, guid: b47c609aca544184eaa7d946b986c17c, type: 2}
+  - {fileID: 11400000, guid: e286a234a4d589f4a9e23aba40e4dd0b, type: 2}
+  - {fileID: 11400000, guid: c7f85a0253c3b3b4ca7fc640c9f7eca0, type: 2}
+  airCards:
+  - {fileID: 11400000, guid: 6a35c30123493ed43b923802715e2d9a, type: 2}
+  - {fileID: 11400000, guid: 975e092b70c97f9438efae98d7fb799f, type: 2}
+  globalMagicCards: []

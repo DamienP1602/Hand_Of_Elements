@@ -20,6 +20,7 @@ public class CardComponent : NetworkBehaviour
     public bool IsHovered => isHovered.Value;
     public bool IsSelected => isSelected.Value;
     public BaseCardData Data => data;
+    public PlayerEnum OwnerTag => ownerTag.Value;
 
     #region Setters
 
