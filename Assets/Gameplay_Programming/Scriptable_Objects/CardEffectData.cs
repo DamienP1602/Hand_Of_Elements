@@ -25,6 +25,8 @@ public class CardEffectData
         SingleTarget,
         Self,
         Opponent,
+        RandomOpponent,
+        AllOpponentSoldier
     }
 
     [Serializable]
@@ -33,7 +35,8 @@ public class CardEffectData
         Summon,
         Heal,
         InstantDamage,
-        Debuff
+        Debuff,
+        Draw
     }
 
     [Serializable]
@@ -53,4 +56,5 @@ public class CardEffectData
     public int amount;
     public VisualEffectAsset effectAsset;
     public bool isInstantEffect;
+    public CardElement specificElement;
 }

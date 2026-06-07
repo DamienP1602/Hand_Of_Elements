@@ -16,7 +16,7 @@ MonoBehaviour:
   cardName: Fire Elemental
   cardElement: 0
   cardCost: 2
-  hasEffect: 0
+  hasEffect: 1
   isHiddenEffect: 0
   effect:
     selectionMode: 1
@@ -26,7 +26,9 @@ MonoBehaviour:
     cardReference: {fileID: 0}
     debuffType: 1
     amount: 2
-    effectAsset: {fileID: 8926484042661614526, guid: b1a70f576796f9f4e90ac9a9b604f614, type: 3}
+    effectAsset: {fileID: 8926484042661614526, guid: 74d611e42b31dc643837753dc32d89ef, type: 3}
+    isInstantEffect: 1
+    specificElement: 0
   hasElementaryCombo: 0
   elementaryComboEffect:
     selectionMode: 0
@@ -37,7 +39,9 @@ MonoBehaviour:
     debuffType: 0
     amount: 0
     effectAsset: {fileID: 0}
-  description: 
+    isInstantEffect: 0
+    specificElement: 0
+  description: Put 2 Burn Tokens.
   elementaryComboDescription: 
   attackAmount: 20
   healthAmount: 20

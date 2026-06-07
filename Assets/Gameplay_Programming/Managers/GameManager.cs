@@ -183,12 +183,11 @@ public class GameManager : Singleton<GameManager>
         {
             _player.RemoveArcane(_card.Data.cardCost);
             _slot.PutCardInSlot(_card.transform.position, _card.ID);
-            _player.SetElementCardPlayed(_card.Data.cardElement); 
             _player.HandComponent.RemoveSelectedCard();
 
             if (_card.Data.hasEffect && SpellManager.Instance.CanLaunchEffect(_card.Data.effect))
             {
-                SpellManager.Instance.LaunchSoldierEffect(_slot.GetSlotIndex, _slot.PlayerTag);
+                SpellManager.Instance.LaunchEffect(_slot.GetSlotIndex, _slot.PlayerTag,false);
             }
         }
     }
@@ -196,10 +195,10 @@ public class GameManager : Singleton<GameManager>
     /// <summary>
     /// Server Function
     /// </summary>
-    public void AttackCard(int _targetedCardID, PlayerEnum _ownerTag)
+    public void AttackCard(int _boardID, PlayerEnum _ownerTag)
     {
         BoardCardComponent _selectedCard = board.GetSelectedCard(_ownerTag);
-        BoardSlotComponent _targetedCard = board.GetCardFromCardID(GetOtherPlayerTag(_ownerTag), _targetedCardID);
+        BoardSlotComponent _targetedCard = board.GetCardFromCardID(GetOtherPlayerTag(_ownerTag), _boardID);
 
         _selectedCard.AttackCard(_targetedCard.Card);
     }

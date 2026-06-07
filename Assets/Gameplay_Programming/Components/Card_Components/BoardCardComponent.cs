@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
-using static UnityEngine.UI.GridLayoutGroup;
 
 public class BoardCardComponent : CardComponent
 {
@@ -45,6 +44,9 @@ public class BoardCardComponent : CardComponent
         }
         return false;
     }
+    public bool IsDead => healthAmount.Value == 0;
+    public int GetAttack => attackAmount.Value;
+
 
     #endregion
 
@@ -72,7 +74,9 @@ public class BoardCardComponent : CardComponent
         base.InitCard();
 
         PlayerEntity _localPlayer = GameManager.Instance.GetLocalPlayer();
-        _localPlayer.InitCard(ID, ownerTag.Value);
+        int _slotIndex = GameManager.Instance.Board.GetSlotIndex(this, ownerTag.Value);
+        _localPlayer.InitCard(_slotIndex, ownerTag.Value);
+        FadeComponent.SetFade(CardFadeComponent.FadeStatus.FadeIn);
     }
 
     public void InitStats()

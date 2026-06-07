@@ -1,11 +1,12 @@
 using Unity.Netcode;
 using UnityEngine;
 
-[RequireComponent(typeof(CardMovementComponent), typeof(CardOverlayComponent))]
+[RequireComponent(typeof(CardMovementComponent), typeof(CardOverlayComponent), typeof(CardFadeComponent))]
 public class CardComponent : NetworkBehaviour
 {
     public CardMovementComponent MovementComponent { get; private set; }
     public CardOverlayComponent OverlayComponent { get; private set; }
+    public CardFadeComponent FadeComponent { get; private set; }
 
     [Header("Card Network Parameters")]
     [SerializeField] protected NetworkVariable<int> cardID = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
@@ -46,7 +47,7 @@ public class CardComponent : NetworkBehaviour
     {
         MovementComponent = GetComponent<CardMovementComponent>();
         OverlayComponent = GetComponent<CardOverlayComponent>();
-
+        FadeComponent = GetComponent<CardFadeComponent>();
         ownerTag.OnValueChanged += (_oldVal, _newVal) => InitCard();
     }
 

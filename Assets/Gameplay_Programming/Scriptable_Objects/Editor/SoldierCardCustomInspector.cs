@@ -98,8 +98,12 @@ public class SoldierCardCustomInspector : Editor
             case CardEffectMode.Debuff:
                 DrawDebuff(_effect);
                 break;
+            case CardEffectMode.Draw:
+                DrawDrawCard(_effect);
+                break;
         }
 
+        EditorGUILayout.Space();
         _effect.effectAsset = (VisualEffectAsset)EditorGUILayout.ObjectField("Visual Asset", _effect.effectAsset, typeof(VisualEffectAsset), false);
         _effect.isInstantEffect = EditorGUILayout.Toggle("In Effect Instant", _effect.isInstantEffect);
     }
@@ -134,6 +138,15 @@ public class SoldierCardCustomInspector : Editor
         _effect.debuffType = (DebuffType)EditorGUILayout.EnumPopup("Turn Based Effect", _effect.debuffType);
 
         _effect.amount = EditorGUILayout.IntField("Amount", _effect.amount);
+    }
+
+    void DrawDrawCard(CardEffectData _effect)
+    {
+        DrawTitle("Draw Data");
+
+        _effect.amount = EditorGUILayout.IntField("Amount", _effect.amount);
+
+        _effect.specificElement = (CardElement)EditorGUILayout.EnumPopup("Specific Element", _effect.specificElement);
     }
 
     void DrawTitle(string _label, float _space = 5.0f)

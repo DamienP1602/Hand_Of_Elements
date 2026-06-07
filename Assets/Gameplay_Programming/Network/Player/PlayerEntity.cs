@@ -26,7 +26,8 @@ public class PlayerEntity : NetworkBehaviour
     [Header("Network Variables")]
     [SerializeField] NetworkVariable<int> arcaneAmount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     [SerializeField] NetworkVariable<CardElement> lastElementPlayed = new NetworkVariable<CardElement>(CardElement.NONE, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-    [SerializeField] NetworkVariable<List<int>> vfxIndexCreated = new NetworkVariable<List<int>>(new(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner); 
+    [SerializeField] NetworkVariable<List<int>> vfxIndexCreated = new NetworkVariable<List<int>>(new(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+    [SerializeField] NetworkVariable<int> healthAmount = new NetworkVariable<int>(400, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     #region Getters
 
@@ -62,6 +63,7 @@ public class PlayerEntity : NetworkBehaviour
     {
         player = OwnerClientId == 0 ? PlayerEnum.Player_One : PlayerEnum.Player_Two;
         InteractComponent.SetOwnerTag(player);
+        healthAmount.OnValueChanged += (_old, _new) => PortraitComponent.SetHealthAmount(_new);
 
         if (!IsOwner) return;
 
@@ -169,6 +171,26 @@ public class PlayerEntity : NetworkBehaviour
     /// Server Function
     /// </summary>
     public void AddNewVfxIndex(int _index) => vfxIndexCreated.Value.Add(_index);
+
+    /// <summary>
+    /// Server Function
+    /// </summary>
+    public void LoseHealth(int _amount)
+    {
+        int _newAmount = healthAmount.Value - _amount;
+        _newAmount = Mathf.Clamp(_newAmount, 0, 400);
+        healthAmount.Value = _newAmount;
+    }
+
+    /// <summary>
+    /// Server Function
+    /// </summary>
+    public void RestaureHealth(int _amount)
+    {
+        int _newAmount = healthAmount.Value + _amount;
+        _newAmount = Mathf.Clamp(_newAmount, 0, 400);
+        healthAmount.Value = _newAmount;
+    }
 
     #endregion
 }

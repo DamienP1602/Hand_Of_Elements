@@ -8,6 +8,7 @@ public class CardOverlayComponent : MonoBehaviour
     [Header("Base Parameters")]
     [SerializeField] Canvas canva;
     [SerializeField] Image background;
+    [SerializeField] TMP_Text costText;
     [SerializeField] TMP_Text healthText;
     [SerializeField] TMP_Text damageText;
     [SerializeField] TMP_Text nameText;
@@ -64,11 +65,16 @@ public class CardOverlayComponent : MonoBehaviour
             healthText.gameObject.SetActive(false);
         }
 
-        if (data.hasEffect)
-            description.text = data.description;
+
 
         if (GetComponent<HandCardComponent>() || _forceInit)
+        {
             nameText.text = _data.cardName;
+            costText.text = _data.cardCost.ToString();
+
+            if (data.hasEffect)
+                description.text = data.description;
+        }
 
         SetColorFromType();
     }

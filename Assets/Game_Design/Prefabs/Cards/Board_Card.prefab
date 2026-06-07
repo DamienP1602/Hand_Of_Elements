@@ -330,6 +330,8 @@ GameObject:
   - component: {fileID: 8967812732163145341}
   - component: {fileID: 6997199870020094744}
   - component: {fileID: 7051091250452970361}
+  - component: {fileID: 1232375151511707184}
+  - component: {fileID: 2461548535850499931}
   m_Layer: 3
   m_Name: Board_Card
   m_TagString: Untagged
@@ -427,6 +429,11 @@ MonoBehaviour:
       MinSecondsBetweenUpdates: 0
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 0
+  ownerTag:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 2
   data: {fileID: 0}
   canAttack:
     UpdateTraits:
@@ -443,6 +450,11 @@ MonoBehaviour:
       MinSecondsBetweenUpdates: 0
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 0
+  cardDebuffs:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: []
 --- !u!114 &6997199870020094744
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -456,13 +468,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   drawDebug: 0
-  maxMovementSpeed: 0
-  minMovementSpeed: 0
-  currentMovementSpeed: 0
-  slowFactor: 0
+  movementSpeed: 0
   canMove: 0
+  canRotate: 0
+  rotationSpeed: 100
   destination: {x: 0, y: 0, z: 0}
   initialPosition: {x: 0, y: 0, z: 0}
+  rotationDestination: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &7051091250452970361
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -475,17 +487,42 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abb0237976fd11e45851372249116bac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canva: {fileID: 0}
   background: {fileID: 1172488890199170610}
   healthText: {fileID: 6359190347024516561}
   damageText: {fileID: 785244445109907936}
   nameText: {fileID: 0}
-  singleDescriptionObject: {fileID: 0}
-  singleDescription: {fileID: 0}
-  hiddenDescriptionObject: {fileID: 0}
-  hiddenDescription: {fileID: 0}
-  comboDescriptionObject: {fileID: 0}
-  firstDescription: {fileID: 0}
-  comboDescription: {fileID: 0}
+  description: {fileID: 0}
+  scaleTarget: 1
+  scaleSpeed: 1
+  needToChangeScale: 0
+  currentScaleTime: 0
+--- !u!225 &1232375151511707184
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4591595903680623571}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &2461548535850499931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4591595903680623571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf526c90e8d8cd3469e830668fde95d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fadeStatus: 2
+  fadeSpeed: 5
 --- !u!1 &5657852768651877406
 GameObject:
   m_ObjectHideFlags: 0

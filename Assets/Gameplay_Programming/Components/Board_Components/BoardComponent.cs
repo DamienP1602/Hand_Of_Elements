@@ -99,11 +99,15 @@ public class BoardComponent : MonoBehaviour
     {
         List<BoardSlotComponent> _slots = GetSlotsFromTag(_playerTag);
 
-        foreach (BoardSlotComponent _slot in _slots)
+        int _size = _slots.Count;
+        for (int _i = 0; _i < _size; _i++)
         {
+            BoardSlotComponent _slot = _slots[_i];
+            if (!_slot) continue;
+
             if (_slot.IsEmpty) continue;
 
-            if (_slot.Card.ID == _targetedCardID)
+            if (_i == _targetedCardID)
                 return _slot;
         }
         return null;
@@ -118,6 +122,43 @@ public class BoardComponent : MonoBehaviour
         _allSlots.AddRange(playerTwoSlots);
 
         return _allSlots;
+    }
+
+    public BoardSlotComponent GetRandomCardOnBoard(PlayerEnum _playerTag)
+    {
+        List<BoardSlotComponent> _slots = GetSlotsFromTag(_playerTag);
+
+        List<int> _availableSlots = new();
+
+        foreach (BoardSlotComponent _slot in _slots)
+        {
+            if (!_slot.IsEmpty)
+                _availableSlots.Add(_slot.GetSlotIndex);
+        }
+
+        if (_availableSlots.Count > 0)
+        {
+            int _randomIndex = UnityEngine.Random.Range(0, _availableSlots.Count);
+            int _slotIndex = _availableSlots[_randomIndex];
+            return _slots[_slotIndex];
+        }
+        else
+            return null;
+
+    }
+
+    public List<BoardSlotComponent> GetAllSlotCards(PlayerEnum _tag)
+    {
+        List<BoardSlotComponent> _result = new();
+
+        List<BoardSlotComponent> _slots = GetSlotsFromTag(_tag);
+        foreach (BoardSlotComponent _slot in _slots)
+        {
+            if (!_slot.IsEmpty)
+                _result.Add(_slot);
+        }
+
+        return _result;
     }
 
     #endregion

@@ -20,6 +20,8 @@ public class CardDictionary
     }
     [SerializeField] List<Value> values;
 
+    public int Count => values.Count;
+
     public void Add(int _key, BaseCardData _value)
     {
         values.Add(new Value(_key, _value));
@@ -83,7 +85,21 @@ public class CardManager : Singleton<CardManager>
         return allCards[_id] is SoldierCardData;
     }
 
+    public List<BaseCardData> GetAllCards()
+    {
+        List<BaseCardData> _result = new();
+
+        int _size = allCards.Count;
+        for (int _i = 0; _i < _size; _i++)
+        {
+            _result.Add(allCards[_i]);
+        }
+
+        return _result;
+    }
+
     #endregion
+
     protected override void Awake()
     {
         base.Awake();

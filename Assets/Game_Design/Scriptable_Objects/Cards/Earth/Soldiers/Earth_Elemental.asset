@@ -12,22 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c8e7bd1d286b25499e20359c7a5d484, type: 3}
   m_Name: Earth_Elemental
   m_EditorClassIdentifier: 
-  cardID: 5
+  cardID: 6
   cardName: Earth Elemental
   cardElement: 2
   cardCost: 2
-  hasEffect: 0
+  hasEffect: 1
   isHiddenEffect: 0
   effect:
-    selectionMode: 0
+    selectionMode: 2
     effectMode: 0
     effectModifier: 0
     triggerMode: 0
-    cardReference: {fileID: 0}
+    cardReference: {fileID: 11400000, guid: b47c609aca544184eaa7d946b986c17c, type: 2}
     debuffType: 0
-    amount: 0
-    effectAsset: {fileID: 0}
-    isInstantEffect: 0
+    amount: 1
+    effectAsset: {fileID: 8926484042661614526, guid: 2a0dad5688e648244a09c652f08bc391, type: 3}
+    isInstantEffect: 1
   hasElementaryCombo: 0
   elementaryComboEffect:
     selectionMode: 0
@@ -39,8 +39,8 @@ MonoBehaviour:
     amount: 0
     effectAsset: {fileID: 0}
     isInstantEffect: 0
-  description: 
+  description: Summon 1 Lesser Earth Elemental 10/10.
   elementaryComboDescription: 
   attackAmount: 20
-  healthAmount: 40
+  healthAmount: 20
   isInvocation: 0

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
@@ -17,6 +18,25 @@ public class PlayerDeckComponent : NetworkBehaviour
         int _random = UnityEngine.Random.Range(0, cardsInDeck.Count);
 
         return CardManager.Instance.GetCard(cardsInDeck[_random]);
+    }
+
+    public BaseCardData GetRandomCardOfElement(CardElement _specificElement)
+    {
+        List<BaseCardData> _sortedList = new();
+
+        List<BaseCardData> _allCards = CardManager.Instance.GetAllCards();
+        foreach (BaseCardData _card in _allCards)
+        {
+            if (_card.cardElement == _specificElement && cardsInDeck.Contains(_card.cardID))
+                _sortedList.Add(_card);
+        }
+
+        if (_sortedList.Count == 0)
+            return null;
+
+        int _random = UnityEngine.Random.Range(0, _sortedList.Count);
+
+        return _sortedList[_random];
     }
 
     #endregion

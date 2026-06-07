@@ -113,6 +113,7 @@ public class PlayerInteractComponent : NetworkBehaviour
             #region Variables
             PlayerEntity _player = GameManager.Instance.GetPlayerFromTurn();
             HandCardComponent _selectedCard = _player.HandComponent.GetSelectedCard();
+            BoardCardComponent _boardCardSelected = GameManager.Instance.Board.GetSelectedCard(ownerTag);
             #endregion
 
             #region if Spell selected
@@ -146,13 +147,29 @@ public class PlayerInteractComponent : NetworkBehaviour
             {
                 if (GameManager.Instance.Board.GetOwnerOfCard(_boardCard) != ownerTag)
                 {
-                    BoardCardComponent _boardCardSelected = GameManager.Instance.Board.GetSelectedCard(ownerTag);
                     if (_boardCardSelected && _boardCardSelected.CanAttack)
                     {
-                        AttackCardBoard_ServerRpc(_boardCard.ID, ownerTag);
+                        int _slotIndex = GameManager.Instance.Board.GetSlotIndex(_boardCard,_boardCard.OwnerTag);
+                        AttackCardBoard_ServerRpc(_slotIndex, ownerTag);
                     }
                 }
             }
+            #endregion
+
+            #region Attack Player
+            if (_hit.collider.gameObject.GetComponent<PlayerPortraitComponent>() is PlayerPortraitComponent _portrait)
+            {
+                if (_boardCardSelected.CanAttack)
+                {
+                    PlayerEntity _selectedPlayer = _portrait.GetComponentInParent<PlayerEntity>();
+                    if (_selectedPlayer.PlayerTag != ownerTag)
+                    {
+                        int _slotIndex = GameManager.Instance.Board.GetSlotIndex(_boardCardSelected, _boardCardSelected.OwnerTag);
+                        AttackPlayer_ServerRpc(_selectedPlayer.PlayerTag, _slotIndex, ownerTag);
+                    }
+                }
+            }
+
             #endregion
 
             OnReleaseCards_ServerRpc(ownerTag);
@@ -218,15 +235,15 @@ public class PlayerInteractComponent : NetworkBehaviour
     }
 
     [ServerRpc]
-    void AttackCardBoard_ServerRpc(int _targetedCard, PlayerEnum _ownerTag)
+    void AttackCardBoard_ServerRpc(int _boardID, PlayerEnum _ownerTag)
     {
-        GameManager.Instance.AttackCard(_targetedCard, _ownerTag);
+        GameManager.Instance.AttackCard(_boardID, _ownerTag);
     }
 
     [ServerRpc]
     void LaunchEffect_ServerRpc(int _cardID, PlayerEnum _ownerTag)
     {
-        SpellManager.Instance.LaunchEffect(_cardID, _ownerTag);
+        SpellManager.Instance.LaunchEffect(_cardID, _ownerTag,true);
 
         PlayerEntity _player = GameManager.Instance.GetPlayer(_ownerTag);
         _player.HandComponent.SelectCardVisual_ClientRpc();
@@ -236,6 +253,15 @@ public class PlayerInteractComponent : NetworkBehaviour
     void SelectCardForEffect_ServerRpc(int _targetedCard, PlayerEnum _owner)
     {
         SpellManager.Instance.LaunchEffectSelection(_targetedCard, _owner);
+    }
+
+    [ServerRpc]
+    void AttackPlayer_ServerRpc(PlayerEnum _playerTag, int _slotID,PlayerEnum _ownerTag)
+    {
+        PlayerEntity _player = GameManager.Instance.GetPlayer(_playerTag);
+        BoardSlotComponent _slot = GameManager.Instance.Board.GetSlot(_ownerTag, _slotID);
+        _player.LoseHealth(_slot.Card.GetAttack);
+        _slot.Card.SetCanAttack(false);
     }
     #endregion
 

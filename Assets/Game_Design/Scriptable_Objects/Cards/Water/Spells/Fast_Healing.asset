@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1f2123f9f594a14ab0c9c91591bcc6d, type: 3}
   m_Name: Fast_Healing
   m_EditorClassIdentifier: 
-  cardID: 3
+  cardID: 4
   cardName: Fast Healing
   cardElement: 1
   cardCost: 1
@@ -27,6 +27,7 @@ MonoBehaviour:
     debuffType: 0
     amount: 10
     effectAsset: {fileID: 8926484042661614526, guid: 7b07058f76c06e040a34d03bd36bf4ac, type: 3}
+    isInstantEffect: 0
   hasElementaryCombo: 1
   elementaryComboEffect:
     selectionMode: 0
@@ -37,6 +38,7 @@ MonoBehaviour:
     debuffType: 0
     amount: 10
     effectAsset: {fileID: 8926484042661614526, guid: 7b07058f76c06e040a34d03bd36bf4ac, type: 3}
+    isInstantEffect: 0
   description: 'Restaures 10 health.
 
     <b>Elementary Combo :</b> Restaures 10

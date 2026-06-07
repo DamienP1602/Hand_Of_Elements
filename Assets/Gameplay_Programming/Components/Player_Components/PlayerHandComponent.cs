@@ -184,10 +184,16 @@ public class PlayerHandComponent : NetworkBehaviour
         Invoke(nameof(SetCardInHand_ClientRpc), 0.1f);
     }
 
+    public void RemoveCard(HandCardComponent _card)
+    {
+        _card.NetworkObject.Despawn(true);
+        Invoke(nameof(SetCardInHand_ClientRpc), 0.1f);
+    }
+
     /// <summary>
     /// Server Function
     /// </summary>
-    public void DrawCard(int _amount)
+    public void DrawCard(int _amount, CardElement _specificElement = CardElement.NONE)
     {
         PlayerEntity _owner = GetComponent<PlayerEntity>();
         for (int _i = 0; _i < _amount; _i++)
@@ -200,7 +206,12 @@ public class PlayerHandComponent : NetworkBehaviour
             _card.NetworkObject.Spawn();
             _card.NetworkObject.TrySetParent(gameObject, true);
 
-            BaseCardData _data = _deck.GetRandomCard();
+            BaseCardData _data = null;
+            if (_specificElement == CardElement.NONE)
+                _data = _deck.GetRandomCard();
+            else
+                _data = _deck.GetRandomCardOfElement(_specificElement);
+
             _card.Set(_data.cardID, _owner.PlayerTag);
 
             RemoveCardInDeck_ClientRpc(_data.cardID);

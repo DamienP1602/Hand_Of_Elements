@@ -11,6 +11,7 @@ public class BoardSlotComponent : NetworkBehaviour
     public PlayerEnum PlayerTag => playerTag.Value;
     public int GetSlotIndex => slotIndex.Value;
     public BoardCardComponent Card => card;
+    public Vector3 CardPosition => cardPosition;
 
     public bool IsEmpty => card == null;
 

@@ -10,37 +10,42 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4c8e7bd1d286b25499e20359c7a5d484, type: 3}
-  m_Name: Water_Elemental
+  m_Name: Pyromancer
   m_EditorClassIdentifier: 
-  cardID: 3
-  cardName: Water Elemental
-  cardElement: 1
-  cardCost: 2
+  cardID: 2
+  cardName: Pyromancer
+  cardElement: 0
+  cardCost: 0
   hasEffect: 1
   isHiddenEffect: 0
   effect:
     selectionMode: 2
-    effectMode: 1
+    effectMode: 4
     effectModifier: 0
     triggerMode: 0
     cardReference: {fileID: 0}
     debuffType: 0
-    amount: 20
-    effectAsset: {fileID: 8926484042661614526, guid: 7b07058f76c06e040a34d03bd36bf4ac, type: 3}
-    isInstantEffect: 0
-  hasElementaryCombo: 0
+    amount: 1
+    effectAsset: {fileID: 8926484042661614526, guid: 74d611e42b31dc643837753dc32d89ef, type: 3}
+    isInstantEffect: 1
+    specificElement: 0
+  hasElementaryCombo: 1
   elementaryComboEffect:
-    selectionMode: 0
-    effectMode: 0
+    selectionMode: 5
+    effectMode: 3
     effectModifier: 0
     triggerMode: 0
     cardReference: {fileID: 0}
-    debuffType: 0
-    amount: 0
-    effectAsset: {fileID: 0}
-    isInstantEffect: 0
-  description: Restaures 20 health to Yourself.
+    debuffType: 1
+    amount: 1
+    effectAsset: {fileID: 8926484042661614526, guid: 74d611e42b31dc643837753dc32d89ef, type: 3}
+    isInstantEffect: 1
+    specificElement: 0
+  description: 'Draws 1 Fire Card.
+
+    <b>Elementary Combo :</b> Put 1 Burn Token
+    to every enemy soldiers;'
   elementaryComboDescription: 
-  attackAmount: 20
+  attackAmount: 30
   healthAmount: 20
   isInvocation: 0
