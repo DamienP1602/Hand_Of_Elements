@@ -39,8 +39,9 @@ public class SpellManager : Singleton<SpellManager>
     [SerializeField] PlayerEntity playerTarget;
 
     // Methods
-    Dictionary<CardEffectData.CardEffectSelectionMode, Action> selectionDic = new();
-    Dictionary<CardEffectData.CardEffectMode, Action<CardEffectData,int>> effectDic = new();
+    Dictionary<CardEffectData.CardEffectSelectionMode, Func<bool>> selectionDic = new();
+    Dictionary<CardEffectData.CardEffectMode, Action<CardEffectData, int>> effectDic = new();
+    Dictionary<CardEffectData.KeyEffect, Action<CardEffectData>> keyEffectDic = new();
     Dictionary<CardEffectData.CardEffectSelectionMode, Func<bool>> canLaunchDic = new();
 
     private void Start()
@@ -53,6 +54,7 @@ public class SpellManager : Singleton<SpellManager>
     void Init()
     {
         // Selection
+        selectionDic.Add(CardEffectData.CardEffectSelectionMode.NoTarget, () => false);
         selectionDic.Add(CardEffectData.CardEffectSelectionMode.SingleTarget, SetCardSelection);
         selectionDic.Add(CardEffectData.CardEffectSelectionMode.Self, SelectSelf);
         selectionDic.Add(CardEffectData.CardEffectSelectionMode.Opponent, SelectOpponent);
@@ -60,6 +62,7 @@ public class SpellManager : Singleton<SpellManager>
         selectionDic.Add(CardEffectData.CardEffectSelectionMode.AllOpponentSoldier, SelectAllOpponentSoldiers);
 
         // Effect
+        effectDic.Add(CardEffectData.CardEffectMode.NONE, null);
         effectDic.Add(CardEffectData.CardEffectMode.Summon, SummonCard);
         effectDic.Add(CardEffectData.CardEffectMode.Heal, RestaureHealth);
         effectDic.Add(CardEffectData.CardEffectMode.InstantDamage, DealDamages);
@@ -68,11 +71,14 @@ public class SpellManager : Singleton<SpellManager>
 
         // Can Lauch
         canLaunchDic.Add(CardEffectData.CardEffectSelectionMode.NoTarget, () => true);
-        canLaunchDic.Add(CardEffectData.CardEffectSelectionMode.SingleTarget, () => true);
+        canLaunchDic.Add(CardEffectData.CardEffectSelectionMode.SingleTarget, IsTargetStillAlive);
         canLaunchDic.Add(CardEffectData.CardEffectSelectionMode.Self, () => true);
         canLaunchDic.Add(CardEffectData.CardEffectSelectionMode.Opponent, () => true);
         canLaunchDic.Add(CardEffectData.CardEffectSelectionMode.RandomOpponent, OpponentHasSoldierLeft);
         canLaunchDic.Add(CardEffectData.CardEffectSelectionMode.AllOpponentSoldier, OpponentHasSoldierLeft);
+
+        // Key Effect
+        keyEffectDic.Add(CardEffectData.KeyEffect.Overload, DiscardCard);
     }
 
     #endregion
@@ -91,21 +97,22 @@ public class SpellManager : Singleton<SpellManager>
         playerTarget = null;
 
         // Set Parameters
+        playerOwner = GameManager.Instance.GetPlayer(_ownerType);
         if (_canInHand)
-            card = playerOwner.HandComponent.GetSelectedCard();
+            card = playerOwner.HandComponent.GetCard(_cardID);
         else
         {
             BoardSlotComponent _slot = GameManager.Instance.Board.GetSlot(_ownerType, _cardID);
             card = _slot.Card;
             slotIndex = _slot.GetSlotIndex;
         }
-        playerOwner = GameManager.Instance.GetPlayer(_ownerType);
         elementaryCombo = false;
         data = card.Data;
 
-
         // Check for selection mode
-        CheckSelectionMode(data.effect);
+        // If return true, it means we need to select something on board
+        if (CheckSelectionMode(data.effect))
+            return;
 
         int _targetNumber = targets.Count;
         if (_targetNumber > 0)
@@ -116,14 +123,18 @@ public class SpellManager : Singleton<SpellManager>
                 CreateVisualEffect(_i);
             }
         }
-        if (playerTarget)
+        if (playerTarget || data.hasKeyEffect)
         {
             // Launch Effect
             CreateVisualEffect(0);
         }
 
         if (_canInHand)
+        {
+            playerOwner.RemoveArcane(data.cardCost);
+            playerOwner.SetElementCardPlayed(data.cardElement);
             playerOwner.HandComponent.RemoveSelectedCard();
+        }
     }
 
     /// <summary>
@@ -139,6 +150,9 @@ public class SpellManager : Singleton<SpellManager>
 
         // Launch Effect
         CreateVisualEffect(0);
+
+        playerOwner.RemoveArcane(data.cardCost);
+        playerOwner.SetElementCardPlayed(data.cardElement);
         playerOwner.HandComponent.RemoveSelectedCard();
     }
 
@@ -173,15 +187,20 @@ public class SpellManager : Singleton<SpellManager>
     public void ChooseEffectToCast(int _index)
     {
         CardEffectData _effect = elementaryCombo ? data.elementaryComboEffect : data.effect;
-        CastEffect(_effect,_index);
+        CastEffect(_effect, _index);
     }
 
     /// <summary>
     /// Server Function
     /// </summary>
-    void CastEffect(CardEffectData _effect,int _index)
+    void CastEffect(CardEffectData _effect, int _index)
     {
         effectDic[_effect.effectMode]?.Invoke(_effect, _index);
+
+        if (_effect.keyEffect != CardEffectData.KeyEffect.NONE)
+        {
+            keyEffectDic[_effect.keyEffect].Invoke(_effect);
+        }
 
         if (data.hasElementaryCombo && !elementaryCombo)
         {
@@ -205,12 +224,6 @@ public class SpellManager : Singleton<SpellManager>
                 }
             }
         }
-
-        if (data is SpellCardData)
-        {
-            playerOwner.RemoveArcane(data.cardCost);
-        }
-        playerOwner.SetElementCardPlayed(data.cardElement);
     }
 
     /// <summary>
@@ -228,11 +241,28 @@ public class SpellManager : Singleton<SpellManager>
         return _opponentCards.Count > 0;
     }
 
+    bool IsTargetStillAlive()
+    {
+        if (targets.Count == 0) return false;
+
+        BoardSlotComponent _slot = GameManager.Instance.Board.GetSlot(targets[0].cardOwnerTag, targets[0].slotID);
+        return !_slot.Card.IsDead;
+    }
+
+    void DiscardCard(CardEffectData _effect)
+    {
+        int _amount = _effect.keyEffectValue;
+        for (int _i = 0; _i < _amount; _i++)
+        {
+            playerOwner.HandComponent.DiscardRandomCard();
+        }        
+    }
+
     #endregion
 
     #region Effect Functions
 
-    void DealDamages(CardEffectData _effect,int _index)
+    void DealDamages(CardEffectData _effect, int _index)
     {
         TargetedData _target = targets[_index];
         BoardSlotComponent _slot = GameManager.Instance.Board.GetSlot(_target.cardOwnerTag, _target.slotID);
@@ -252,7 +282,7 @@ public class SpellManager : Singleton<SpellManager>
             playerTarget.RestaureHealth(_effect.amount);
     }
 
-    void SummonCard(CardEffectData _effect,int _index)
+    void SummonCard(CardEffectData _effect, int _index)
     {
         PlayerEnum _ownerTag = playerTarget.PlayerTag;
         BoardSlotComponent _slot = GameManager.Instance.Board.GetFirstEmptySlot(_ownerTag);
@@ -278,35 +308,39 @@ public class SpellManager : Singleton<SpellManager>
 
     #region Selection Functions
 
-    void CheckSelectionMode(CardEffectData _effect)
+    bool CheckSelectionMode(CardEffectData _effect)
     {
-        selectionDic[_effect.selectionMode]?.Invoke();
+        return selectionDic[_effect.selectionMode].Invoke();
     }
 
-    void SetCardSelection()
+    bool SetCardSelection()
     {
         playerOwner.InteractComponent.SetSelectCard(true);
+        return true;
     }
 
-    void SelectSelf()
+    bool SelectSelf()
     {
         playerTarget = GameManager.Instance.GetPlayer(playerOwner.PlayerTag);
+        return false;
     }
 
-    void SelectOpponent()
+    bool SelectOpponent()
     {
         playerTarget = GameManager.Instance.GetOtherPlayer(playerOwner.PlayerTag);
+        return false;
     }
 
-    void SelectRandomOpponent()
+    bool SelectRandomOpponent()
     {
         PlayerEntity _opponent = GameManager.Instance.GetOtherPlayer(playerOwner.PlayerTag);
         BoardSlotComponent _slot = GameManager.Instance.Board.GetRandomCardOnBoard(_opponent.PlayerTag);
         if (_slot)
             targets.Add(new TargetedData(_slot.GetSlotIndex, _opponent.PlayerTag));
+        return false;
     }
 
-    void SelectAllOpponentSoldiers()
+    bool SelectAllOpponentSoldiers()
     {
         PlayerEntity _opponent = GameManager.Instance.GetOtherPlayer(playerOwner.PlayerTag);
         List<BoardSlotComponent> _slots = GameManager.Instance.Board.GetAllSlotCards(_opponent.PlayerTag);
@@ -315,6 +349,7 @@ public class SpellManager : Singleton<SpellManager>
         {
             targets.Add(new TargetedData(_slot.GetSlotIndex, _opponent.PlayerTag));
         }
+        return false;
     }
 
     #endregion
@@ -326,7 +361,7 @@ public class SpellManager : Singleton<SpellManager>
     [ServerRpc]
     public void InitEffect_ServerRpc(PlayerEnum _ownerType, int _vfxIndex)
     {
-        InitEffect_ClientRpc(_ownerType, _vfxIndex, data.cardID, targets.ToArray());
+        InitEffect_ClientRpc(_ownerType, _vfxIndex, data.cardID, slotIndex, elementaryCombo, targets.ToArray());
     }
 
     #endregion
@@ -334,12 +369,11 @@ public class SpellManager : Singleton<SpellManager>
     #region ClientRpc
 
     [ClientRpc]
-    public void InitEffect_ClientRpc(PlayerEnum _ownerType, int _vfxIndex, int _cardID, TargetedData[] _targets)
+    public void InitEffect_ClientRpc(PlayerEnum _ownerType, int _vfxIndex, int _cardID, int _slotIndex,bool _elementaryCombo, TargetedData[] _targets)
     {
         BaseCardData _data = CardManager.Instance.GetCard(_cardID);
-        CardEffectData _effect = elementaryCombo ? _data.elementaryComboEffect : _data.effect;
+        CardEffectData _effect = _elementaryCombo ? _data.elementaryComboEffect : _data.effect;
         PlayerEntity _entity = GameManager.Instance.GetPlayer(_ownerType);
-        bool _isOnBoard = false;
         Vector3 _endPos = Vector3.zero;
         Vector3 _startPos = Vector3.zero;
         TargetedData _target = new TargetedData();
@@ -348,26 +382,23 @@ public class SpellManager : Singleton<SpellManager>
 
         if (_data is SpellCardData)
         {
-            _isOnBoard = false;
             _endPos = GetEndPosFromEffect(_effect, _ownerType, _target) + Vector3.up * 0.5f;
             _startPos = _entity.transform.position;
         }
         else
         {
-            BoardSlotComponent _slot = GameManager.Instance.Board.GetCardFromCardID(_ownerType, slotIndex);
-            _isOnBoard = true;
-
+            BoardSlotComponent _slot = GameManager.Instance.Board.GetCardFromCardID(_ownerType, _slotIndex);
             _endPos = GetEndPosFromEffect(_effect, _ownerType, _target) + Vector3.up * 0.5f;
             _startPos = _slot.Card.transform.position;
         }
-        InitVisualEffect(_data, _isOnBoard, _endPos, _startPos, _vfxIndex, elementaryCombo, _ownerType);
+        InitVisualEffect(_data, _endPos, _startPos, _vfxIndex, _elementaryCombo, _ownerType);
     }
 
     #endregion
 
     #region Functions
 
-    void InitVisualEffect(BaseCardData _data, bool _isOnBoard, Vector3 _endPos, Vector3 _startPos, int _vfxIndex, bool _comboEffect, PlayerEnum _ownerType)
+    void InitVisualEffect(BaseCardData _data, Vector3 _endPos, Vector3 _startPos, int _vfxIndex, bool _comboEffect, PlayerEnum _ownerType)
     {
         PlayerEntity _entity = GameManager.Instance.GetPlayer(_ownerType);
         VisualSpellEffectComponent[] _visuals = _entity.transform.GetComponentsInChildren<VisualSpellEffectComponent>(true);
@@ -425,18 +456,18 @@ public class SpellManager : Singleton<SpellManager>
     Vector3 GetPosFromSummon(PlayerEnum _ownerTag)
     {
         BoardSlotComponent _slot = GameManager.Instance.Board.GetFirstEmptySlot(_ownerTag);
-        return _slot.transform.position + _slot.CardPosition + Vector3.up * 0.1f;
+        return _slot.transform.position + _slot.CardPosition + Vector3.up * 0.25f;
     }
 
     Vector3 GetTargetPos(TargetedData _target)
     {
         BoardSlotComponent _slot = GameManager.Instance.Board.GetCardFromCardID(_target.cardOwnerTag, _target.slotID);
-        return _slot.transform.position + Vector3.up * 0.1f;
+        return _slot.transform.position + Vector3.up * 0.25f;
     }
 
     Vector3 GetDeckPos(PlayerEnum _ownerTag)
-    {        
-        return GameManager.Instance.Board.GetDeckPosition(_ownerTag) + Vector3.back * 1.5f;
+    {
+        return GameManager.Instance.Board.GetDeckPosition(_ownerTag);
     }
 
     #endregion

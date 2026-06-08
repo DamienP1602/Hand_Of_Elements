@@ -17,10 +17,11 @@ MonoBehaviour:
   cardElement: 0
   cardCost: 1
   hasEffect: 1
+  hasKeyEffect: 0
   isHiddenEffect: 0
   effect:
     selectionMode: 1
-    effectMode: 2
+    effectMode: 3
     effectModifier: 0
     triggerMode: 0
     cardReference: {fileID: 0}
@@ -28,6 +29,9 @@ MonoBehaviour:
     amount: 10
     effectAsset: {fileID: 8926484042661614526, guid: b1a70f576796f9f4e90ac9a9b604f614, type: 3}
     isInstantEffect: 0
+    specificElement: 0
+    keyEffect: 0
+    keyEffectValue: 0
   hasElementaryCombo: 1
   elementaryComboEffect:
     selectionMode: 1
@@ -37,8 +41,11 @@ MonoBehaviour:
     cardReference: {fileID: 0}
     debuffType: 1
     amount: 1
-    effectAsset: {fileID: 8926484042661614526, guid: 74d611e42b31dc643837753dc32d89ef, type: 3}
+    effectAsset: {fileID: 8926484042661614526, guid: 101759f9b66e8f64ea6c859f913661eb, type: 3}
     isInstantEffect: 1
+    specificElement: 0
+    keyEffect: 0
+    keyEffectValue: 0
   description: 'Deals 10 damages.
 
     <b>Elementary Combo :</b> Put 1 Burn Token.'

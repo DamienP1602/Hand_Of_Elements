@@ -218,6 +218,34 @@ public class PlayerHandComponent : NetworkBehaviour
         }
     }
 
+    /// <summary>
+    /// Server Function
+    /// </summary>
+    public void DiscardRandomCard()
+    {
+        if (cardsInHand.Count == 0) return;
+
+        int _randomIndex = UnityEngine.Random.Range(0, cardsInHand.Count);
+        debug_ClientRpc(_randomIndex);
+    }
+
+    [ClientRpc]
+    void debug_ClientRpc(int _cardIndex)
+    {
+        HandCardComponent _card = GetCard(_cardIndex);
+        // ça se fait pas
+        _card.FadeComponent.SetFade(CardFadeComponent.FadeStatus.FadeOut, () => GameManager.Instance.debugWidget.SetDebugText("UIQDFHUIQSDFHUIGQSFHOIQFSKJIBQFSKBJIO"))
+
+        
+    }
+    
+    void DestroyCard(int _cardIndex)
+    {
+        HandCardComponent _card = GetCard(_cardIndex);
+        _card.NetworkObject.Despawn(true);
+        Invoke(nameof(SetCardInHand_ClientRpc), 0.1f);
+    }
+
     #endregion
 
     #region ClientRpc

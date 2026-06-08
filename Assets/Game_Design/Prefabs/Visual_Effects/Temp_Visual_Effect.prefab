@@ -113,7 +113,7 @@ VFXRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
 --- !u!1 &6198150323314530419
 GameObject:
   m_ObjectHideFlags: 0
@@ -189,6 +189,10 @@ MonoBehaviour:
   <VisualEffect>k__BackingField: {fileID: 137069309235000840}
   destination: {x: 0, y: 0, z: 0}
   moveSpeed: 10
+  canMove: 0
+  lifeTime: 0
+  isTimed: 0
+  currentTime: 0
   vfxIndex:
     UpdateTraits:
       MinSecondsBetweenUpdates: 0

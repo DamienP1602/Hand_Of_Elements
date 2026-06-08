@@ -119,9 +119,12 @@ public class PlayerInteractComponent : NetworkBehaviour
             #region if Spell selected
             if (_selectedCard && _selectedCard.Data is SpellCardData _spell)
             {
-                _selectedCard.FadeComponent.SetFade(CardFadeComponent.FadeStatus.FadeOut);
-                LaunchEffect_ServerRpc(_selectedCard.ID, ownerTag);
-                return;
+                if (_selectedCard.Data.cardCost <= owner.ArcaneAmount)
+                {
+                    _selectedCard.FadeComponent.SetFade(CardFadeComponent.FadeStatus.FadeOut);
+                    LaunchEffect_ServerRpc(_player.HandComponent.GetIndexOf(_selectedCard), ownerTag);
+                    return;
+                }
             }
             #endregion
 

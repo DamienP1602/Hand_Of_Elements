@@ -9,28 +9,28 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4c8e7bd1d286b25499e20359c7a5d484, type: 3}
-  m_Name: Lesser_Earth_Elemental
+  m_Script: {fileID: 11500000, guid: f1f2123f9f594a14ab0c9c91591bcc6d, type: 3}
+  m_Name: Blast
   m_EditorClassIdentifier: 
-  cardID: 7
-  cardName: Lesser Earth Elemental
-  cardElement: 2
-  cardCost: 0
-  hasEffect: 0
+  cardID: 3
+  cardName: Blast
+  cardElement: 0
+  cardCost: 4
+  hasEffect: 1
   hasKeyEffect: 0
   isHiddenEffect: 0
   effect:
-    selectionMode: 0
-    effectMode: 0
+    selectionMode: 2
+    effectMode: 5
     effectModifier: 0
     triggerMode: 0
     cardReference: {fileID: 0}
     debuffType: 0
-    amount: 0
-    effectAsset: {fileID: 0}
-    isInstantEffect: 0
-    specificElement: 0
-    keyEffect: 0
+    amount: 2
+    effectAsset: {fileID: 8926484042661614526, guid: 101759f9b66e8f64ea6c859f913661eb, type: 3}
+    isInstantEffect: 1
+    specificElement: 4
+    keyEffect: 1
     keyEffectValue: 0
   hasElementaryCombo: 0
   elementaryComboEffect:
@@ -46,8 +46,5 @@ MonoBehaviour:
     specificElement: 0
     keyEffect: 0
     keyEffectValue: 0
-  description: 
+  description: Draws 2 Cards with the <b>Overload</b> effect.
   elementaryComboDescription: 
-  attackAmount: 10
-  healthAmount: 10
-  isInvocation: 1

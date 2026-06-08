@@ -23,6 +23,7 @@ public class BaseCardData : ScriptableObject
 
     [Header("Effect")]
     public bool hasEffect;
+    public bool hasKeyEffect;
     // move to spell
     public bool isHiddenEffect;
     public CardEffectData effect;

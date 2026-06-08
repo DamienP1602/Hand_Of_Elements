@@ -17,18 +17,21 @@ MonoBehaviour:
   cardElement: 0
   cardCost: 2
   hasEffect: 1
+  hasKeyEffect: 0
   isHiddenEffect: 0
   effect:
     selectionMode: 1
-    effectMode: 3
+    effectMode: 4
     effectModifier: 0
     triggerMode: 0
     cardReference: {fileID: 0}
     debuffType: 1
     amount: 2
-    effectAsset: {fileID: 8926484042661614526, guid: 74d611e42b31dc643837753dc32d89ef, type: 3}
+    effectAsset: {fileID: 8926484042661614526, guid: 101759f9b66e8f64ea6c859f913661eb, type: 3}
     isInstantEffect: 1
     specificElement: 0
+    keyEffect: 0
+    keyEffectValue: 0
   hasElementaryCombo: 0
   elementaryComboEffect:
     selectionMode: 0
@@ -41,6 +44,8 @@ MonoBehaviour:
     effectAsset: {fileID: 0}
     isInstantEffect: 0
     specificElement: 0
+    keyEffect: 0
+    keyEffectValue: 0
   description: Put 2 Burn Tokens.
   elementaryComboDescription: 
   attackAmount: 20

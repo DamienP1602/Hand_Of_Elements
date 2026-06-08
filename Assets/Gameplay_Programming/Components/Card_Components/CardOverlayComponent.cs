@@ -14,6 +14,11 @@ public class CardOverlayComponent : MonoBehaviour
     [SerializeField] TMP_Text nameText;
     [SerializeField] TMP_Text description;
 
+    [Header("Material Parameters")]
+    [SerializeField] Material dynamicMaterial;
+    [SerializeField] bool discarded;
+    [SerializeField] float disolveValue;
+
     BaseCardData data;
 
     [Header("Scale Parameters")]
@@ -31,6 +36,9 @@ public class CardOverlayComponent : MonoBehaviour
     {
         if (needToChangeScale)
             UpdateScale();
+
+        if (discarded)
+            DisolveUpdate();
     }
 
     #region Update
@@ -43,6 +51,12 @@ public class CardOverlayComponent : MonoBehaviour
 
         if (currentScaleTime >= 1.0f)
             needToChangeScale = false;
+    }
+
+    void DisolveUpdate()
+    {
+        disolveValue += Time.deltaTime;
+        dynamicMaterial.SetFloat("Dissolve", disolveValue);
     }
 
     #endregion
@@ -65,18 +79,26 @@ public class CardOverlayComponent : MonoBehaviour
             healthText.gameObject.SetActive(false);
         }
 
-
-
         if (GetComponent<HandCardComponent>() || _forceInit)
         {
             nameText.text = _data.cardName;
             costText.text = _data.cardCost.ToString();
 
-            if (data.hasEffect)
-                description.text = data.description;
+            if (data.hasEffect || data.hasKeyEffect)
+            {
+                string _text = data.description;
+                _text = data.effect.ChangeSpecialText(_text);
+                description.text = _text;
+            }
         }
 
         SetColorFromType();
+    }
+
+    public void SetDisolve()
+    {
+        discarded = true;
+        disolveValue = 0.0f;
     }
 
     #endregion
@@ -87,15 +109,16 @@ public class CardOverlayComponent : MonoBehaviour
     {
         healthText.text = _healthAmount.ToString();
 
-        if (data is SoldierCardData _soldier)
-        {
-            if (_healthAmount < _soldier.healthAmount)
-                healthText.color = Color.red;
-            else if (_healthAmount > _soldier.healthAmount)
-                healthText.color = Color.green;
-            else
-                healthText.color = Color.white;
-        }
+        healthText.color = Color.white;
+        //if (data is SoldierCardData _soldier)
+        //{
+        //    if (_healthAmount < _soldier.healthAmount)
+        //        healthText.color = Color.red;
+        //    else if (_healthAmount > _soldier.healthAmount)
+        //        healthText.color = Color.green;
+        //    else
+        //        healthText.color = Color.white;
+        //}
     }
 
     public void UpdateAttack(int _attackAmount)
@@ -136,6 +159,7 @@ public class CardOverlayComponent : MonoBehaviour
             default:
                 break;
         }
+
         background.color = _color;
     }
 

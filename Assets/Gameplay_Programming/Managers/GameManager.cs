@@ -185,7 +185,7 @@ public class GameManager : Singleton<GameManager>
             _slot.PutCardInSlot(_card.transform.position, _card.ID);
             _player.HandComponent.RemoveSelectedCard();
 
-            if (_card.Data.hasEffect && SpellManager.Instance.CanLaunchEffect(_card.Data.effect))
+            if ((_card.Data.hasEffect && SpellManager.Instance.CanLaunchEffect(_card.Data.effect)) || _card.Data.hasKeyEffect)
             {
                 SpellManager.Instance.LaunchEffect(_slot.GetSlotIndex, _slot.PlayerTag,false);
             }

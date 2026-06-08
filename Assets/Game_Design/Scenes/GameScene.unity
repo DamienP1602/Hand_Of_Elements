@@ -649,19 +649,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  currentEffect:
-    selectionMode: 0
-    effectMode: 0
-    effectModifier: 0
-    triggerMode: 0
-    cardReference: {fileID: 0}
-    debuffType: 0
-    amount: 0
-    effectAsset: {fileID: 0}
+  data: {fileID: 0}
   card: {fileID: 0}
   playerOwner: {fileID: 0}
   emptyVisualEffect: {fileID: 8071439057994587991, guid: 869dc2a8924c7ce4d8656ed387989379, type: 3}
   slotIndex: 0
+  elementaryCombo: 0
+  vfxIndexes: 0
   targets: []
   playerTarget: {fileID: 0}
 --- !u!114 &1045765579
