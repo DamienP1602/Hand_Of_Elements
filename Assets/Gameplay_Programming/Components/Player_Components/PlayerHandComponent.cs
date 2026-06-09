@@ -22,7 +22,9 @@ public class PlayerHandComponent : NetworkBehaviour
 
     #region Getter
 
-    Vector3 SelectedPosition => selectedCardPosition + transform.position;
+    public Vector3 SelectedPosition => (selectedCardPosition * (IsOwner ? -1.0f : 1.0f))  + transform.position;
+
+    public HandCardComponent GetSelectedSpell() => selectedSpell;
 
     public HandCardComponent GetSelectedCard()
     {
@@ -63,6 +65,36 @@ public class PlayerHandComponent : NetworkBehaviour
         return false;
     }
 
+    Vector3 GetCardPosition(int _index)
+    {
+        int _size = cardsInHand.Count;
+        for (int _i = 0; _i < _size; _i++)
+        {
+            if (_index != _i) continue;
+
+            float _xOffset = _i - (_size / 2) + (_size % 2 != 0 ? 0.0f : 0.5f);
+
+            return transform.position + new Vector3(_xOffset * cardDistanceOffset, 0.0f, 0.0f);
+        }
+        return Vector3.zero;
+    }
+
+    Quaternion GetCardRotation(int _index)
+    {
+        int _size = cardsInHand.Count;
+        for (int _i = 0; _i < _size; _i++)
+        {
+            if (_index != _i) continue;
+
+            float _xOffset = _i - (_size / 2) + (_size % 2 != 0 ? 0.0f : 0.5f);
+
+            float _angle = (_xOffset * cardsRotationOffset) * (IsOwner ? 1.0f : -1.0f);
+            return Quaternion.AngleAxis(_angle, transform.up);
+        }
+
+        return Quaternion.identity;
+    }
+
     #endregion
 
     void Start()
@@ -93,8 +125,7 @@ public class PlayerHandComponent : NetworkBehaviour
             {
                 RaycastHit _hit = _hits[0];
                 Vector3 _point = _hit.point;
-                _card.MovementComponent.SetDestination(_point);
-
+                _card.transform.position = _point;
             }
         }
         else
@@ -180,14 +211,27 @@ public class PlayerHandComponent : NetworkBehaviour
         HandCardComponent _card = GetSelectedCard();
         if (!_card) return;
 
-        _card.NetworkObject.Despawn(true);
-        Invoke(nameof(SetCardInHand_ClientRpc), 0.1f);
+        RemoveCard(_card);
     }
 
+    /// <summary>
+    /// Server Function
+    /// </summary>
     public void RemoveCard(HandCardComponent _card)
     {
         _card.NetworkObject.Despawn(true);
         Invoke(nameof(SetCardInHand_ClientRpc), 0.1f);
+    }
+
+    /// <summary>
+    /// Server Function
+    /// </summary>
+    public void RemoveCard(int _handIndex)
+    {
+        HandCardComponent _card = GetCard(_handIndex);
+        if (!_card) return;
+
+        RemoveCard(_card);
     }
 
     /// <summary>
@@ -226,24 +270,10 @@ public class PlayerHandComponent : NetworkBehaviour
         if (cardsInHand.Count == 0) return;
 
         int _randomIndex = UnityEngine.Random.Range(0, cardsInHand.Count);
-        debug_ClientRpc(_randomIndex);
-    }
+        HandCardComponent _card = GetCard(_randomIndex);
 
-    [ClientRpc]
-    void debug_ClientRpc(int _cardIndex)
-    {
-        HandCardComponent _card = GetCard(_cardIndex);
-        // ça se fait pas
-        _card.FadeComponent.SetFade(CardFadeComponent.FadeStatus.FadeOut, () => GameManager.Instance.debugWidget.SetDebugText("UIQDFHUIQSDFHUIGQSFHOIQFSKJIBQFSKBJIO"))
-
-        
-    }
-    
-    void DestroyCard(int _cardIndex)
-    {
-        HandCardComponent _card = GetCard(_cardIndex);
-        _card.NetworkObject.Despawn(true);
-        Invoke(nameof(SetCardInHand_ClientRpc), 0.1f);
+        _card.SetIsInteractable(false);
+        PutCardInDiscardPile_ClientRpc(_randomIndex);
     }
 
     #endregion
@@ -257,6 +287,7 @@ public class PlayerHandComponent : NetworkBehaviour
         if (!_card) return;
 
         _card.GetComponent<BoxCollider>().enabled = false;
+        _card.MovementComponent.SetLockUpdate(true);
     }
 
     [ClientRpc]
@@ -266,6 +297,7 @@ public class PlayerHandComponent : NetworkBehaviour
         if (!_card) return;
 
         _card.GetComponent<BoxCollider>().enabled = true;
+        _card.MovementComponent.SetLockUpdate(false);
         UpdateCardPosition();
     }
 
@@ -291,36 +323,26 @@ public class PlayerHandComponent : NetworkBehaviour
         UpdateCardPosition();
     }
 
-
     [ClientRpc]
     public void SelectCardVisual_ClientRpc()
     {
         HandCardComponent _card = GetSelectedCard();
         if (!_card) return;
 
-        if (IsOwner)
-        {
-            selectedSpell = _card;
-        }
-        else
-        {
-            _card.MovementComponent.SetDestination(SelectedPosition);
-        }
-
+        selectedSpell = _card;
+        selectedSpell.MovementComponent.SetLockUpdate(false);
+        _card.MovementComponent.SetDestination(SelectedPosition);
     }
 
     [ClientRpc]
     public void UnselectCardVisual_ClientRpc()
     {
-        if (IsOwner)
+        if (selectedSpell)
         {
-            if (!selectedSpell) return;
+            selectedSpell.GetComponent<BoxCollider>().enabled = true;
             selectedSpell = null;
         }
-        else
-        {
-            UpdateCardPosition();
-        }
+        UpdateCardPosition();
     }
 
     [ClientRpc]
@@ -343,6 +365,15 @@ public class PlayerHandComponent : NetworkBehaviour
         }
     }
 
+    [ClientRpc]
+    public void PutCardInDiscardPile_ClientRpc(int _cardIndex)
+    {
+        HandCardComponent _card = GetCard(_cardIndex);
+
+        PlayerEntity _owner = GameManager.Instance.GetPlayer(_card.OwnerTag);
+        _owner.DiscardPileComponent.AddCard(_card, GetIndexOf(_card));
+    }
+
     #endregion
 
     #region Functions
@@ -354,45 +385,16 @@ public class PlayerHandComponent : NetworkBehaviour
         for (int _i = 0; _i < _size; _i++)
         {
             HandCardComponent _card = cardsInHand[_i];
-            if (!_card) continue;
+            if (!_card || !_card.IsInteractable) continue;
 
             float _xOffset = _i - (_size / 2) + (_size % 2 != 0 ? 0.0f : 0.5f);
 
+            // la carte se remet au "bon" endroit alors qu'elle devrait pas
             _card.MovementComponent.SetDestination(transform.position + new Vector3(_xOffset * cardDistanceOffset, 0.0f, 0.0f));
 
             float _angle = (_xOffset * cardsRotationOffset) * (IsOwner ? 1.0f : -1.0f);
             _card.MovementComponent.SetRotationDestination(Quaternion.AngleAxis(_angle, transform.up));
         }
-    }
-
-    Vector3 GetCardPosition(int _index)
-    {
-        int _size = cardsInHand.Count;
-        for (int _i = 0; _i < _size; _i++)
-        {
-            if (_index != _i) continue;
-
-            float _xOffset = _i - (_size / 2) + (_size % 2 != 0 ? 0.0f : 0.5f);
-
-            return transform.position + new Vector3(_xOffset * cardDistanceOffset, 0.0f, 0.0f);
-        }
-        return Vector3.zero;
-    }
-
-    Quaternion GetCardRotation(int _index)
-    {
-        int _size = cardsInHand.Count;
-        for (int _i = 0; _i < _size; _i++)
-        {
-            if (_index != _i) continue;
-
-            float _xOffset = _i - (_size / 2) + (_size % 2 != 0 ? 0.0f : 0.5f);
-
-            float _angle = (_xOffset * cardsRotationOffset) * (IsOwner ? 1.0f : -1.0f);
-            return Quaternion.AngleAxis(_angle, transform.up);
-        }
-
-        return Quaternion.identity;
     }
 
     #endregion

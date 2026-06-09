@@ -16,12 +16,18 @@ public class CardComponent : NetworkBehaviour
 
     [Header("Card Parameters")]
     [SerializeField] protected BaseCardData data;
+    [SerializeField] protected bool isInteractable = true;
+
+    #region Getters
 
     public int ID => cardID.Value;
     public bool IsHovered => isHovered.Value;
     public bool IsSelected => isSelected.Value;
     public BaseCardData Data => data;
     public PlayerEnum OwnerTag => ownerTag.Value;
+    public bool IsInteractable => isInteractable;
+
+    #endregion
 
     #region Setters
 
@@ -39,6 +45,11 @@ public class CardComponent : NetworkBehaviour
     public void SetIsSelected(bool _value)
     {
         isSelected.Value = _value;
+    }
+
+    public void SetIsInteractable(bool _value)
+    {
+        isInteractable = _value;
     }
 
     #endregion

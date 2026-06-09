@@ -9,7 +9,9 @@ public class VisualSpellEffectComponent : NetworkBehaviour
 
     [Header("Movement Parameters")]
     [SerializeField] Vector3 destination;
-    [SerializeField] float moveSpeed = 3.0f;
+    [SerializeField] AnimationCurve curveMovement;
+    [SerializeField] float currentMovementTime = 0.0f;
+    //[SerializeField] float moveSpeed = 3.0f;
     [SerializeField] bool canMove = false;
 
     [Header("Time Parameters")]
@@ -89,7 +91,11 @@ public class VisualSpellEffectComponent : NetworkBehaviour
 
     void MoveTo()
     {
-        transform.position = Vector3.MoveTowards(transform.position, destination, Time.deltaTime * moveSpeed);
+        currentMovementTime += Time.deltaTime;
+        float _value = curveMovement.Evaluate(currentMovementTime);
+
+        transform.position = Vector3.Lerp(transform.position, destination, _value);
+        //transform.position = Vector3.MoveTowards(transform.position, destination, Time.deltaTime * moveSpeed);
 
         if (transform.position == destination)
         {

@@ -1,3 +1,4 @@
+using System;
 using Unity.Netcode;
 using Unity.Services.Authentication;
 using UnityEngine;
@@ -66,7 +67,7 @@ public class PlayerInteractComponent : NetworkBehaviour
 
     public void OnPlayerClick()
     {
-        if (Physics.Raycast(PointOnScreen, out RaycastHit _hit, 15.0f))
+        if (Physics.Raycast(PointOnScreen, out RaycastHit _hit, 25.0f))
         {
             if (_hit.collider.gameObject.GetComponent<HandCardComponent>() is HandCardComponent _handCard)
             {
@@ -92,18 +93,14 @@ public class PlayerInteractComponent : NetworkBehaviour
             }
             if (needToSelectACard.Value)
             {
-                SetSelectCard(false);
-                HandCardComponent _cardSelected = owner.HandComponent.GetSelectedCard();
-                _cardSelected.FadeComponent.SetFade(CardFadeComponent.FadeStatus.FadeIn);
-                owner.HandComponent.ReleaseCard();
-                owner.HandComponent.UnselectCardVisual_ClientRpc();
+                StopSelectionForSpell_ServerRpc(ownerTag);
             }
         }
     }
 
     public void OnPlayerRelease()
     {
-        if (Physics.Raycast(PointOnScreen, out RaycastHit _hit, 15.0f))
+        if (Physics.Raycast(PointOnScreen, out RaycastHit _hit, 25.0f))
         {
             #region Owner Verification
             if (ownerTag != GameManager.Instance.PlayerTurnTag)
@@ -121,7 +118,6 @@ public class PlayerInteractComponent : NetworkBehaviour
             {
                 if (_selectedCard.Data.cardCost <= owner.ArcaneAmount)
                 {
-                    _selectedCard.FadeComponent.SetFade(CardFadeComponent.FadeStatus.FadeOut);
                     LaunchEffect_ServerRpc(_player.HandComponent.GetIndexOf(_selectedCard), ownerTag);
                     return;
                 }
@@ -152,7 +148,7 @@ public class PlayerInteractComponent : NetworkBehaviour
                 {
                     if (_boardCardSelected && _boardCardSelected.CanAttack)
                     {
-                        int _slotIndex = GameManager.Instance.Board.GetSlotIndex(_boardCard,_boardCard.OwnerTag);
+                        int _slotIndex = GameManager.Instance.Board.GetSlotIndex(_boardCard, _boardCard.OwnerTag);
                         AttackCardBoard_ServerRpc(_slotIndex, ownerTag);
                     }
                 }
@@ -246,10 +242,13 @@ public class PlayerInteractComponent : NetworkBehaviour
     [ServerRpc]
     void LaunchEffect_ServerRpc(int _cardID, PlayerEnum _ownerTag)
     {
-        SpellManager.Instance.LaunchEffect(_cardID, _ownerTag,true);
-
         PlayerEntity _player = GameManager.Instance.GetPlayer(_ownerTag);
         _player.HandComponent.SelectCardVisual_ClientRpc();
+
+        HandCardComponent _card = _player.HandComponent.GetSelectedCard();
+        _card.SetIsSelected(false);
+
+        SpellManager.Instance.LaunchEffect(_cardID, _ownerTag, true);
     }
 
     [ServerRpc]
@@ -259,12 +258,20 @@ public class PlayerInteractComponent : NetworkBehaviour
     }
 
     [ServerRpc]
-    void AttackPlayer_ServerRpc(PlayerEnum _playerTag, int _slotID,PlayerEnum _ownerTag)
+    void AttackPlayer_ServerRpc(PlayerEnum _playerTag, int _slotID, PlayerEnum _ownerTag)
     {
         PlayerEntity _player = GameManager.Instance.GetPlayer(_playerTag);
         BoardSlotComponent _slot = GameManager.Instance.Board.GetSlot(_ownerTag, _slotID);
         _player.LoseHealth(_slot.Card.GetAttack);
         _slot.Card.SetCanAttack(false);
+    }
+
+    [ServerRpc]
+    void StopSelectionForSpell_ServerRpc(PlayerEnum _ownerTag)
+    {
+        PlayerEntity _player = GameManager.Instance.GetPlayer(_ownerTag);
+        _player.HandComponent.UnselectCardVisual_ClientRpc();
+        SetSelectCard(false);
     }
     #endregion
 

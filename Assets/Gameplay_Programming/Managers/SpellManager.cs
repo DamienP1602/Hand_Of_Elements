@@ -54,7 +54,7 @@ public class SpellManager : Singleton<SpellManager>
     void Init()
     {
         // Selection
-        selectionDic.Add(CardEffectData.CardEffectSelectionMode.NoTarget, () => false);
+        selectionDic.Add(CardEffectData.CardEffectSelectionMode.NoTarget, () => true);
         selectionDic.Add(CardEffectData.CardEffectSelectionMode.SingleTarget, SetCardSelection);
         selectionDic.Add(CardEffectData.CardEffectSelectionMode.Self, SelectSelf);
         selectionDic.Add(CardEffectData.CardEffectSelectionMode.Opponent, SelectOpponent);
@@ -132,8 +132,6 @@ public class SpellManager : Singleton<SpellManager>
         if (_canInHand)
         {
             playerOwner.RemoveArcane(data.cardCost);
-            playerOwner.SetElementCardPlayed(data.cardElement);
-            playerOwner.HandComponent.RemoveSelectedCard();
         }
     }
 
@@ -142,9 +140,6 @@ public class SpellManager : Singleton<SpellManager>
     /// </summary>
     public void LaunchEffectSelection(int _selectedSlotID, PlayerEnum _ownerType)
     {
-        // Stop Card Selection
-        playerOwner.InteractComponent.SetSelectCard(false);
-
         // Set Targets
         targets.Add(new TargetedData(_selectedSlotID, _ownerType));
 
@@ -152,8 +147,9 @@ public class SpellManager : Singleton<SpellManager>
         CreateVisualEffect(0);
 
         playerOwner.RemoveArcane(data.cardCost);
-        playerOwner.SetElementCardPlayed(data.cardElement);
-        playerOwner.HandComponent.RemoveSelectedCard();
+
+        // Stop Card Selection
+        playerOwner.InteractComponent.SetSelectCard(false);
     }
 
     #endregion
@@ -212,18 +208,39 @@ public class SpellManager : Singleton<SpellManager>
                     CheckSelectionMode(data.elementaryComboEffect);
 
                     int _targetNumber = targets.Count;
-                    if (_targetNumber > 0 || playerTarget)
+                    if (_targetNumber > 0)
                     {
                         for (int _i = 0; _i < _targetNumber; _i++)
                         {
-                            // Launch Effect
                             CreateVisualEffect(_i);
                         }
+                    }
+                    if (playerTarget)
+                    {
+                        CreateVisualEffect(0);
                     }
                     return;
                 }
             }
         }
+
+        if (data is SpellCardData)
+        {
+            playerOwner.SetElementCardPlayed(data.cardElement);
+            DiscardCardAfterUse(playerOwner.PlayerTag);
+        }
+    }
+
+    /// <summary>
+    /// Server Function
+    /// </summary>
+    public void DiscardCardAfterUse(PlayerEnum _ownerTag)
+    {
+        PlayerEntity _player = GameManager.Instance.GetPlayer(_ownerTag);
+        HandCardComponent _card = _player.HandComponent.GetSelectedSpell();
+        int _index = _player.HandComponent.GetIndexOf(_card);
+        _card.SetIsInteractable(false);
+        _player.HandComponent.PutCardInDiscardPile_ClientRpc(_index);
     }
 
     /// <summary>
@@ -255,7 +272,7 @@ public class SpellManager : Singleton<SpellManager>
         for (int _i = 0; _i < _amount; _i++)
         {
             playerOwner.HandComponent.DiscardRandomCard();
-        }        
+        }
     }
 
     #endregion
@@ -369,7 +386,7 @@ public class SpellManager : Singleton<SpellManager>
     #region ClientRpc
 
     [ClientRpc]
-    public void InitEffect_ClientRpc(PlayerEnum _ownerType, int _vfxIndex, int _cardID, int _slotIndex,bool _elementaryCombo, TargetedData[] _targets)
+    public void InitEffect_ClientRpc(PlayerEnum _ownerType, int _vfxIndex, int _cardID, int _slotIndex, bool _elementaryCombo, TargetedData[] _targets)
     {
         BaseCardData _data = CardManager.Instance.GetCard(_cardID);
         CardEffectData _effect = _elementaryCombo ? _data.elementaryComboEffect : _data.effect;
@@ -383,7 +400,7 @@ public class SpellManager : Singleton<SpellManager>
         if (_data is SpellCardData)
         {
             _endPos = GetEndPosFromEffect(_effect, _ownerType, _target) + Vector3.up * 0.5f;
-            _startPos = _entity.transform.position;
+            _startPos = _entity.HandComponent.SelectedPosition;
         }
         else
         {

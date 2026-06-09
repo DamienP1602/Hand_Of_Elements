@@ -1,7 +1,10 @@
+using System;
 using UnityEngine;
 
 public class CardMovementComponent : MonoBehaviour
 {
+    public event Action OnDestinationReached;
+
     [Header("Debug")]
     [SerializeField] bool drawDebug;
 
@@ -9,12 +12,14 @@ public class CardMovementComponent : MonoBehaviour
     [SerializeField] float movementSpeed;
     [SerializeField] bool canMove;
     [SerializeField] bool canRotate;
+    [SerializeField] bool lockUpdate;
     [SerializeField] float rotationSpeed = 100.0f;
 
     [Header("Parameters")]
     [SerializeField] Vector3 destination;
-    [SerializeField] Vector3 initialPosition;
     [SerializeField] Quaternion rotationDestination;
+
+    public void SetLockUpdate(bool _value) => lockUpdate = _value;
 
     void Start()
     {
@@ -23,6 +28,8 @@ public class CardMovementComponent : MonoBehaviour
 
     void Update()
     {
+        if (lockUpdate) return;
+
         if (canMove)
             MoveTo();
 
@@ -37,7 +44,10 @@ public class CardMovementComponent : MonoBehaviour
         transform.position = Vector3.Lerp(transform.position, destination, movementSpeed * Time.deltaTime);
 
         if (Vector3.Distance(transform.position,destination) < 0.01f)
+        {
             canMove = false;
+            OnDestinationReached?.Invoke();
+        }
     }
 
     public void RotateTo()
@@ -56,9 +66,7 @@ public class CardMovementComponent : MonoBehaviour
     {
         if (_destination == transform.position) return;
 
-        initialPosition = transform.position;
         destination = _destination;
-
         canMove = true;
     }
 
@@ -68,14 +76,13 @@ public class CardMovementComponent : MonoBehaviour
         canRotate = true;
     }
 
+    public void SetSpeed(float _value) => movementSpeed = _value;
+
     #endregion
 
     private void OnDrawGizmos()
     {
         if (!drawDebug) return;
-
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawWireSphere(initialPosition, 0.5f);
 
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(destination, 0.5f);

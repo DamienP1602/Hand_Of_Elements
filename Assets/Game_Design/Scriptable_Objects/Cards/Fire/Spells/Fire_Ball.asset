@@ -34,8 +34,8 @@ MonoBehaviour:
     keyEffectValue: 0
   hasElementaryCombo: 1
   elementaryComboEffect:
-    selectionMode: 1
-    effectMode: 3
+    selectionMode: 0
+    effectMode: 4
     effectModifier: 0
     triggerMode: 0
     cardReference: {fileID: 0}

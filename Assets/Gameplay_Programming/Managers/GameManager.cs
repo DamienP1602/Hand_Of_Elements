@@ -81,17 +81,27 @@ public class GameManager : Singleton<GameManager>
         foreach (PlayerEntity _player in players)
         {
             Vector3 _portraitOffset = Vector3.right * 9.0f - Vector3.up;
+            Vector3 _discardPileOffset = Vector3.right * 14.0f - Vector3.up;
             if (_player.IsOwner)
             {
                 _player.transform.position = firstPlayerPosition;
+
                 _portraitOffset += Vector3.forward * 4.5f;
                 _player.PortraitComponent.transform.position = firstPlayerPosition + _portraitOffset;
+
+                _discardPileOffset += Vector3.forward * 1.5f;
+                _player.DiscardPileComponent.transform.position = firstPlayerPosition + _discardPileOffset;
             }
             else
             {
                 _player.transform.position = secondPlayerPosition;
+
                 _portraitOffset -= Vector3.forward * 4.5f;
                 _player.PortraitComponent.transform.position = secondPlayerPosition + _portraitOffset;
+
+                _discardPileOffset -= Vector3.forward * 1.5f;
+                _player.DiscardPileComponent.transform.position = secondPlayerPosition + _discardPileOffset;
+
             }
 
             _player.Init();
@@ -189,6 +199,8 @@ public class GameManager : Singleton<GameManager>
             {
                 SpellManager.Instance.LaunchEffect(_slot.GetSlotIndex, _slot.PlayerTag,false);
             }
+            else
+                _player.SetElementCardPlayed(_card.Data.cardElement);
         }
     }
 

@@ -19,6 +19,7 @@ public class PlayerEntity : NetworkBehaviour
     public PlayerDeckComponent DeckComponent { get; private set; }
     public PlayerInterfaceComponent InterfaceComponent { get; private set; }
     public PlayerPortraitComponent PortraitComponent { get; private set; }
+    public PlayerDiscardPileComponent DiscardPileComponent { get; private set; }
 
     [Header("Player Parameters")]
     [SerializeField] PlayerEnum player;
@@ -45,6 +46,7 @@ public class PlayerEntity : NetworkBehaviour
         DeckComponent = GetComponent<PlayerDeckComponent>();
         InterfaceComponent = GetComponentInChildren<PlayerInterfaceComponent>(true);
         PortraitComponent = GetComponentInChildren<PlayerPortraitComponent>();
+        DiscardPileComponent = GetComponentInChildren<PlayerDiscardPileComponent>();
     }
 
     void Start()

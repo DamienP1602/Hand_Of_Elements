@@ -13,25 +13,18 @@ public class CardFadeComponent : MonoBehaviour
         None
     }
 
+    public event Action OnFadeFinish;
     public CanvasGroup Group { get; private set; }
     [Header("Parameters")]
     [SerializeField] FadeStatus fadeStatus = FadeStatus.None;
     [SerializeField] float fadeSpeed = 1.0f;
     [SerializeField] bool callServerRpcAfterFade;
-    Action actionToTrigger;
 
     #region Setters
 
-    public void SetFade(FadeStatus _fade, Action _action = null, bool _callServerRpc = false)
+    public void SetFade(FadeStatus _fade)
     {
         fadeStatus = _fade;
-        actionToTrigger = null;
-
-        if (_action != null)
-        {
-            actionToTrigger += actionToTrigger;
-            callServerRpcAfterFade = _callServerRpc;
-        }
     }
 
     #endregion
@@ -59,10 +52,7 @@ public class CardFadeComponent : MonoBehaviour
         if (Group.alpha >= 1.0f)
         {
             fadeStatus = FadeStatus.None;
-            if (callServerRpcAfterFade)
-                Action_ServerRpc();
-            else
-                actionToTrigger?.Invoke();
+            OnFadeFinish?.Invoke();
         }
     }
 
@@ -73,21 +63,8 @@ public class CardFadeComponent : MonoBehaviour
         if (Group.alpha <= 0.0f)
         {
             fadeStatus = FadeStatus.None;
-            if (callServerRpcAfterFade)
-                Action_ServerRpc();
-            else
-                actionToTrigger?.Invoke();
+            OnFadeFinish?.Invoke();
         }
-    }
-
-    #endregion
-
-    #region ServerRpc
-
-    [ServerRpc]
-    void Action_ServerRpc()
-    {
-        actionToTrigger?.Invoke();
     }
 
     #endregion

@@ -670,7 +670,7 @@ MonoBehaviour:
   movementSpeed: 10
   canMove: 0
   canRotate: 0
-  rotationSpeed: 100
+  rotationSpeed: 350
   destination: {x: 0, y: 0, z: 0}
   initialPosition: {x: 0, y: 0, z: 0}
   rotationDestination: {x: 0, y: 0, z: 0, w: 0}
@@ -747,6 +747,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fadeStatus: 2
   fadeSpeed: 5
+  callServerRpcAfterFade: 0
 --- !u!1 &6030555120143323228
 GameObject:
   m_ObjectHideFlags: 0
