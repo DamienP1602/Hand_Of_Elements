@@ -9,13 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1f2123f9f594a14ab0c9c91591bcc6d, type: 3}
-  m_Name: Blast
+  m_Script: {fileID: 11500000, guid: 4c8e7bd1d286b25499e20359c7a5d484, type: 3}
+  m_Name: 2_Pyromancer
   m_EditorClassIdentifier: 
-  cardID: 3
-  cardName: Blast
+  cardID: 4
+  cardName: Pyromancer
   cardElement: 0
-  cardCost: 4
+  cardRarity: 0
+  cardCost: 3
   hasEffect: 1
   hasKeyEffect: 0
   isHiddenEffect: 0
@@ -26,25 +27,35 @@ MonoBehaviour:
     triggerMode: 0
     cardReference: {fileID: 0}
     debuffType: 0
-    amount: 2
+    amount: 1
     effectAsset: {fileID: 8926484042661614526, guid: 101759f9b66e8f64ea6c859f913661eb, type: 3}
     isInstantEffect: 1
-    specificElement: 4
-    keyEffect: 1
+    specificElement: 0
+    specificKeyEffect: 0
+    keyEffect: 0
     keyEffectValue: 0
-  hasElementaryCombo: 0
+    triggerEffectOnDiscard: 0
+  hasElementaryCombo: 1
   elementaryComboEffect:
-    selectionMode: 0
-    effectMode: 0
+    selectionMode: 5
+    effectMode: 4
     effectModifier: 0
     triggerMode: 0
     cardReference: {fileID: 0}
-    debuffType: 0
-    amount: 0
-    effectAsset: {fileID: 0}
-    isInstantEffect: 0
+    debuffType: 1
+    amount: 1
+    effectAsset: {fileID: 8926484042661614526, guid: 101759f9b66e8f64ea6c859f913661eb, type: 3}
+    isInstantEffect: 1
     specificElement: 0
+    specificKeyEffect: 0
     keyEffect: 0
     keyEffectValue: 0
-  description: Draws 2 Cards with the <b>Overload</b> effect.
+    triggerEffectOnDiscard: 0
+  description: 'Draws 1 Fire Card.
+
+    <b>Elementary Combo :</b> Put 1 Burn Token
+    to every enemy soldiers;'
   elementaryComboDescription: 
+  attackAmount: 30
+  healthAmount: 20
+  isInvocation: 0

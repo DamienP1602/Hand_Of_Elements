@@ -13,12 +13,23 @@ public enum CardElement
     NONE
 }
 
+[Serializable]
+public enum CardRarity
+{
+    Summoned,
+    Common,
+    Rare,
+    Epic,
+    Mythic
+}
+
 public class BaseCardData : ScriptableObject
 {
     [Header("Base Data")]
     public int cardID;
     public string cardName;
     public CardElement cardElement;
+    public CardRarity cardRarity;
     public int cardCost;
 
     [Header("Effect")]
@@ -31,4 +42,6 @@ public class BaseCardData : ScriptableObject
     public CardEffectData elementaryComboEffect;
     public string description;
     public string elementaryComboDescription;
+    public bool hasUniqueEffect;
+    public UniqueEffectData uniqueEffectData;
 }

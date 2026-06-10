@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1f2123f9f594a14ab0c9c91591bcc6d, type: 3}
-  m_Name: Gust
+  m_Name: 1_Burned_Power
   m_EditorClassIdentifier: 
-  cardID: 16
-  cardName: Gust
-  cardElement: 3
-  cardRarity: 0
+  cardID: 3
+  cardName: Burned Power
+  cardElement: 0
+  cardRarity: 1
   cardCost: 1
   hasEffect: 1
-  hasKeyEffect: 0
+  hasKeyEffect: 1
   isHiddenEffect: 0
   effect:
     selectionMode: 1
@@ -27,31 +27,31 @@ MonoBehaviour:
     triggerMode: 0
     cardReference: {fileID: 0}
     debuffType: 0
-    amount: 10
-    effectAsset: {fileID: 8926484042661614526, guid: bee68f0be249a854386188db888ac863, type: 3}
+    amount: 40
+    effectAsset: {fileID: 8926484042661614526, guid: b1a70f576796f9f4e90ac9a9b604f614, type: 3}
     isInstantEffect: 0
     specificElement: 0
     specificKeyEffect: 0
-    keyEffect: 0
-    keyEffectValue: 0
+    keyEffect: 1
+    keyEffectValue: 1
     triggerEffectOnDiscard: 0
-  hasElementaryCombo: 1
+  hasElementaryCombo: 0
   elementaryComboEffect:
     selectionMode: 0
-    effectMode: 3
+    effectMode: 0
     effectModifier: 0
     triggerMode: 0
     cardReference: {fileID: 0}
     debuffType: 0
-    amount: 10
-    effectAsset: {fileID: 8926484042661614526, guid: bee68f0be249a854386188db888ac863, type: 3}
+    amount: 0
+    effectAsset: {fileID: 0}
     isInstantEffect: 0
     specificElement: 0
     specificKeyEffect: 0
     keyEffect: 0
     keyEffectValue: 0
     triggerEffectOnDiscard: 0
-  description: 'Deals 10 damages.
+  description: '<b>Overload (1)</b>
 
-    <b>Elementary Combo :</b> Deals 10 extra damages.'
-  elementaryComboDescription: Deals 10 extra damages.
+    Deals 40 damages.'
+  elementaryComboDescription: 

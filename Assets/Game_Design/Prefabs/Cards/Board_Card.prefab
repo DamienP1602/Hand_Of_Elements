@@ -399,8 +399,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2, y: 0.2, z: 3}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 2, y: 0.5, z: 3}
+  m_Center: {x: 0, y: 0.1, z: 0}
 --- !u!114 &8967812732163145341
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -435,6 +435,7 @@ MonoBehaviour:
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 2
   data: {fileID: 0}
+  isInteractable: 1
   canAttack:
     UpdateTraits:
       MinSecondsBetweenUpdates: 0
@@ -471,9 +472,9 @@ MonoBehaviour:
   movementSpeed: 0
   canMove: 0
   canRotate: 0
+  lockUpdate: 0
   rotationSpeed: 100
   destination: {x: 0, y: 0, z: 0}
-  initialPosition: {x: 0, y: 0, z: 0}
   rotationDestination: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &7051091250452970361
 MonoBehaviour:
@@ -527,6 +528,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fadeStatus: 2
   fadeSpeed: 5
+  callServerRpcAfterFade: 0
 --- !u!1 &5657852768651877406
 GameObject:
   m_ObjectHideFlags: 0

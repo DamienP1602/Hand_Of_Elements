@@ -39,6 +39,26 @@ public class PlayerDeckComponent : NetworkBehaviour
         return _sortedList[_random];
     }
 
+    public BaseCardData GetRandomCardOfKey(CardEffectData.KeyEffect _specificKey)
+    {
+        List<BaseCardData> _sortedList = new();
+
+        List<BaseCardData> _allCards = CardManager.Instance.GetAllCards();
+        foreach (BaseCardData _card in _allCards)
+        {
+            if (_card.hasEffect)
+                if (_card.effect.keyEffect == _specificKey)
+                    _sortedList.Add(_card);
+        }
+
+        if (_sortedList.Count == 0)
+            return null;
+
+        int _random = UnityEngine.Random.Range(0, _sortedList.Count);
+
+        return _sortedList[_random];
+    }
+
     #endregion
 
     void Start()

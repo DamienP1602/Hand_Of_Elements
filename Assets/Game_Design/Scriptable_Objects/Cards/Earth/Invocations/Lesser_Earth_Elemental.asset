@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c8e7bd1d286b25499e20359c7a5d484, type: 3}
   m_Name: Lesser_Earth_Elemental
   m_EditorClassIdentifier: 
-  cardID: 7
+  cardID: 12
   cardName: Lesser Earth Elemental
   cardElement: 2
+  cardRarity: 0
   cardCost: 0
   hasEffect: 0
   hasKeyEffect: 0
@@ -30,8 +31,10 @@ MonoBehaviour:
     effectAsset: {fileID: 0}
     isInstantEffect: 0
     specificElement: 0
+    specificKeyEffect: 0
     keyEffect: 0
     keyEffectValue: 0
+    triggerEffectOnDiscard: 0
   hasElementaryCombo: 0
   elementaryComboEffect:
     selectionMode: 0
@@ -44,10 +47,12 @@ MonoBehaviour:
     effectAsset: {fileID: 0}
     isInstantEffect: 0
     specificElement: 0
+    specificKeyEffect: 0
     keyEffect: 0
     keyEffectValue: 0
+    triggerEffectOnDiscard: 0
   description: 
   elementaryComboDescription: 
   attackAmount: 10
-  healthAmount: 10
+  healthAmount: 80
   isInvocation: 1

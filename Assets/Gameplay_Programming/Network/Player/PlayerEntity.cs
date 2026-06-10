@@ -30,11 +30,15 @@ public class PlayerEntity : NetworkBehaviour
     [SerializeField] NetworkVariable<List<int>> vfxIndexCreated = new NetworkVariable<List<int>>(new(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     [SerializeField] NetworkVariable<int> healthAmount = new NetworkVariable<int>(400, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
+    [Header("In Game Network Variables")]
+    [SerializeField] NetworkVariable<int> amountOfOverload = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+
     #region Getters
 
     public PlayerEnum PlayerTag => player;
     public int ArcaneAmount => arcaneAmount.Value;
     public CardElement LastElementPlayed => lastElementPlayed.Value;
+    public int AmountOfOverload => amountOfOverload.Value;
 
     #endregion
 
@@ -193,6 +197,11 @@ public class PlayerEntity : NetworkBehaviour
         _newAmount = Mathf.Clamp(_newAmount, 0, 400);
         healthAmount.Value = _newAmount;
     }
+
+    /// <summary>
+    /// Server Function
+    /// </summary>
+    public void AddToOverloadAmount(int _amount) => amountOfOverload.Value += _amount;
 
     #endregion
 }

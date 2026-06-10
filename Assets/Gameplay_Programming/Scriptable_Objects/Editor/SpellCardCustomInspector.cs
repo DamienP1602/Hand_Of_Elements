@@ -12,6 +12,7 @@ public class SpellCardCustomInspector : CardCustomInspector
             _target.hasEffect = true;
 
         DrawBaseData(_target);
+        DrawKeyEffect(_target);
         DrawEffect(_target);
 
         DrawTitle("Card Description");

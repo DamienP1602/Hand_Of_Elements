@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using TMPro;
 using Unity.Netcode;
 using UnityEngine;
+using static CardEffectData;
 
 public class PlayerHandComponent : NetworkBehaviour
 {
@@ -22,7 +24,7 @@ public class PlayerHandComponent : NetworkBehaviour
 
     #region Getter
 
-    public Vector3 SelectedPosition => (selectedCardPosition * (IsOwner ? -1.0f : 1.0f))  + transform.position;
+    public Vector3 SelectedPosition => (selectedCardPosition * (IsOwner ? -1.0f : 1.0f)) + transform.position;
 
     public HandCardComponent GetSelectedSpell() => selectedSpell;
 
@@ -131,7 +133,9 @@ public class PlayerHandComponent : NetworkBehaviour
         else
         {
             if (GameManager.Instance.PlayerTurnTag == GetComponent<PlayerEntity>().PlayerTag)
+            {
                 _card.MovementComponent.SetDestination(SelectedPosition);
+            }
         }
     }
 
@@ -156,7 +160,8 @@ public class PlayerHandComponent : NetworkBehaviour
 
             _card.SetIsHovered(_isHovered);
 
-            HoverCardVisual_ClientRpc(_i, _isHovered);
+            if (_card.IsInteractable)
+                HoverCardVisual_ClientRpc(_i, _isHovered);
         }
     }
 
@@ -174,7 +179,8 @@ public class PlayerHandComponent : NetworkBehaviour
             {
                 _card.SetIsHovered(false);
 
-                HoverCardVisual_ClientRpc(_i, false);
+                if (_card.IsInteractable)
+                    HoverCardVisual_ClientRpc(_i, false);
             }
         }
     }
@@ -237,7 +243,7 @@ public class PlayerHandComponent : NetworkBehaviour
     /// <summary>
     /// Server Function
     /// </summary>
-    public void DrawCard(int _amount, CardElement _specificElement = CardElement.NONE)
+    public void DrawCard(int _amount, CardElement _specificElement = CardElement.NONE, KeyEffect _specificKey = KeyEffect.NONE)
     {
         PlayerEntity _owner = GetComponent<PlayerEntity>();
         for (int _i = 0; _i < _amount; _i++)
@@ -251,10 +257,22 @@ public class PlayerHandComponent : NetworkBehaviour
             _card.NetworkObject.TrySetParent(gameObject, true);
 
             BaseCardData _data = null;
-            if (_specificElement == CardElement.NONE)
-                _data = _deck.GetRandomCard();
-            else
+
+            // Search Card from Element
+            if (_specificElement != CardElement.NONE)
+            {
                 _data = _deck.GetRandomCardOfElement(_specificElement);
+            }
+            // Search Card from Key Effect
+            else if (_specificKey != KeyEffect.NONE)
+            {
+                _data = _deck.GetRandomCardOfKey(_specificKey);
+            }
+            // Search Random Card
+            else
+            {
+                _data = _deck.GetRandomCard();
+            }
 
             _card.Set(_data.cardID, _owner.PlayerTag);
 
@@ -269,11 +287,28 @@ public class PlayerHandComponent : NetworkBehaviour
     {
         if (cardsInHand.Count == 0) return;
 
-        int _randomIndex = UnityEngine.Random.Range(0, cardsInHand.Count);
-        HandCardComponent _card = GetCard(_randomIndex);
+        List<HandCardComponent> _cards = new();
+        int _size = cardsInHand.Count;
+        for (int _i = 0; _i < _size; _i++)
+        {
+            HandCardComponent _card = cardsInHand[_i];
+            if (_card && _card.IsInteractable)
+                _cards.Add(_card);
+        }
 
-        _card.SetIsInteractable(false);
-        PutCardInDiscardPile_ClientRpc(_randomIndex);
+        int _randomIndex = UnityEngine.Random.Range(0, _cards.Count);
+        HandCardComponent _randomCard = _cards[_randomIndex];
+
+        int _cardHandIndex = GetIndexOf(_randomCard);
+        if (_randomCard.Data.effect.triggerEffectOnDiscard)
+        {
+            SpellManager.Instance.SetNextEffect(_randomCard.Data);
+        }
+
+        // This will only put the IsInteractable = false to the server, because we don't want to discard the same card twice during the selection
+        // It will put IsInteractable = false to the client during the Client Rpc, so after some ticks
+        _randomCard.SetIsInteractable(false);
+        PutCardInDiscardPile_ClientRpc(_cardHandIndex);
     }
 
     #endregion
@@ -286,8 +321,11 @@ public class PlayerHandComponent : NetworkBehaviour
         HandCardComponent _card = GetCard(_index);
         if (!_card) return;
 
-        _card.GetComponent<BoxCollider>().enabled = false;
-        _card.MovementComponent.SetLockUpdate(true);
+        if (IsOwner)
+        {
+            _card.GetComponent<BoxCollider>().enabled = false;
+            _card.MovementComponent.SetLockUpdate(true);
+        }
     }
 
     [ClientRpc]
@@ -296,8 +334,11 @@ public class PlayerHandComponent : NetworkBehaviour
         HandCardComponent _card = GetSelectedCard();
         if (!_card) return;
 
-        _card.GetComponent<BoxCollider>().enabled = true;
-        _card.MovementComponent.SetLockUpdate(false);
+        if (IsOwner)
+        {
+            _card.GetComponent<BoxCollider>().enabled = true;
+            _card.MovementComponent.SetLockUpdate(false);
+        }
         UpdateCardPosition();
     }
 
@@ -331,6 +372,7 @@ public class PlayerHandComponent : NetworkBehaviour
 
         selectedSpell = _card;
         selectedSpell.MovementComponent.SetLockUpdate(false);
+        selectedSpell.SetIsInteractable(false);
         _card.MovementComponent.SetDestination(SelectedPosition);
     }
 
@@ -340,6 +382,7 @@ public class PlayerHandComponent : NetworkBehaviour
         if (selectedSpell)
         {
             selectedSpell.GetComponent<BoxCollider>().enabled = true;
+            selectedSpell.SetIsInteractable(true);
             selectedSpell = null;
         }
         UpdateCardPosition();
@@ -381,19 +424,19 @@ public class PlayerHandComponent : NetworkBehaviour
     [ContextMenu("Update Card Position")]
     void UpdateCardPosition()
     {
+        int _index = 0;
         int _size = cardsInHand.Count;
-        for (int _i = 0; _i < _size; _i++)
+        foreach (HandCardComponent _card in cardsInHand)
         {
-            HandCardComponent _card = cardsInHand[_i];
             if (!_card || !_card.IsInteractable) continue;
 
-            float _xOffset = _i - (_size / 2) + (_size % 2 != 0 ? 0.0f : 0.5f);
+            float _xOffset = _index - (_size / 2) + (_size % 2 != 0 ? 0.0f : 0.5f);
 
-            // la carte se remet au "bon" endroit alors qu'elle devrait pas
             _card.MovementComponent.SetDestination(transform.position + new Vector3(_xOffset * cardDistanceOffset, 0.0f, 0.0f));
 
             float _angle = (_xOffset * cardsRotationOffset) * (IsOwner ? 1.0f : -1.0f);
             _card.MovementComponent.SetRotationDestination(Quaternion.AngleAxis(_angle, transform.up));
+            _index++;
         }
     }
 

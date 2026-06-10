@@ -194,10 +194,11 @@ public class GameManager : Singleton<GameManager>
             _player.RemoveArcane(_card.Data.cardCost);
             _slot.PutCardInSlot(_card.transform.position, _card.ID);
             _player.HandComponent.RemoveSelectedCard();
+            _card.SetIsInteractable(false);
 
-            if ((_card.Data.hasEffect && SpellManager.Instance.CanLaunchEffect(_card.Data.effect)) || _card.Data.hasKeyEffect)
+            if (_card.Data.hasEffect|| _card.Data.hasKeyEffect)
             {
-                SpellManager.Instance.LaunchEffect(_slot.GetSlotIndex, _slot.PlayerTag,false);
+                StartCoroutine(SpellManager.Instance.LaunchEffect(_slot.GetSlotIndex, _slot.PlayerTag,false));
             }
             else
                 _player.SetElementCardPlayed(_card.Data.cardElement);

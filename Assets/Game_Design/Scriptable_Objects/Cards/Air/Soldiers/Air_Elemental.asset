@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c8e7bd1d286b25499e20359c7a5d484, type: 3}
   m_Name: Air_Elemental
   m_EditorClassIdentifier: 
-  cardID: 10
+  cardID: 15
   cardName: Air Elemental
   cardElement: 3
+  cardRarity: 0
   cardCost: 2
   hasEffect: 1
   hasKeyEffect: 0
@@ -30,8 +31,10 @@ MonoBehaviour:
     effectAsset: {fileID: 8926484042661614526, guid: bee68f0be249a854386188db888ac863, type: 3}
     isInstantEffect: 0
     specificElement: 0
+    specificKeyEffect: 0
     keyEffect: 0
     keyEffectValue: 0
+    triggerEffectOnDiscard: 0
   hasElementaryCombo: 0
   elementaryComboEffect:
     selectionMode: 0
@@ -44,8 +47,10 @@ MonoBehaviour:
     effectAsset: {fileID: 0}
     isInstantEffect: 0
     specificElement: 0
+    specificKeyEffect: 0
     keyEffect: 0
     keyEffectValue: 0
+    triggerEffectOnDiscard: 0
   description: Deals 20 damages to a random opponent.
   elementaryComboDescription: 
   attackAmount: 20

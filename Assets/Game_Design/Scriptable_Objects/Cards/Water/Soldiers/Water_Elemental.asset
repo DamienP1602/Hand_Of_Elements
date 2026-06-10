@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c8e7bd1d286b25499e20359c7a5d484, type: 3}
   m_Name: Water_Elemental
   m_EditorClassIdentifier: 
-  cardID: 5
+  cardID: 10
   cardName: Water Elemental
   cardElement: 1
+  cardRarity: 0
   cardCost: 2
   hasEffect: 1
   hasKeyEffect: 0
@@ -30,8 +31,10 @@ MonoBehaviour:
     effectAsset: {fileID: 8926484042661614526, guid: 7b07058f76c06e040a34d03bd36bf4ac, type: 3}
     isInstantEffect: 0
     specificElement: 0
+    specificKeyEffect: 0
     keyEffect: 0
     keyEffectValue: 0
+    triggerEffectOnDiscard: 0
   hasElementaryCombo: 0
   elementaryComboEffect:
     selectionMode: 0
@@ -44,8 +47,10 @@ MonoBehaviour:
     effectAsset: {fileID: 0}
     isInstantEffect: 0
     specificElement: 0
+    specificKeyEffect: 0
     keyEffect: 0
     keyEffectValue: 0
+    triggerEffectOnDiscard: 0
   description: Restaures 20 health to Yourself.
   elementaryComboDescription: 
   attackAmount: 20

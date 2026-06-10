@@ -26,7 +26,8 @@ public class CardEffectData
         Self,
         Opponent,
         RandomOpponent,
-        AllOpponentSoldier
+        AllOpponentSoldier,
+        AllOpponents
     }
 
     [Serializable]
@@ -68,8 +69,10 @@ public class CardEffectData
     public VisualEffectAsset effectAsset;
     public bool isInstantEffect;
     public CardElement specificElement;
+    public KeyEffect specificKeyEffect;
     public KeyEffect keyEffect;
     public int keyEffectValue;
+    public bool triggerEffectOnDiscard;
 
     public string ChangeSpecialText(string _text)
     {

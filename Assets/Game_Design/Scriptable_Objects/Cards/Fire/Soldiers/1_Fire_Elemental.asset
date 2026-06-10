@@ -9,49 +9,50 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1f2123f9f594a14ab0c9c91591bcc6d, type: 3}
-  m_Name: Gust
+  m_Script: {fileID: 11500000, guid: 4c8e7bd1d286b25499e20359c7a5d484, type: 3}
+  m_Name: 1_Fire_Elemental
   m_EditorClassIdentifier: 
-  cardID: 16
-  cardName: Gust
-  cardElement: 3
-  cardRarity: 0
-  cardCost: 1
+  cardID: 0
+  cardName: Fire Elemental
+  cardElement: 0
+  cardRarity: 1
+  cardCost: 2
   hasEffect: 1
   hasKeyEffect: 0
   isHiddenEffect: 0
   effect:
     selectionMode: 1
-    effectMode: 3
+    effectMode: 4
     effectModifier: 0
     triggerMode: 0
     cardReference: {fileID: 0}
-    debuffType: 0
-    amount: 10
-    effectAsset: {fileID: 8926484042661614526, guid: bee68f0be249a854386188db888ac863, type: 3}
-    isInstantEffect: 0
+    debuffType: 1
+    amount: 2
+    effectAsset: {fileID: 8926484042661614526, guid: 101759f9b66e8f64ea6c859f913661eb, type: 3}
+    isInstantEffect: 1
     specificElement: 0
     specificKeyEffect: 0
     keyEffect: 0
     keyEffectValue: 0
     triggerEffectOnDiscard: 0
-  hasElementaryCombo: 1
+  hasElementaryCombo: 0
   elementaryComboEffect:
     selectionMode: 0
-    effectMode: 3
+    effectMode: 0
     effectModifier: 0
     triggerMode: 0
     cardReference: {fileID: 0}
     debuffType: 0
-    amount: 10
-    effectAsset: {fileID: 8926484042661614526, guid: bee68f0be249a854386188db888ac863, type: 3}
+    amount: 0
+    effectAsset: {fileID: 0}
     isInstantEffect: 0
     specificElement: 0
     specificKeyEffect: 0
     keyEffect: 0
     keyEffectValue: 0
     triggerEffectOnDiscard: 0
-  description: 'Deals 10 damages.
-
-    <b>Elementary Combo :</b> Deals 10 extra damages.'
-  elementaryComboDescription: Deals 10 extra damages.
+  description: Put 2 Burn Tokens.
+  elementaryComboDescription: 
+  attackAmount: 20
+  healthAmount: 20
+  isInvocation: 0

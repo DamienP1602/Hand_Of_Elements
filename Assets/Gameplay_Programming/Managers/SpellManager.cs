@@ -1,5 +1,6 @@
 using NUnit.Framework.Internal;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
@@ -33,6 +34,11 @@ public class SpellManager : Singleton<SpellManager>
     [SerializeField] int slotIndex;
     [SerializeField] bool elementaryCombo = false;
     [SerializeField] int vfxIndexes = 0;
+    [SerializeField] List<BaseCardData> nextEffectToPlay = new();
+
+    [Header("Time Parameters")]
+    [SerializeField] float timeToWait = 0.0f;
+    [SerializeField] bool needToWaitTime = false;
 
     [Header("Targets")]
     [SerializeField] List<TargetedData> targets = new();
@@ -49,17 +55,23 @@ public class SpellManager : Singleton<SpellManager>
         Init();
     }
 
+    private void Update()
+    {
+
+    }
+
     #region Init
 
     void Init()
     {
         // Selection
-        selectionDic.Add(CardEffectData.CardEffectSelectionMode.NoTarget, () => true);
+        selectionDic.Add(CardEffectData.CardEffectSelectionMode.NoTarget, () => false);
         selectionDic.Add(CardEffectData.CardEffectSelectionMode.SingleTarget, SetCardSelection);
         selectionDic.Add(CardEffectData.CardEffectSelectionMode.Self, SelectSelf);
         selectionDic.Add(CardEffectData.CardEffectSelectionMode.Opponent, SelectOpponent);
         selectionDic.Add(CardEffectData.CardEffectSelectionMode.RandomOpponent, SelectRandomOpponent);
         selectionDic.Add(CardEffectData.CardEffectSelectionMode.AllOpponentSoldier, SelectAllOpponentSoldiers);
+        selectionDic.Add(CardEffectData.CardEffectSelectionMode.AllOpponents, SelectAllOpponents);
 
         // Effect
         effectDic.Add(CardEffectData.CardEffectMode.NONE, null);
@@ -76,6 +88,7 @@ public class SpellManager : Singleton<SpellManager>
         canLaunchDic.Add(CardEffectData.CardEffectSelectionMode.Opponent, () => true);
         canLaunchDic.Add(CardEffectData.CardEffectSelectionMode.RandomOpponent, OpponentHasSoldierLeft);
         canLaunchDic.Add(CardEffectData.CardEffectSelectionMode.AllOpponentSoldier, OpponentHasSoldierLeft);
+        canLaunchDic.Add(CardEffectData.CardEffectSelectionMode.AllOpponents, () => true);
 
         // Key Effect
         keyEffectDic.Add(CardEffectData.KeyEffect.Overload, DiscardCard);
@@ -90,7 +103,7 @@ public class SpellManager : Singleton<SpellManager>
     /// <summary>
     /// Server Function
     /// </summary>
-    public void LaunchEffect(int _cardID, PlayerEnum _ownerType, bool _canInHand)
+    public IEnumerator LaunchEffect(int _cardID, PlayerEnum _ownerType, bool _canInHand)
     {
         // Reset Targets
         targets.Clear();
@@ -109,10 +122,20 @@ public class SpellManager : Singleton<SpellManager>
         elementaryCombo = false;
         data = card.Data;
 
+        // Play Keyword Effect
+        if (data.effect.keyEffect != CardEffectData.KeyEffect.NONE)
+            keyEffectDic[data.effect.keyEffect].Invoke(data.effect);
+        // If you need to wait after he keyword effect => wait for X seconds
+        if (needToWaitTime)
+        {
+            yield return new WaitForSeconds(timeToWait);
+            needToWaitTime = false;
+        }
+
         // Check for selection mode
         // If return true, it means we need to select something on board
         if (CheckSelectionMode(data.effect))
-            return;
+            yield break;
 
         int _targetNumber = targets.Count;
         if (_targetNumber > 0)
@@ -123,7 +146,7 @@ public class SpellManager : Singleton<SpellManager>
                 CreateVisualEffect(_i);
             }
         }
-        if (playerTarget || data.hasKeyEffect)
+        if (playerTarget)
         {
             // Launch Effect
             CreateVisualEffect(0);
@@ -138,7 +161,7 @@ public class SpellManager : Singleton<SpellManager>
     /// <summary>
     /// Server Function
     /// </summary>
-    public void LaunchEffectSelection(int _selectedSlotID, PlayerEnum _ownerType)
+    public IEnumerator LaunchEffectSelection(int _selectedSlotID, PlayerEnum _ownerType)
     {
         // Set Targets
         targets.Add(new TargetedData(_selectedSlotID, _ownerType));
@@ -150,6 +173,16 @@ public class SpellManager : Singleton<SpellManager>
 
         // Stop Card Selection
         playerOwner.InteractComponent.SetSelectCard(false);
+
+        // Play Keyword Effect
+        if (data.effect.keyEffect != CardEffectData.KeyEffect.NONE)
+            keyEffectDic[data.effect.keyEffect].Invoke(data.effect);
+        // If you need to wait after he keyword effect => wait for X seconds
+        if (needToWaitTime)
+        {
+            yield return new WaitForSeconds(timeToWait);
+            needToWaitTime = false;
+        }
     }
 
     #endregion
@@ -173,40 +206,43 @@ public class SpellManager : Singleton<SpellManager>
 
     #endregion
 
-
-
     #region Effect
 
     /// <summary>
     /// Server Function
     /// </summary>
-    public void ChooseEffectToCast(int _index)
+    IEnumerator ChooseEffectToCast(int _index)
     {
         CardEffectData _effect = elementaryCombo ? data.elementaryComboEffect : data.effect;
-        CastEffect(_effect, _index);
+        yield return StartCoroutine(CastEffect(_effect, _index));
     }
 
-    /// <summary>
-    /// Server Function
-    /// </summary>
-    void CastEffect(CardEffectData _effect, int _index)
+    IEnumerator CastEffect(CardEffectData _effect, int _index)
     {
+        // Play Effect
         effectDic[_effect.effectMode]?.Invoke(_effect, _index);
-
-        if (_effect.keyEffect != CardEffectData.KeyEffect.NONE)
+        // If you need to wait after the effect => wait for X seconds
+        if (needToWaitTime)
         {
-            keyEffectDic[_effect.keyEffect].Invoke(_effect);
+            yield return new WaitForSeconds(timeToWait);
+            needToWaitTime = false;
         }
 
+        // If the card has an elementary combo AND we're not during the elementary combo
         if (data.hasElementaryCombo && !elementaryCombo)
         {
+            // If the last played card is the same element as this card
             if (playerOwner.LastElementPlayed == data.cardElement)
             {
+                // Check if we can still launch the effect
                 if (CanLaunchEffect(_effect))
                 {
+                    // Activate elementary combo
                     elementaryCombo = true;
+                    // Set the new Target(s)
                     CheckSelectionMode(data.elementaryComboEffect);
 
+                    // Launch visual effect for each targets
                     int _targetNumber = targets.Count;
                     if (_targetNumber > 0)
                     {
@@ -215,20 +251,27 @@ public class SpellManager : Singleton<SpellManager>
                             CreateVisualEffect(_i);
                         }
                     }
+                    // Launch single visual effect if the target is a player
                     if (playerTarget)
                     {
                         CreateVisualEffect(0);
                     }
-                    return;
+                    yield break;
                 }
             }
         }
 
+        // If the card played is a spell, set the last played element and discard the played card
         if (data is SpellCardData)
         {
             playerOwner.SetElementCardPlayed(data.cardElement);
             DiscardCardAfterUse(playerOwner.PlayerTag);
         }
+
+        if (nextEffectToPlay.Count > 0)
+            TriggerNextEffect();
+
+        yield break;
     }
 
     /// <summary>
@@ -251,6 +294,9 @@ public class SpellManager : Singleton<SpellManager>
         return canLaunchDic[_effect.selectionMode].Invoke();
     }
 
+    /// <summary>
+    /// Server Function
+    /// </summary>
     bool OpponentHasSoldierLeft()
     {
         PlayerEntity _opponent = GameManager.Instance.GetOtherPlayer(playerOwner.PlayerTag);
@@ -258,6 +304,9 @@ public class SpellManager : Singleton<SpellManager>
         return _opponentCards.Count > 0;
     }
 
+    /// <summary>
+    /// Server Function
+    /// </summary>
     bool IsTargetStillAlive()
     {
         if (targets.Count == 0) return false;
@@ -266,12 +315,47 @@ public class SpellManager : Singleton<SpellManager>
         return !_slot.Card.IsDead;
     }
 
-    void DiscardCard(CardEffectData _effect)
+    /// <summary>
+    /// Server Function
+    /// </summary>
+    void SetWaitTime(float _time)
     {
-        int _amount = _effect.keyEffectValue;
-        for (int _i = 0; _i < _amount; _i++)
+        needToWaitTime = true;
+        timeToWait = _time;
+    }
+
+    /// <summary>
+    /// Server Function
+    /// </summary>
+    public void SetNextEffect(BaseCardData _data)
+    {
+        nextEffectToPlay.Add(_data);
+    }
+
+    /// <summary>
+    /// Server Function
+    /// </summary>
+    void TriggerNextEffect()
+    {
+        BaseCardData _next = nextEffectToPlay[0];
+        nextEffectToPlay.RemoveAt(0);
+
+        data = _next;
+        CheckSelectionMode(data.effect);
+
+        int _targetNumber = targets.Count;
+        if (_targetNumber > 0)
         {
-            playerOwner.HandComponent.DiscardRandomCard();
+            for (int _i = 0; _i < _targetNumber; _i++)
+            {
+                // Launch Effect
+                CreateVisualEffect(_i);
+            }
+        }
+        if (playerTarget)
+        {
+            // Launch Effect
+            CreateVisualEffect(0);
         }
     }
 
@@ -287,6 +371,8 @@ public class SpellManager : Singleton<SpellManager>
 
         if (playerTarget)
             playerTarget.LoseHealth(_effect.amount);
+
+        SetWaitTime(0.5f);
     }
 
     void RestaureHealth(CardEffectData _effect, int _index)
@@ -297,6 +383,8 @@ public class SpellManager : Singleton<SpellManager>
 
         if (playerTarget)
             playerTarget.RestaureHealth(_effect.amount);
+
+        SetWaitTime(0.5f);
     }
 
     void SummonCard(CardEffectData _effect, int _index)
@@ -306,6 +394,8 @@ public class SpellManager : Singleton<SpellManager>
         if (!_slot) return;
 
         _slot.PutCardInSlot(_slot.transform.position, _effect.cardReference.cardID);
+
+        SetWaitTime(1.0f);
     }
 
     void AddDebuff(CardEffectData _effect, int _index)
@@ -313,12 +403,27 @@ public class SpellManager : Singleton<SpellManager>
         TargetedData _target = targets[_index];
         BoardSlotComponent _slot = GameManager.Instance.Board.GetSlot(_target.cardOwnerTag, _target.slotID);
         _slot.Card.AddDebuff(_effect.debuffType, _effect.amount);
+
+        SetWaitTime(0.5f);
     }
 
     void DrawCard(CardEffectData _effect, int _index)
     {
-        playerTarget.HandComponent.DrawCard(_effect.amount, _effect.specificElement);
+        playerTarget.HandComponent.DrawCard(_effect.amount, _effect.specificElement, _effect.specificKeyEffect);
         playerTarget.HandComponent.SetCardInHand_ClientRpc();
+
+        SetWaitTime(0.5f);
+    }
+
+    void DiscardCard(CardEffectData _effect)
+    {
+        int _amount = _effect.keyEffectValue;
+        for (int _i = 0; _i < _amount; _i++)
+        {
+            playerOwner.HandComponent.DiscardRandomCard();
+        }
+        playerOwner.AddToOverloadAmount(_amount);
+        SetWaitTime(1.0f);
     }
 
     #endregion
@@ -354,7 +459,8 @@ public class SpellManager : Singleton<SpellManager>
         BoardSlotComponent _slot = GameManager.Instance.Board.GetRandomCardOnBoard(_opponent.PlayerTag);
         if (_slot)
             targets.Add(new TargetedData(_slot.GetSlotIndex, _opponent.PlayerTag));
-        return false;
+
+        return _slot == null;
     }
 
     bool SelectAllOpponentSoldiers()
@@ -366,6 +472,20 @@ public class SpellManager : Singleton<SpellManager>
         {
             targets.Add(new TargetedData(_slot.GetSlotIndex, _opponent.PlayerTag));
         }
+        return _slots.Count == 0;
+    }
+
+    bool SelectAllOpponents()
+    {
+        PlayerEntity _opponent = GameManager.Instance.GetOtherPlayer(playerOwner.PlayerTag);
+        List<BoardSlotComponent> _slots = GameManager.Instance.Board.GetAllSlotCards(_opponent.PlayerTag);
+
+        foreach (BoardSlotComponent _slot in _slots)
+        {
+            targets.Add(new TargetedData(_slot.GetSlotIndex, _opponent.PlayerTag));
+        }
+        playerTarget = _opponent;
+
         return false;
     }
 
@@ -399,13 +519,13 @@ public class SpellManager : Singleton<SpellManager>
 
         if (_data is SpellCardData)
         {
-            _endPos = GetEndPosFromEffect(_effect, _ownerType, _target) + Vector3.up * 0.5f;
+            _endPos = GetEndPosFromEffect(_effect, _ownerType, _target);
             _startPos = _entity.HandComponent.SelectedPosition;
         }
         else
         {
             BoardSlotComponent _slot = GameManager.Instance.Board.GetCardFromCardID(_ownerType, _slotIndex);
-            _endPos = GetEndPosFromEffect(_effect, _ownerType, _target) + Vector3.up * 0.5f;
+            _endPos = GetEndPosFromEffect(_effect, _ownerType, _target);
             _startPos = _slot.Card.transform.position;
         }
         InitVisualEffect(_data, _endPos, _startPos, _vfxIndex, _elementaryCombo, _ownerType);
@@ -433,7 +553,7 @@ public class SpellManager : Singleton<SpellManager>
                     _visualEffect.transform.position = _endPos;
                     _visualEffect.SetTime(1.0f);
                     if (IsServer)
-                        ChooseEffectToCast(_visualEffect.GetVfxIndex);
+                        StartCoroutine(ChooseEffectToCast(_visualEffect.GetVfxIndex));
 
                     return;
                 }

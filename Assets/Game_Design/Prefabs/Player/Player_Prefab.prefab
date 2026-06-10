@@ -679,7 +679,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  cardsInDeck: 040000000400000001000000010000000900000009000000
+  cardsInDeck: 080000000d0000000d0000000d000000
 --- !u!1 &6877495836546711829
 GameObject:
   m_ObjectHideFlags: 0

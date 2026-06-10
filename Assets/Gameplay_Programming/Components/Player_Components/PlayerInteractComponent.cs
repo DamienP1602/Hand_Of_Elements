@@ -248,13 +248,13 @@ public class PlayerInteractComponent : NetworkBehaviour
         HandCardComponent _card = _player.HandComponent.GetSelectedCard();
         _card.SetIsSelected(false);
 
-        SpellManager.Instance.LaunchEffect(_cardID, _ownerTag, true);
+        StartCoroutine(SpellManager.Instance.LaunchEffect(_cardID, _ownerTag, true));
     }
 
     [ServerRpc]
     void SelectCardForEffect_ServerRpc(int _targetedCard, PlayerEnum _owner)
     {
-        SpellManager.Instance.LaunchEffectSelection(_targetedCard, _owner);
+        StartCoroutine(SpellManager.Instance.LaunchEffectSelection(_targetedCard, _owner));
     }
 
     [ServerRpc]

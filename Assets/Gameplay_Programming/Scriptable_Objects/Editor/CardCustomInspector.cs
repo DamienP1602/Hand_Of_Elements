@@ -1,3 +1,4 @@
+using NUnit.Framework.Internal;
 using System;
 using UnityEditor;
 using UnityEngine;
@@ -14,6 +15,8 @@ public class CardCustomInspector : Editor
 
         _target.cardName = EditorGUILayout.TextField("Card Name", _target.cardName);
 
+        _target.cardRarity = (CardRarity)EditorGUILayout.EnumPopup("Rarity", _target.cardRarity);
+
         _target.cardElement = (CardElement)EditorGUILayout.EnumPopup("Card Element", _target.cardElement);
 
         _target.cardCost = EditorGUILayout.IntField("Arcane Cost", _target.cardCost);
@@ -24,6 +27,14 @@ public class CardCustomInspector : Editor
         GUILayout.Space(10.0f);
 
         DrawTitle("Card Effect");
+
+        _target.hasUniqueEffect = EditorGUILayout.Toggle("Unique Effect (Mythic Cards)", _target.hasUniqueEffect);
+        if (_target.hasUniqueEffect)
+        {
+            _target.uniqueEffectData = (UniqueEffectData)EditorGUILayout.ObjectField("Unique Effect", _target.uniqueEffectData, typeof(UniqueEffectData), false);
+            GUILayout.Space(10.0f);
+        }
+
         DrawEffectDatas(_target.effect);
 
         GUILayout.Space(10.0f);
@@ -52,6 +63,8 @@ public class CardCustomInspector : Editor
         _effect.selectionMode = (CardEffectSelectionMode)EditorGUILayout.EnumPopup("Targets", _effect.selectionMode);
 
         _effect.effectMode = (CardEffectMode)EditorGUILayout.EnumPopup("Effect", _effect.effectMode);
+
+        _effect.triggerEffectOnDiscard = EditorGUILayout.Toggle("Trigger effect on discard", _effect.triggerEffectOnDiscard);
 
         DrawEffectMode(_effect);
 
@@ -154,7 +167,16 @@ public class CardCustomInspector : Editor
 
         _effect.specificElement = (CardElement)EditorGUILayout.EnumPopup("Specific Element", _effect.specificElement);
 
-        _effect.keyEffect = (KeyEffect)EditorGUILayout.EnumPopup("Specific Key Effect", _effect.keyEffect);
+        _effect.specificKeyEffect = (KeyEffect)EditorGUILayout.EnumPopup("Specific Key Effect", _effect.specificKeyEffect);
+    }
+
+
+    void DrawUniqueEffect(BaseCardData _target)
+    {
+        
+
+        _target.effect.effectAsset = (VisualEffectAsset)EditorGUILayout.ObjectField("Visual Asset", _target.effect.effectAsset, typeof(VisualEffectAsset), false);
+        _target.effect.isInstantEffect = EditorGUILayout.Toggle("In Effect Instant", _target.effect.isInstantEffect);
     }
 
     protected void DrawTitle(string _label, float _space = 5.0f)

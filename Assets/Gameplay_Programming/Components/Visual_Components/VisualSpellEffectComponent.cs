@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.VFX;
@@ -19,7 +20,7 @@ public class VisualSpellEffectComponent : NetworkBehaviour
     [SerializeField] bool isTimed = false;
     [SerializeField] float currentTime = 0.0f;
 
-    Action<int> actionToPlay;
+    Func<int, IEnumerator> actionToPlay;
 
     [Header("Network Variables")]
     [SerializeField] NetworkVariable<int> vfxIndex = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
@@ -33,7 +34,7 @@ public class VisualSpellEffectComponent : NetworkBehaviour
     #region Setters
 
     public void SetVisualAsset(VisualEffectAsset _asset) => VisualEffect.visualEffectAsset = _asset;
-    public void SetAction(Action<int> _action) => actionToPlay += _action;
+    public void SetAction(Func<int,IEnumerator> _action) => actionToPlay += _action;
     public void SetVfxIndex(int _index) => vfxIndex.Value = _index;
 
     public void SetDestination(Vector3 _destination)
@@ -121,7 +122,7 @@ public class VisualSpellEffectComponent : NetworkBehaviour
     [ServerRpc]
     void OnEndBehaviour_ServerRpc()
     {
-        actionToPlay?.Invoke(vfxIndex.Value);
+        StartCoroutine(actionToPlay?.Invoke(vfxIndex.Value));
         NetworkObject.Despawn(this);
     }
 

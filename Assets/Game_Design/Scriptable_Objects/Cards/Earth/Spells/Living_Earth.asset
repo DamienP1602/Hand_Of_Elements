@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1f2123f9f594a14ab0c9c91591bcc6d, type: 3}
   m_Name: Living_Earth
   m_EditorClassIdentifier: 
-  cardID: 9
+  cardID: 14
   cardName: Living Earth
   cardElement: 2
+  cardRarity: 0
   cardCost: 1
   hasEffect: 1
   hasKeyEffect: 0
@@ -30,8 +31,10 @@ MonoBehaviour:
     effectAsset: {fileID: 8926484042661614526, guid: 2a0dad5688e648244a09c652f08bc391, type: 3}
     isInstantEffect: 1
     specificElement: 0
+    specificKeyEffect: 0
     keyEffect: 0
     keyEffectValue: 0
+    triggerEffectOnDiscard: 0
   hasElementaryCombo: 1
   elementaryComboEffect:
     selectionMode: 2
@@ -44,8 +47,10 @@ MonoBehaviour:
     effectAsset: {fileID: 8926484042661614526, guid: 2a0dad5688e648244a09c652f08bc391, type: 3}
     isInstantEffect: 1
     specificElement: 0
+    specificKeyEffect: 0
     keyEffect: 0
     keyEffectValue: 0
+    triggerEffectOnDiscard: 0
   description: 'Summon 1 Minor Earth Elemental 10/10.
 
     <b>Elementary Combo :</b>
