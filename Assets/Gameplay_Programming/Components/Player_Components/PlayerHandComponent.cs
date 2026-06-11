@@ -300,7 +300,7 @@ public class PlayerHandComponent : NetworkBehaviour
         HandCardComponent _randomCard = _cards[_randomIndex];
 
         int _cardHandIndex = GetIndexOf(_randomCard);
-        if (_randomCard.Data.effect.triggerEffectOnDiscard)
+        if (_randomCard.Data.effect.triggerMode == CardEffectTriggerMode.OnDiscarded)
         {
             SpellManager.Instance.SetNextEffect(_randomCard.Data);
         }
@@ -414,7 +414,7 @@ public class PlayerHandComponent : NetworkBehaviour
         HandCardComponent _card = GetCard(_cardIndex);
 
         PlayerEntity _owner = GameManager.Instance.GetPlayer(_card.OwnerTag);
-        _owner.DiscardPileComponent.AddCard(_card, GetIndexOf(_card));
+        _owner.DiscardPileComponent.AddHandCard(_card, GetIndexOf(_card));
     }
 
     #endregion

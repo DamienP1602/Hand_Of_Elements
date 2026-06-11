@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
@@ -23,15 +24,21 @@ public class PlayerEntity : NetworkBehaviour
 
     [Header("Player Parameters")]
     [SerializeField] PlayerEnum player;
+    [SerializeField] int maxArcaneAmount = 10;
 
     [Header("Network Variables")]
     [SerializeField] NetworkVariable<int> arcaneAmount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     [SerializeField] NetworkVariable<CardElement> lastElementPlayed = new NetworkVariable<CardElement>(CardElement.NONE, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-    [SerializeField] NetworkVariable<List<int>> vfxIndexCreated = new NetworkVariable<List<int>>(new(), NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     [SerializeField] NetworkVariable<int> healthAmount = new NetworkVariable<int>(400, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     [Header("In Game Network Variables")]
     [SerializeField] NetworkVariable<int> amountOfOverload = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+
+    #region Event Linked with In Game Network Variables
+
+    public event Action<int> overloadAmountChanged;
+
+    #endregion
 
     #region Getters
 
@@ -77,9 +84,11 @@ public class PlayerEntity : NetworkBehaviour
 
         InteractComponent.SetOwner(this);
         InterfaceComponent.gameObject.SetActive(true);
-        arcaneAmount.OnValueChanged += (_old, _new) => InterfaceComponent.SetArcaneText(_new);
+        
 
         InitInputs();
+        InitNetworkEvents();
+
         GameManager.Instance.SetButtonVisibleFromPlayerTurn(player);
 
         if (player == PlayerEnum.Player_One)
@@ -90,6 +99,12 @@ public class PlayerEntity : NetworkBehaviour
     {
         InputsComponent.Click.started += (_context) => InteractComponent.OnPlayerClick();
         InputsComponent.Click.canceled += (_context) => InteractComponent.OnPlayerRelease();
+    }
+
+    void InitNetworkEvents()
+    {
+        arcaneAmount.OnValueChanged += (_old, _new) => InterfaceComponent.SetArcaneText(_new);
+        amountOfOverload.OnValueChanged += (_old, _new) => overloadAmountChanged?.Invoke(_new);
     }
 
     #endregion
@@ -156,27 +171,34 @@ public class PlayerEntity : NetworkBehaviour
     /// <summary>
     /// Server Function
     /// </summary>
-    public void AddArcane(int _amount) => arcaneAmount.Value += _amount;
+    public void AddArcane(int _amount)
+    {
+        int _newAmount = Mathf.Clamp(arcaneAmount.Value + _amount, 0, maxArcaneAmount);
+        arcaneAmount.Value = _newAmount;
+    }
 
     /// <summary>
     /// Server Function
     /// </summary>
-    public void RemoveArcane(int _amount) => arcaneAmount.Value -= _amount;
+    public void RemoveArcane(int _amount)
+    {
+        int _newAmount = Mathf.Clamp(arcaneAmount.Value - _amount, 0, maxArcaneAmount);
+        arcaneAmount.Value = _newAmount;
+    }
 
     /// <summary>
     /// Server Function
     /// </summary>
-    public void SetArcaneAmount(int _amount) => arcaneAmount.Value = _amount;
+    public void SetArcaneAmount(int _amount)
+    {
+        int _newAmount = Mathf.Clamp(_amount, 0, maxArcaneAmount);
+        arcaneAmount.Value = _newAmount;
+    }
 
     /// <summary>
     /// Server Function
     /// </summary>
     public void SetElementCardPlayed(CardElement _element) => lastElementPlayed.Value = _element;
-
-    /// <summary>
-    /// Server Function
-    /// </summary>
-    public void AddNewVfxIndex(int _index) => vfxIndexCreated.Value.Add(_index);
 
     /// <summary>
     /// Server Function

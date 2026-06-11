@@ -672,7 +672,7 @@ MonoBehaviour:
   canMove: 0
   canRotate: 0
   lockUpdate: 0
-  rotationSpeed: 350
+  rotationSpeed: 500
   destination: {x: 0, y: 0, z: 0}
   rotationDestination: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &7051091250452970361

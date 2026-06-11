@@ -23,14 +23,17 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7dcf5f20969d1934d9b655336230c5ca, type: 2}
   - {fileID: 11400000, guid: 2060a4370cf8f324b939db688ef53611, type: 2}
   - {fileID: 11400000, guid: f3bca76750b5863498da72bfaea4c735, type: 2}
-  waterCards:
-  - {fileID: 11400000, guid: 6277c5e660f9cc7479dbc9fe4825e3c7, type: 2}
-  - {fileID: 11400000, guid: a53bfc5dd4d9038449b51424a4126a47, type: 2}
+  waterCards: []
   earthCards:
   - {fileID: 11400000, guid: b47c609aca544184eaa7d946b986c17c, type: 2}
   - {fileID: 11400000, guid: e286a234a4d589f4a9e23aba40e4dd0b, type: 2}
   - {fileID: 11400000, guid: c7f85a0253c3b3b4ca7fc640c9f7eca0, type: 2}
-  airCards:
-  - {fileID: 11400000, guid: 6a35c30123493ed43b923802715e2d9a, type: 2}
+  thunderCards:
+  - {fileID: 11400000, guid: db23d2e07e407154b960b7a7d48c5085, type: 2}
   - {fileID: 11400000, guid: 975e092b70c97f9438efae98d7fb799f, type: 2}
-  globalMagicCards: []
+  - {fileID: 11400000, guid: 04b96c01c86ab194da9e22984663fd9e, type: 2}
+  - {fileID: 11400000, guid: 6a35c30123493ed43b923802715e2d9a, type: 2}
+  - {fileID: 11400000, guid: d3ea1a1db83014942b5e5084e8fc0f27, type: 2}
+  - {fileID: 11400000, guid: 73de785b3489e6547b1d2f71ff66a09d, type: 2}
+  globalMagicCards:
+  - {fileID: 11400000, guid: 80f8c7af0fa5dd54f9a4a54293039d11, type: 2}

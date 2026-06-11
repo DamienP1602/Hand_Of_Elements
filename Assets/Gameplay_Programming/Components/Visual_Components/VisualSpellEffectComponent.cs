@@ -23,7 +23,7 @@ public class VisualSpellEffectComponent : NetworkBehaviour
     Func<int, IEnumerator> actionToPlay;
 
     [Header("Network Variables")]
-    [SerializeField] NetworkVariable<int> vfxIndex = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    [SerializeField] NetworkVariable<int> vfxIndex = new NetworkVariable<int>(-2, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     #region Getters
 
@@ -92,16 +92,18 @@ public class VisualSpellEffectComponent : NetworkBehaviour
 
     void MoveTo()
     {
-        currentMovementTime += Time.deltaTime;
+        currentMovementTime += Time.deltaTime / 1.0f;
         float _value = curveMovement.Evaluate(currentMovementTime);
 
         transform.position = Vector3.Lerp(transform.position, destination, _value);
-        //transform.position = Vector3.MoveTowards(transform.position, destination, Time.deltaTime * moveSpeed);
 
         if (transform.position == destination)
         {
             if (IsServer)
                 OnEndBehaviour_ServerRpc();
+
+            VisualEffect.Stop();
+            canMove = false;
         }
     }
 
@@ -111,7 +113,10 @@ public class VisualSpellEffectComponent : NetworkBehaviour
         if (currentTime >= lifeTime)
         {
             if (IsServer)
-                DestroyObject_ServerRpc();
+                OnEndBehaviour_ServerRpc();
+
+            VisualEffect.Stop();
+            isTimed = false;
         }
     }
 
@@ -123,11 +128,19 @@ public class VisualSpellEffectComponent : NetworkBehaviour
     void OnEndBehaviour_ServerRpc()
     {
         StartCoroutine(actionToPlay?.Invoke(vfxIndex.Value));
-        NetworkObject.Despawn(this);
+
+        Invoke(nameof(DestroyActor), 1.0f);
     }
 
-    [ServerRpc]
-    public void DestroyObject_ServerRpc()
+    #endregion
+
+
+    #region Server Function
+
+    /// <summary>
+    /// Server Function
+    /// </summary>
+    void DestroyActor()
     {
         NetworkObject.Despawn(this);
     }

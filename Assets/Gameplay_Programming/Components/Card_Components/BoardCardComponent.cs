@@ -153,9 +153,12 @@ public class BoardCardComponent : CardComponent
         OverlayComponent.UpdateHealth(_newAmount);
         if (_newAmount == 0)
         {
-            PlayerEntity _localPlayer = GameManager.Instance.GetLocalPlayer();
-            PlayerEnum _ownerTag = GameManager.Instance.Board.GetOwnerOfCard(this);
-            _localPlayer.DestroyCard(GameManager.Instance.Board.GetSlotIndex(this, _ownerTag), _ownerTag);
+            PlayerEntity _owner = GameManager.Instance.GetPlayer(OwnerTag);
+
+            if (data.keyEffect == CardEffectData.KeyEffect.Etherial)
+                _owner.DeckComponent.AddCardInDeck(_owner, this, false);
+            else
+                _owner.DiscardPileComponent.AddBoardCard(this);
         }
     }
 

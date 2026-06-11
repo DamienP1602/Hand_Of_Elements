@@ -32,9 +32,6 @@ MonoBehaviour:
     isInstantEffect: 0
     specificElement: 0
     specificKeyEffect: 0
-    keyEffect: 1
-    keyEffectValue: 1
-    triggerEffectOnDiscard: 0
   hasElementaryCombo: 0
   elementaryComboEffect:
     selectionMode: 0
@@ -48,10 +45,11 @@ MonoBehaviour:
     isInstantEffect: 0
     specificElement: 0
     specificKeyEffect: 0
-    keyEffect: 0
-    keyEffectValue: 0
-    triggerEffectOnDiscard: 0
   description: '<b>Overload (1)</b>
 
     Deals 40 damages.'
   elementaryComboDescription: 
+  hasUniqueEffect: 0
+  uniqueEffectData: {fileID: 0}
+  keyEffect: 1
+  keyEffectValue: 1

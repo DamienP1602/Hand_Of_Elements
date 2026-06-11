@@ -17,4 +17,10 @@ public class ArchimageMalorinUniqueEffect : UniqueEffectData
         PlayerEntity _player = GameManager.Instance.GetPlayer(_card.OwnerTag);
         _card.Data.effect.amount = _player.AmountOfOverload * 10;
     }
+
+    public override void EventLinkedWithUniqueEffect(CardComponent _card)
+    {
+        PlayerEntity _owner = GameManager.Instance.GetPlayer(_card.OwnerTag);
+        _owner.overloadAmountChanged += (_value) => _card.OverlayComponent.SetData(_card.Data, true);
+    }
 }

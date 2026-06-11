@@ -153,7 +153,7 @@ public class GameManager : Singleton<GameManager>
         }
 
         // Set new arcane amount clamped between 0 and 10
-        _player.SetArcaneAmount(Mathf.Clamp(turnAmount.Value, 0, 10));
+        _player.SetArcaneAmount(turnAmount.Value);
 
         // Disable button and show it to the current player
         widget.SetButtonIsVisible(false);

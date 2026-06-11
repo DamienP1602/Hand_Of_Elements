@@ -47,7 +47,7 @@ public class PlayerDeckComponent : NetworkBehaviour
         foreach (BaseCardData _card in _allCards)
         {
             if (_card.hasEffect)
-                if (_card.effect.keyEffect == _specificKey)
+                if (_card.keyEffect == _specificKey)
                     _sortedList.Add(_card);
         }
 
@@ -87,4 +87,49 @@ public class PlayerDeckComponent : NetworkBehaviour
 
     #endregion
 
+    #region Server Function
+
+    /// <summary>
+    /// Server Function
+    /// </summary>
+    public void AddCardInDeck(PlayerEntity _owner, CardComponent _card, bool _inHand)
+    {
+        int _index = 0;
+        if (_inHand)
+            _index = _owner.HandComponent.GetIndexOf(_card as HandCardComponent);
+        else
+            _index = GameManager.Instance.Board.GetSlotIndex(_card as BoardCardComponent, _owner.PlayerTag);
+
+        AddCardInDeck_ClientRpc(_owner.PlayerTag, _index, _inHand);
+    }
+
+    #endregion
+
+    #region ClientRpc
+
+    [ClientRpc]
+    void AddCardInDeck_ClientRpc(PlayerEnum _ownerType, int _cardIndex, bool _inHand)
+    {
+        CardComponent _card = null;
+        PlayerEntity _player = GameManager.Instance.GetPlayer(_ownerType);
+        if (_inHand)
+        {
+            _card = _player.HandComponent.GetCard(_cardIndex);
+        }
+        else
+        {
+            BoardSlotComponent _slot = GameManager.Instance.Board.GetCardFromCardID(_ownerType, _cardIndex);
+            _card = _slot.Card;
+        }
+
+        cardsInDeck.Add(_card.Data.cardID);
+
+        _card.MovementComponent.SetSpeed(6.0f);
+        _card.MovementComponent.SetDestination(GameManager.Instance.Board.GetDeckPosition(_ownerType) + Vector3.up * 0.5f);
+        _card.MovementComponent.OnDestinationReached += () => _card.FadeComponent.SetFade(CardFadeComponent.FadeStatus.FadeOut);
+        if (IsServer)
+            _card.FadeComponent.OnFadeFinish += () => _card.NetworkObject.Despawn(true);
+    }
+
+    #endregion
 }

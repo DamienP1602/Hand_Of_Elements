@@ -1,15 +1,16 @@
 using System;
-using UnityEngine;
-using UnityEditor;
 using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine;
+using static CardEffectData;
 
 [Serializable]
 public enum CardElement
 {
     Fire,
-    Water,
+    Ice,
     Earth,
-    Air,
+    Thunder,
     NONE
 }
 
@@ -44,4 +45,6 @@ public class BaseCardData : ScriptableObject
     public string elementaryComboDescription;
     public bool hasUniqueEffect;
     public UniqueEffectData uniqueEffectData;
+    public KeyEffect keyEffect;
+    public int keyEffectValue;
 }

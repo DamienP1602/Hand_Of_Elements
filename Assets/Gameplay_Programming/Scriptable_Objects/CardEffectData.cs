@@ -15,7 +15,8 @@ public class CardEffectData
     public enum CardEffectTriggerMode
     {
         OnPlayed,
-        AtDeath
+        AtDeath,
+        OnDiscarded
     }
 
     [Serializable]
@@ -39,6 +40,8 @@ public class CardEffectData
         InstantDamage,
         Debuff,
         Draw,
+        RestaureArcane,
+        GainArcane
     }
 
     [Serializable]
@@ -68,19 +71,7 @@ public class CardEffectData
     public int amount;
     public VisualEffectAsset effectAsset;
     public bool isInstantEffect;
+    public float effectTime;
     public CardElement specificElement;
     public KeyEffect specificKeyEffect;
-    public KeyEffect keyEffect;
-    public int keyEffectValue;
-    public bool triggerEffectOnDiscard;
-
-    public string ChangeSpecialText(string _text)
-    {
-        string _toReplace = "";
-
-        if (keyEffect == KeyEffect.Overload)
-            _toReplace = keyEffectValue.ToString();
-
-        return _text.Replace("#",_toReplace);
-    }
 }

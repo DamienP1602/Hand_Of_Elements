@@ -591,6 +591,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   player: 0
+  maxArcaneAmount: 10
   arcaneAmount:
     UpdateTraits:
       MinSecondsBetweenUpdates: 0
@@ -601,16 +602,16 @@ MonoBehaviour:
       MinSecondsBetweenUpdates: 0
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 4
-  vfxIndexCreated:
-    UpdateTraits:
-      MinSecondsBetweenUpdates: 0
-      MaxSecondsBetweenUpdates: 0
-    m_InternalValue: 
   healthAmount:
     UpdateTraits:
       MinSecondsBetweenUpdates: 0
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 400
+  amountOfOverload:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
 --- !u!114 &3898805736163551846
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -679,7 +680,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  cardsInDeck: 080000000d0000000d0000000d000000
+  cardsInDeck: 01000000010000000c0000000c000000
 --- !u!1 &6877495836546711829
 GameObject:
   m_ObjectHideFlags: 0

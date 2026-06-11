@@ -24,7 +24,7 @@ MonoBehaviour:
     selectionMode: 2
     effectMode: 1
     effectModifier: 0
-    triggerMode: 0
+    triggerMode: 2
     cardReference: {fileID: 11400000}
     debuffType: 0
     amount: 1
@@ -32,9 +32,6 @@ MonoBehaviour:
     isInstantEffect: 1
     specificElement: 0
     specificKeyEffect: 0
-    keyEffect: 0
-    keyEffectValue: 0
-    triggerEffectOnDiscard: 1
   hasElementaryCombo: 0
   elementaryComboEffect:
     selectionMode: 0
@@ -48,11 +45,12 @@ MonoBehaviour:
     isInstantEffect: 0
     specificElement: 0
     specificKeyEffect: 0
-    keyEffect: 0
-    keyEffectValue: 0
-    triggerEffectOnDiscard: 0
   description: This card is summoned when discarded.
   elementaryComboDescription: 
+  hasUniqueEffect: 0
+  uniqueEffectData: {fileID: 0}
+  keyEffect: 0
+  keyEffectValue: 0
   attackAmount: 40
   healthAmount: 30
   isInvocation: 0

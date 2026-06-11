@@ -32,9 +32,6 @@ MonoBehaviour:
     isInstantEffect: 0
     specificElement: 0
     specificKeyEffect: 0
-    keyEffect: 1
-    keyEffectValue: 2
-    triggerEffectOnDiscard: 0
   hasElementaryCombo: 0
   elementaryComboEffect:
     selectionMode: 0
@@ -48,13 +45,14 @@ MonoBehaviour:
     isInstantEffect: 0
     specificElement: 0
     specificKeyEffect: 0
-    keyEffect: 0
-    keyEffectValue: 0
-    triggerEffectOnDiscard: 0
   description: '<b>Overload (2)</b>
 
     Deals 20 damages to all opponents.'
   elementaryComboDescription: 
+  hasUniqueEffect: 0
+  uniqueEffectData: {fileID: 0}
+  keyEffect: 1
+  keyEffectValue: 2
   attackAmount: 40
   healthAmount: 40
   isInvocation: 0

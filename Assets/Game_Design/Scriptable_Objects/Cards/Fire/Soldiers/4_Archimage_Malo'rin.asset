@@ -32,9 +32,6 @@ MonoBehaviour:
     isInstantEffect: 0
     specificElement: 0
     specificKeyEffect: 0
-    keyEffect: 0
-    keyEffectValue: 0
-    triggerEffectOnDiscard: 0
   hasElementaryCombo: 0
   elementaryComboEffect:
     selectionMode: 0
@@ -48,14 +45,13 @@ MonoBehaviour:
     isInstantEffect: 0
     specificElement: 0
     specificKeyEffect: 0
-    keyEffect: 0
-    keyEffectValue: 0
-    triggerEffectOnDiscard: 0
   description: For each amount of <b>Overload</b> used this game, deals 10 damages
     to all Opponents (#)
   elementaryComboDescription: 
   hasUniqueEffect: 1
   uniqueEffectData: {fileID: 11400000, guid: fd681ced05222f84b9479263c7c221ce, type: 2}
+  keyEffect: 0
+  keyEffectValue: 0
   attackAmount: 70
   healthAmount: 70
   isInvocation: 0

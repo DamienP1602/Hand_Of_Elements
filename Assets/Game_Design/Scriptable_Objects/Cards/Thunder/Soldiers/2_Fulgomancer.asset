@@ -10,47 +10,49 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4c8e7bd1d286b25499e20359c7a5d484, type: 3}
-  m_Name: Lesser_Earth_Elemental
+  m_Name: 2_Fulgomancer
   m_EditorClassIdentifier: 
-  cardID: 10
-  cardName: Lesser Earth Elemental
-  cardElement: 2
-  cardRarity: 0
-  cardCost: 0
-  hasEffect: 0
-  hasKeyEffect: 0
+  cardID: 17
+  cardName: Fulgomancer
+  cardElement: 3
+  cardRarity: 2
+  cardCost: 3
+  hasEffect: 1
+  hasKeyEffect: 1
   isHiddenEffect: 0
   effect:
-    selectionMode: 0
-    effectMode: 0
+    selectionMode: 5
+    effectMode: 3
     effectModifier: 0
     triggerMode: 0
     cardReference: {fileID: 0}
     debuffType: 0
-    amount: 0
-    effectAsset: {fileID: 0}
+    amount: 10
+    effectAsset: {fileID: 8926484042661614526, guid: bee68f0be249a854386188db888ac863, type: 3}
     isInstantEffect: 0
     specificElement: 0
     specificKeyEffect: 0
   hasElementaryCombo: 0
   elementaryComboEffect:
-    selectionMode: 0
-    effectMode: 0
+    selectionMode: 5
+    effectMode: 3
     effectModifier: 0
     triggerMode: 0
     cardReference: {fileID: 0}
     debuffType: 0
-    amount: 0
-    effectAsset: {fileID: 0}
+    amount: 10
+    effectAsset: {fileID: 8926484042661614526, guid: bee68f0be249a854386188db888ac863, type: 3}
     isInstantEffect: 0
     specificElement: 0
     specificKeyEffect: 0
-  description: 
+  description: '<b>Etherial</b>
+
+    Deals 10 damages to every enemy soldiers.'
   elementaryComboDescription: 
   hasUniqueEffect: 0
   uniqueEffectData: {fileID: 0}
   keyEffect: 0
   keyEffectValue: 0
-  attackAmount: 10
-  healthAmount: 80
-  isInvocation: 1
+  attackAmount: 30
+  healthAmount: 20
+  isInvocation: 0

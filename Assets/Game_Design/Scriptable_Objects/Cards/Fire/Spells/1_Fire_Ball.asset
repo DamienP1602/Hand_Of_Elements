@@ -32,9 +32,6 @@ MonoBehaviour:
     isInstantEffect: 0
     specificElement: 0
     specificKeyEffect: 0
-    keyEffect: 0
-    keyEffectValue: 0
-    triggerEffectOnDiscard: 0
   hasElementaryCombo: 1
   elementaryComboEffect:
     selectionMode: 0
@@ -48,10 +45,11 @@ MonoBehaviour:
     isInstantEffect: 1
     specificElement: 0
     specificKeyEffect: 0
-    keyEffect: 0
-    keyEffectValue: 0
-    triggerEffectOnDiscard: 0
   description: 'Deals 10 damages.
 
     <b>Elementary Combo :</b> Put 1 Burn Token.'
   elementaryComboDescription: Put 1 Burn Token on it.
+  hasUniqueEffect: 0
+  uniqueEffectData: {fileID: 0}
+  keyEffect: 0
+  keyEffectValue: 0

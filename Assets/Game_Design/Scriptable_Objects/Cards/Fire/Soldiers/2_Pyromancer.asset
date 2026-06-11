@@ -32,9 +32,6 @@ MonoBehaviour:
     isInstantEffect: 1
     specificElement: 0
     specificKeyEffect: 0
-    keyEffect: 0
-    keyEffectValue: 0
-    triggerEffectOnDiscard: 0
   hasElementaryCombo: 1
   elementaryComboEffect:
     selectionMode: 5
@@ -48,14 +45,15 @@ MonoBehaviour:
     isInstantEffect: 1
     specificElement: 0
     specificKeyEffect: 0
-    keyEffect: 0
-    keyEffectValue: 0
-    triggerEffectOnDiscard: 0
   description: 'Draws 1 Fire Card.
 
     <b>Elementary Combo :</b> Put 1 Burn Token
     to every enemy soldiers;'
   elementaryComboDescription: 
+  hasUniqueEffect: 0
+  uniqueEffectData: {fileID: 0}
+  keyEffect: 0
+  keyEffectValue: 0
   attackAmount: 30
   healthAmount: 20
   isInvocation: 0

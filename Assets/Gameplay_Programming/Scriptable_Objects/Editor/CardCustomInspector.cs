@@ -64,12 +64,14 @@ public class CardCustomInspector : Editor
 
         _effect.effectMode = (CardEffectMode)EditorGUILayout.EnumPopup("Effect", _effect.effectMode);
 
-        _effect.triggerEffectOnDiscard = EditorGUILayout.Toggle("Trigger effect on discard", _effect.triggerEffectOnDiscard);
-
         DrawEffectMode(_effect);
 
         _effect.effectAsset = (VisualEffectAsset)EditorGUILayout.ObjectField("Visual Asset", _effect.effectAsset, typeof(VisualEffectAsset), false);
         _effect.isInstantEffect = EditorGUILayout.Toggle("In Effect Instant", _effect.isInstantEffect);
+        if (_effect.isInstantEffect)
+        {
+            _effect.effectTime = EditorGUILayout.FloatField("Effect Time", _effect.effectTime);
+        }
     }
 
     protected void DrawKeyEffect(BaseCardData _data)
@@ -81,14 +83,14 @@ public class CardCustomInspector : Editor
             return;
 
         DrawTitle("Key Effect");
-        _data.effect.keyEffect = (KeyEffect)EditorGUILayout.EnumPopup("Key Effect", _data.effect.keyEffect);
+        _data.keyEffect = (KeyEffect)EditorGUILayout.EnumPopup("Key Effect", _data.keyEffect);
 
-        switch (_data.effect.keyEffect)
+        switch (_data.keyEffect)
         {
             case KeyEffect.NONE:
                 break;
             case KeyEffect.Overload:
-                _data.effect.keyEffectValue = EditorGUILayout.IntField("Amount of Card Discarded", _data.effect.keyEffectValue);
+                _data.keyEffectValue = EditorGUILayout.IntField("Amount of Card Discarded", _data.keyEffectValue);
                 break;
             case KeyEffect.Etherial:
                 break;
@@ -123,6 +125,9 @@ public class CardCustomInspector : Editor
                 break;
             case CardEffectMode.Draw:
                 DrawDrawCard(_effect);
+                break;
+            case CardEffectMode.RestaureArcane | CardEffectMode.GainArcane:
+                DrawRestaureArcane(_effect);
                 break;
         }
     }
@@ -169,14 +174,12 @@ public class CardCustomInspector : Editor
 
         _effect.specificKeyEffect = (KeyEffect)EditorGUILayout.EnumPopup("Specific Key Effect", _effect.specificKeyEffect);
     }
-
-
-    void DrawUniqueEffect(BaseCardData _target)
+    
+    void DrawRestaureArcane(CardEffectData _effect)
     {
-        
+        DrawTitle("Arcane Restauration Data");
 
-        _target.effect.effectAsset = (VisualEffectAsset)EditorGUILayout.ObjectField("Visual Asset", _target.effect.effectAsset, typeof(VisualEffectAsset), false);
-        _target.effect.isInstantEffect = EditorGUILayout.Toggle("In Effect Instant", _target.effect.isInstantEffect);
+        _effect.amount = EditorGUILayout.IntField("Amount", _effect.amount);
     }
 
     protected void DrawTitle(string _label, float _space = 5.0f)

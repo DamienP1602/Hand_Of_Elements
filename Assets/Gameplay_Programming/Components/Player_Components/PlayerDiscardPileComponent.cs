@@ -20,7 +20,7 @@ public class PlayerDiscardPileComponent : NetworkBehaviour
 
     #region Functions
 
-    public void AddCard(CardComponent _card,int _cardHandIndex)
+    public void AddHandCard(CardComponent _card,int _cardHandIndex)
     {
         _card.SetIsInteractable(false);
         _card.MovementComponent.SetSpeed(6.0f);
@@ -30,6 +30,19 @@ public class PlayerDiscardPileComponent : NetworkBehaviour
         _card.MovementComponent.OnDestinationReached += () => _card.FadeComponent.SetFade(CardFadeComponent.FadeStatus.FadeOut);
         if (IsOwner)
             _card.FadeComponent.OnFadeFinish += () => RemoveCard_ServerRpc(_cardHandIndex);
+
+        discardedCardIDs.Add(_card.Data.cardID);
+    }
+
+    public void AddBoardCard(CardComponent _card)
+    {
+        _card.MovementComponent.SetSpeed(6.0f);
+        _card.MovementComponent.SetDestination(discardedCardTransform.position);
+        _card.MovementComponent.SetRotationDestination(discardedCardTransform.rotation);
+
+        _card.MovementComponent.OnDestinationReached += () => _card.FadeComponent.SetFade(CardFadeComponent.FadeStatus.FadeOut);
+        if (IsServer)
+            _card.FadeComponent.OnFadeFinish += () => _card.NetworkObject.Despawn(true);
 
         discardedCardIDs.Add(_card.Data.cardID);
     }

@@ -78,6 +78,9 @@ public class CardComponent : NetworkBehaviour
     {
         data = CardManager.Instance.GetCard(ID);
         OverlayComponent.SetData(data);
+
+        if (data.hasUniqueEffect)
+            data.uniqueEffectData.EventLinkedWithUniqueEffect(this);
     }
 
     #endregion

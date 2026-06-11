@@ -33,7 +33,6 @@ public class SpellManager : Singleton<SpellManager>
     [SerializeField] VisualSpellEffectComponent emptyVisualEffect;
     [SerializeField] int slotIndex;
     [SerializeField] bool elementaryCombo = false;
-    [SerializeField] int vfxIndexes = 0;
     [SerializeField] List<BaseCardData> nextEffectToPlay = new();
 
     [Header("Time Parameters")]
@@ -80,6 +79,7 @@ public class SpellManager : Singleton<SpellManager>
         effectDic.Add(CardEffectData.CardEffectMode.InstantDamage, DealDamages);
         effectDic.Add(CardEffectData.CardEffectMode.Debuff, AddDebuff);
         effectDic.Add(CardEffectData.CardEffectMode.Draw, DrawCard);
+        effectDic.Add(CardEffectData.CardEffectMode.RestaureArcane, RestaureArcane);
 
         // Can Lauch
         canLaunchDic.Add(CardEffectData.CardEffectSelectionMode.NoTarget, () => true);
@@ -92,6 +92,7 @@ public class SpellManager : Singleton<SpellManager>
 
         // Key Effect
         keyEffectDic.Add(CardEffectData.KeyEffect.Overload, DiscardCard);
+        keyEffectDic.Add(CardEffectData.KeyEffect.Etherial, null);
     }
 
     #endregion
@@ -123,8 +124,8 @@ public class SpellManager : Singleton<SpellManager>
         data = card.Data;
 
         // Play Keyword Effect
-        if (data.effect.keyEffect != CardEffectData.KeyEffect.NONE)
-            keyEffectDic[data.effect.keyEffect].Invoke(data.effect);
+        if (data.keyEffect != CardEffectData.KeyEffect.NONE)
+            keyEffectDic[data.keyEffect]?.Invoke(data.effect);
         // If you need to wait after he keyword effect => wait for X seconds
         if (needToWaitTime)
         {
@@ -149,7 +150,7 @@ public class SpellManager : Singleton<SpellManager>
         if (playerTarget)
         {
             // Launch Effect
-            CreateVisualEffect(0);
+            CreateVisualEffect(-1);
         }
 
         if (_canInHand)
@@ -175,8 +176,8 @@ public class SpellManager : Singleton<SpellManager>
         playerOwner.InteractComponent.SetSelectCard(false);
 
         // Play Keyword Effect
-        if (data.effect.keyEffect != CardEffectData.KeyEffect.NONE)
-            keyEffectDic[data.effect.keyEffect].Invoke(data.effect);
+        if (data.keyEffect != CardEffectData.KeyEffect.NONE)
+            keyEffectDic[data.keyEffect].Invoke(data.effect);
         // If you need to wait after he keyword effect => wait for X seconds
         if (needToWaitTime)
         {
@@ -194,14 +195,11 @@ public class SpellManager : Singleton<SpellManager>
     /// </summary>
     void CreateVisualEffect(int _number)
     {
-        vfxIndexes++;
-
         PlayerEntity _entity = GameManager.Instance.GetPlayerFromTurn();
         VisualSpellEffectComponent _visual = Instantiate(emptyVisualEffect, _entity.transform);
         _visual.NetworkObject.Spawn();
         _visual.NetworkObject.TrySetParent(_entity.transform, true);
         _visual.SetVfxIndex(_number);
-        _entity.AddNewVfxIndex(vfxIndexes);
     }
 
     #endregion
@@ -219,6 +217,10 @@ public class SpellManager : Singleton<SpellManager>
 
     IEnumerator CastEffect(CardEffectData _effect, int _index)
     {
+        // If there's a unique effect, trigger it before any executions
+        if (data.hasUniqueEffect)
+            data.uniqueEffectData.ExecuteEffect(card);
+
         // Play Effect
         effectDic[_effect.effectMode]?.Invoke(_effect, _index);
         // If you need to wait after the effect => wait for X seconds
@@ -254,7 +256,7 @@ public class SpellManager : Singleton<SpellManager>
                     // Launch single visual effect if the target is a player
                     if (playerTarget)
                     {
-                        CreateVisualEffect(0);
+                        CreateVisualEffect(-1);
                     }
                     yield break;
                 }
@@ -281,9 +283,16 @@ public class SpellManager : Singleton<SpellManager>
     {
         PlayerEntity _player = GameManager.Instance.GetPlayer(_ownerTag);
         HandCardComponent _card = _player.HandComponent.GetSelectedSpell();
-        int _index = _player.HandComponent.GetIndexOf(_card);
-        _card.SetIsInteractable(false);
-        _player.HandComponent.PutCardInDiscardPile_ClientRpc(_index);
+        if (_card.Data.keyEffect == CardEffectData.KeyEffect.Etherial)
+        {
+            _player.DeckComponent.AddCardInDeck(playerOwner,_card,true);
+        }
+        else
+        {
+            int _index = _player.HandComponent.GetIndexOf(_card);
+            _card.SetIsInteractable(false);
+            _player.HandComponent.PutCardInDiscardPile_ClientRpc(_index);
+        }
     }
 
     /// <summary>
@@ -355,7 +364,7 @@ public class SpellManager : Singleton<SpellManager>
         if (playerTarget)
         {
             // Launch Effect
-            CreateVisualEffect(0);
+            CreateVisualEffect(-1);
         }
     }
 
@@ -365,23 +374,28 @@ public class SpellManager : Singleton<SpellManager>
 
     void DealDamages(CardEffectData _effect, int _index)
     {
-        TargetedData _target = targets[_index];
-        BoardSlotComponent _slot = GameManager.Instance.Board.GetSlot(_target.cardOwnerTag, _target.slotID);
-        _slot.Card.RemoveHealth(_effect.amount);
-
-        if (playerTarget)
+        if (_index >= 0)
+        {
+            TargetedData _target = targets[_index];
+            BoardSlotComponent _slot = GameManager.Instance.Board.GetSlot(_target.cardOwnerTag, _target.slotID);
+            _slot.Card.RemoveHealth(_effect.amount);
+            
+        }
+        else if (playerTarget)
             playerTarget.LoseHealth(_effect.amount);
 
-        SetWaitTime(0.5f);
+        SetWaitTime(0.2f);
     }
 
     void RestaureHealth(CardEffectData _effect, int _index)
     {
-        TargetedData _target = targets[_index];
-        BoardSlotComponent _slot = GameManager.Instance.Board.GetSlot(_target.cardOwnerTag, _target.slotID);
-        _slot.Card.RemoveHealth(_effect.amount);
-
-        if (playerTarget)
+        if (_index >= 0)
+        {
+            TargetedData _target = targets[_index];
+            BoardSlotComponent _slot = GameManager.Instance.Board.GetSlot(_target.cardOwnerTag, _target.slotID);
+            _slot.Card.RemoveHealth(_effect.amount);
+        }
+        else if (playerTarget)
             playerTarget.RestaureHealth(_effect.amount);
 
         SetWaitTime(0.5f);
@@ -400,9 +414,12 @@ public class SpellManager : Singleton<SpellManager>
 
     void AddDebuff(CardEffectData _effect, int _index)
     {
-        TargetedData _target = targets[_index];
-        BoardSlotComponent _slot = GameManager.Instance.Board.GetSlot(_target.cardOwnerTag, _target.slotID);
-        _slot.Card.AddDebuff(_effect.debuffType, _effect.amount);
+        if (_index >= 0)
+        {
+            TargetedData _target = targets[_index];
+            BoardSlotComponent _slot = GameManager.Instance.Board.GetSlot(_target.cardOwnerTag, _target.slotID);
+            _slot.Card.AddDebuff(_effect.debuffType, _effect.amount);
+        }
 
         SetWaitTime(0.5f);
     }
@@ -415,9 +432,16 @@ public class SpellManager : Singleton<SpellManager>
         SetWaitTime(0.5f);
     }
 
+    void RestaureArcane(CardEffectData _effect,int _index)
+    {
+        playerTarget.AddArcane(_effect.amount);
+
+        SetWaitTime(0.2f);
+    }
+
     void DiscardCard(CardEffectData _effect)
     {
-        int _amount = _effect.keyEffectValue;
+        int _amount = data.keyEffectValue;
         for (int _i = 0; _i < _amount; _i++)
         {
             playerOwner.HandComponent.DiscardRandomCard();
@@ -498,7 +522,7 @@ public class SpellManager : Singleton<SpellManager>
     [ServerRpc]
     public void InitEffect_ServerRpc(PlayerEnum _ownerType, int _vfxIndex)
     {
-        InitEffect_ClientRpc(_ownerType, _vfxIndex, data.cardID, slotIndex, elementaryCombo, targets.ToArray());
+        InitEffect_ClientRpc(_ownerType, _vfxIndex, data.cardID, slotIndex, elementaryCombo, targets.ToArray(), playerTarget ? playerTarget.PlayerTag : PlayerEnum.Player_NONE);
     }
 
     #endregion
@@ -506,26 +530,26 @@ public class SpellManager : Singleton<SpellManager>
     #region ClientRpc
 
     [ClientRpc]
-    public void InitEffect_ClientRpc(PlayerEnum _ownerType, int _vfxIndex, int _cardID, int _slotIndex, bool _elementaryCombo, TargetedData[] _targets)
+    public void InitEffect_ClientRpc(PlayerEnum _ownerType, int _vfxIndex, int _cardID, int _slotIndex, bool _elementaryCombo, TargetedData[] _targets, PlayerEnum _playerTarget)
     {
         BaseCardData _data = CardManager.Instance.GetCard(_cardID);
         CardEffectData _effect = _elementaryCombo ? _data.elementaryComboEffect : _data.effect;
         PlayerEntity _entity = GameManager.Instance.GetPlayer(_ownerType);
         Vector3 _endPos = Vector3.zero;
         Vector3 _startPos = Vector3.zero;
-        TargetedData _target = new TargetedData();
-        if (_targets.Length > 0)
+        TargetedData? _target = null;
+        if (_vfxIndex >= 0)
             _target = _targets[_vfxIndex];
 
         if (_data is SpellCardData)
         {
-            _endPos = GetEndPosFromEffect(_effect, _ownerType, _target);
+            _endPos = GetEndPosFromEffect(_effect, _ownerType, _target, _playerTarget);
             _startPos = _entity.HandComponent.SelectedPosition;
         }
         else
         {
             BoardSlotComponent _slot = GameManager.Instance.Board.GetCardFromCardID(_ownerType, _slotIndex);
-            _endPos = GetEndPosFromEffect(_effect, _ownerType, _target);
+            _endPos = GetEndPosFromEffect(_effect, _ownerType, _target, _playerTarget);
             _startPos = _slot.Card.transform.position;
         }
         InitVisualEffect(_data, _endPos, _startPos, _vfxIndex, _elementaryCombo, _ownerType);
@@ -551,16 +575,12 @@ public class SpellManager : Singleton<SpellManager>
                 if (_effectData.isInstantEffect)
                 {
                     _visualEffect.transform.position = _endPos;
-                    _visualEffect.SetTime(1.0f);
-                    if (IsServer)
-                        StartCoroutine(ChooseEffectToCast(_visualEffect.GetVfxIndex));
-
-                    return;
+                    _visualEffect.SetTime(_effectData.effectTime);
                 }
                 else
                 {
                     _visualEffect.transform.position = _startPos;
-                    _visualEffect.SetDestination(_endPos);
+                    _visualEffect.SetDestination(_endPos + Vector3.up * 0.5f);
                 }
 
                 if (IsServer)
@@ -571,18 +591,23 @@ public class SpellManager : Singleton<SpellManager>
 
     #region Positions
 
-    Vector3 GetEndPosFromEffect(CardEffectData _data, PlayerEnum _playerTag, TargetedData _target)
+    Vector3 GetEndPosFromEffect(CardEffectData _data, PlayerEnum _playerTag, TargetedData? _target, PlayerEnum _playerTarget)
     {
         switch (_data.effectMode)
         {
             case CardEffectData.CardEffectMode.Summon:
                 return GetPosFromSummon(_playerTag);
             case CardEffectData.CardEffectMode.Heal:
-                return GetTargetPos(_target);
+                return GetTargetPos(_target.Value);
             case CardEffectData.CardEffectMode.InstantDamage:
-                return GetTargetPos(_target);
+                {
+                    if (_target == null)
+                        return GetPlayerPos(_playerTarget);
+                    else
+                        return GetTargetPos(_target.Value);
+                }
             case CardEffectData.CardEffectMode.Debuff:
-                return GetTargetPos(_target);
+                return GetTargetPos(_target.Value);
             case CardEffectData.CardEffectMode.Draw:
                 return GetDeckPos(_playerTag);
         }
@@ -605,6 +630,12 @@ public class SpellManager : Singleton<SpellManager>
     Vector3 GetDeckPos(PlayerEnum _ownerTag)
     {
         return GameManager.Instance.Board.GetDeckPosition(_ownerTag);
+    }
+
+    Vector3 GetPlayerPos(PlayerEnum _playerTarget)
+    {
+        PlayerEntity _player = GameManager.Instance.GetPlayer(_playerTarget);
+        return _player.PortraitComponent.transform.position;
     }
 
     #endregion

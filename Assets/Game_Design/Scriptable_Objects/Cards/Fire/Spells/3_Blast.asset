@@ -32,9 +32,6 @@ MonoBehaviour:
     isInstantEffect: 1
     specificElement: 4
     specificKeyEffect: 1
-    keyEffect: 1
-    keyEffectValue: 0
-    triggerEffectOnDiscard: 0
   hasElementaryCombo: 0
   elementaryComboEffect:
     selectionMode: 0
@@ -48,8 +45,9 @@ MonoBehaviour:
     isInstantEffect: 0
     specificElement: 0
     specificKeyEffect: 0
-    keyEffect: 0
-    keyEffectValue: 0
-    triggerEffectOnDiscard: 0
   description: Draws 2 Cards with the <b>Overload</b> effect.
   elementaryComboDescription: 
+  hasUniqueEffect: 0
+  uniqueEffectData: {fileID: 0}
+  keyEffect: 0
+  keyEffectValue: 0

@@ -9,7 +9,7 @@ public class MasterCardData : ScriptableObject
     public List<BaseCardData> fireCards = new();
     public List<BaseCardData> waterCards = new();
     public List<BaseCardData> earthCards = new();
-    public List<BaseCardData> airCards = new();
+    public List<BaseCardData> thunderCards = new();
     public List<BaseCardData> globalMagicCards = new();
 
 #if UNITY_EDITOR
@@ -21,7 +21,7 @@ public class MasterCardData : ScriptableObject
         SetList(fireCards);
         SetList(waterCards);
         SetList(earthCards);
-        SetList(airCards);
+        SetList(thunderCards);
         SetList(globalMagicCards);
     }
 
@@ -49,7 +49,7 @@ public class MasterCardData : ScriptableObject
         PutInDictionary(fireCards, ref _dic);
         PutInDictionary(waterCards, ref _dic);
         PutInDictionary(earthCards, ref _dic);
-        PutInDictionary(airCards, ref _dic);
+        PutInDictionary(thunderCards, ref _dic);
         PutInDictionary(globalMagicCards, ref _dic);
 
         return _dic;

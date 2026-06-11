@@ -84,12 +84,18 @@ public class CardOverlayComponent : MonoBehaviour
             nameText.text = _data.cardName;
             costText.text = _data.cardCost.ToString();
 
+            string _descriptionText = "";
             if (data.hasEffect || data.hasKeyEffect)
             {
-                string _text = data.description;
-                _text = data.effect.ChangeSpecialText(_text);
-                description.text = _text;
+                _descriptionText = data.description;
             }
+            if (data.hasUniqueEffect)
+            {
+                CardComponent _card = GetComponent<CardComponent>();
+                _descriptionText = data.uniqueEffectData.ChangeSpecificText(_card, _descriptionText);
+            }
+            description.text = _descriptionText;
+
         }
 
         SetColorFromType();
@@ -145,16 +151,16 @@ public class CardOverlayComponent : MonoBehaviour
         switch (data.cardElement)
         {
             case CardElement.Fire:
-                _color = new Color(1.0f, 0.2f, 0.2f);
+                _color = new Color(1.0f, 0.5f, 0.25f);
                 break;
-            case CardElement.Water:
-                _color = new Color(0.5f, 0.5f, 1.0f);
+            case CardElement.Ice:
+                _color = new Color(0.5f, 0.8f, 1.0f);
                 break;
             case CardElement.Earth:
-                _color = new Color(0.5f, 1.0f, 0.5f);
+                _color = new Color(0.75f, 1.0f, 0.5f);
                 break;
-            case CardElement.Air:
-                _color = new Color(0.5f, 1.0f, 1.0f);
+            case CardElement.Thunder:   
+                _color = new Color(0.75f, 0.5f, 1.0f);
                 break;
             default:
                 break;

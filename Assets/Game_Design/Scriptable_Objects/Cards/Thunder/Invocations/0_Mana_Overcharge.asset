@@ -10,48 +10,46 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1f2123f9f594a14ab0c9c91591bcc6d, type: 3}
-  m_Name: Gust
+  m_Name: 0_Mana_Overcharge
   m_EditorClassIdentifier: 
-  cardID: 16
-  cardName: Gust
+  cardID: 13
+  cardName: Mana Overcharge
   cardElement: 3
   cardRarity: 0
-  cardCost: 1
+  cardCost: 0
   hasEffect: 1
-  hasKeyEffect: 0
+  hasKeyEffect: 1
   isHiddenEffect: 0
   effect:
-    selectionMode: 1
+    selectionMode: 3
     effectMode: 3
     effectModifier: 0
     triggerMode: 0
     cardReference: {fileID: 0}
     debuffType: 0
-    amount: 10
+    amount: 0
     effectAsset: {fileID: 8926484042661614526, guid: bee68f0be249a854386188db888ac863, type: 3}
     isInstantEffect: 0
     specificElement: 0
     specificKeyEffect: 0
-    keyEffect: 0
-    keyEffectValue: 0
-    triggerEffectOnDiscard: 0
-  hasElementaryCombo: 1
+  hasElementaryCombo: 0
   elementaryComboEffect:
     selectionMode: 0
-    effectMode: 3
+    effectMode: 0
     effectModifier: 0
     triggerMode: 0
     cardReference: {fileID: 0}
     debuffType: 0
-    amount: 10
-    effectAsset: {fileID: 8926484042661614526, guid: bee68f0be249a854386188db888ac863, type: 3}
+    amount: 0
+    effectAsset: {fileID: 0}
     isInstantEffect: 0
     specificElement: 0
     specificKeyEffect: 0
-    keyEffect: 0
-    keyEffectValue: 0
-    triggerEffectOnDiscard: 0
-  description: 'Deals 10 damages.
+  description: '<b>Etherial</b>
 
-    <b>Elementary Combo :</b> Deals 10 extra damages.'
-  elementaryComboDescription: Deals 10 extra damages.
+    TEST'
+  elementaryComboDescription: 
+  hasUniqueEffect: 0
+  uniqueEffectData: {fileID: 0}
+  keyEffect: 2
+  keyEffectValue: 0
