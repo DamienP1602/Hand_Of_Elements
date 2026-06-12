@@ -30,6 +30,7 @@ MonoBehaviour:
     amount: 1
     effectAsset: {fileID: 8926484042661614526, guid: 2a0dad5688e648244a09c652f08bc391, type: 3}
     isInstantEffect: 1
+    effectTime: 0
     specificElement: 0
     specificKeyEffect: 0
   hasElementaryCombo: 0
@@ -43,6 +44,7 @@ MonoBehaviour:
     amount: 0
     effectAsset: {fileID: 0}
     isInstantEffect: 0
+    effectTime: 0
     specificElement: 0
     specificKeyEffect: 0
   description: Summon 1 Lesser Earth Elemental 10/10.

@@ -30,6 +30,7 @@ MonoBehaviour:
     amount: 0
     effectAsset: {fileID: 8926484042661614526, guid: bee68f0be249a854386188db888ac863, type: 3}
     isInstantEffect: 0
+    effectTime: 0
     specificElement: 0
     specificKeyEffect: 0
   hasElementaryCombo: 0
@@ -43,6 +44,7 @@ MonoBehaviour:
     amount: 0
     effectAsset: {fileID: 0}
     isInstantEffect: 0
+    effectTime: 0
     specificElement: 0
     specificKeyEffect: 0
   description: '<b>Etherial</b>

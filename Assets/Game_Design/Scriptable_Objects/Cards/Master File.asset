@@ -33,6 +33,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 975e092b70c97f9438efae98d7fb799f, type: 2}
   - {fileID: 11400000, guid: 04b96c01c86ab194da9e22984663fd9e, type: 2}
   - {fileID: 11400000, guid: 6a35c30123493ed43b923802715e2d9a, type: 2}
+  - {fileID: 11400000, guid: 5fe869bf607538d44a8dc512d72dbb14, type: 2}
   - {fileID: 11400000, guid: d3ea1a1db83014942b5e5084e8fc0f27, type: 2}
   - {fileID: 11400000, guid: 73de785b3489e6547b1d2f71ff66a09d, type: 2}
   globalMagicCards:

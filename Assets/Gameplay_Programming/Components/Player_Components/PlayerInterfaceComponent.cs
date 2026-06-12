@@ -20,7 +20,7 @@ public class PlayerInterfaceComponent : MonoBehaviour
         visualCard.gameObject.SetActive(false);
     }
 
-    public void SetArcaneText(int _amount)
+    public void SetArcaneText(int _amount, int _maxAmount)
     {
         int _turnAmount = GameManager.Instance.PlayerTurnCount;
         _turnAmount = Mathf.Clamp(_turnAmount, 0, 10);

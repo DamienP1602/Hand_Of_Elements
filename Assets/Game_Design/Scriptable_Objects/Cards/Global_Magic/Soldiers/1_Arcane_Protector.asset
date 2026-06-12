@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c8e7bd1d286b25499e20359c7a5d484, type: 3}
   m_Name: 1_Arcane_Protector
   m_EditorClassIdentifier: 
-  cardID: 19
+  cardID: 20
   cardName: Arcane Protector
   cardElement: 4
   cardRarity: 1
@@ -30,6 +30,7 @@ MonoBehaviour:
     amount: 0
     effectAsset: {fileID: 0}
     isInstantEffect: 0
+    effectTime: 0
     specificElement: 0
     specificKeyEffect: 0
   hasElementaryCombo: 0
@@ -43,6 +44,7 @@ MonoBehaviour:
     amount: 0
     effectAsset: {fileID: 0}
     isInstantEffect: 0
+    effectTime: 0
     specificElement: 0
     specificKeyEffect: 0
   description: <b>Mana Shield</b>

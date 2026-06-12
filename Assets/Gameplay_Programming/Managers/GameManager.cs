@@ -152,8 +152,8 @@ public class GameManager : Singleton<GameManager>
             }
         }
 
-        // Set new arcane amount clamped between 0 and 10
-        _player.SetArcaneAmount(turnAmount.Value);
+        // Set the arcane amount at (current +1 clamped to 10) and restaures the current arcane amount to the new amount;
+        _player.NewTurnArcaneGain();
 
         // Disable button and show it to the current player
         widget.SetButtonIsVisible(false);
@@ -191,7 +191,7 @@ public class GameManager : Singleton<GameManager>
 
         if (_card && _slot)
         {
-            _player.RemoveArcane(_card.Data.cardCost);
+            _player.RemoveCurrentArcane(_card.Data.cardCost);
             _slot.PutCardInSlot(_card.transform.position, _card.ID);
             _player.HandComponent.RemoveSelectedCard();
             _card.SetIsInteractable(false);

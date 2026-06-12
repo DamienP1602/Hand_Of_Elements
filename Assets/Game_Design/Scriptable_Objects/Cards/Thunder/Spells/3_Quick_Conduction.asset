@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1f2123f9f594a14ab0c9c91591bcc6d, type: 3}
   m_Name: 3_Quick_Conduction
   m_EditorClassIdentifier: 
-  cardID: 18
+  cardID: 19
   cardName: Quick Conduction
   cardElement: 3
   cardRarity: 3
@@ -28,8 +28,9 @@ MonoBehaviour:
     cardReference: {fileID: 0}
     debuffType: 0
     amount: 3
-    effectAsset: {fileID: 0}
-    isInstantEffect: 0
+    effectAsset: {fileID: 8926484042661614526, guid: 9eecdb394bff8c14d957af20e14be1de, type: 3}
+    isInstantEffect: 1
+    effectTime: 0.2
     specificElement: 3
     specificKeyEffect: 0
   hasElementaryCombo: 1
@@ -43,6 +44,7 @@ MonoBehaviour:
     amount: 2
     effectAsset: {fileID: 0}
     isInstantEffect: 0
+    effectTime: 0
     specificElement: 0
     specificKeyEffect: 0
   description: 'Draws 3 Thunder Cards.

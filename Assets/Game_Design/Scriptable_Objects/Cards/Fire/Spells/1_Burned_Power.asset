@@ -30,6 +30,7 @@ MonoBehaviour:
     amount: 40
     effectAsset: {fileID: 8926484042661614526, guid: b1a70f576796f9f4e90ac9a9b604f614, type: 3}
     isInstantEffect: 0
+    effectTime: 0
     specificElement: 0
     specificKeyEffect: 0
   hasElementaryCombo: 0
@@ -43,6 +44,7 @@ MonoBehaviour:
     amount: 0
     effectAsset: {fileID: 0}
     isInstantEffect: 0
+    effectTime: 0
     specificElement: 0
     specificKeyEffect: 0
   description: '<b>Overload (1)</b>

@@ -30,6 +30,7 @@ MonoBehaviour:
     amount: 0
     effectAsset: {fileID: 0}
     isInstantEffect: 0
+    effectTime: 0
     specificElement: 0
     specificKeyEffect: 0
   hasElementaryCombo: 0
@@ -43,6 +44,7 @@ MonoBehaviour:
     amount: 0
     effectAsset: {fileID: 0}
     isInstantEffect: 0
+    effectTime: 0
     specificElement: 0
     specificKeyEffect: 0
   description: 

@@ -24,10 +24,10 @@ public class PlayerEntity : NetworkBehaviour
 
     [Header("Player Parameters")]
     [SerializeField] PlayerEnum player;
-    [SerializeField] int maxArcaneAmount = 10;
+    [SerializeField] int arcanelimit = 10;
 
     [Header("Network Variables")]
-    [SerializeField] NetworkVariable<int> arcaneAmount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    [SerializeField] NetworkVariable<Vector2Int> arcaneAmount = new NetworkVariable<Vector2Int>(Vector2Int.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     [SerializeField] NetworkVariable<CardElement> lastElementPlayed = new NetworkVariable<CardElement>(CardElement.NONE, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     [SerializeField] NetworkVariable<int> healthAmount = new NetworkVariable<int>(400, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
@@ -43,7 +43,8 @@ public class PlayerEntity : NetworkBehaviour
     #region Getters
 
     public PlayerEnum PlayerTag => player;
-    public int ArcaneAmount => arcaneAmount.Value;
+    public int ArcaneAmount => currentArcaneAmount.Value;
+    public int MaxArcaneAmount => intarcaneAmount.Value.y;
     public CardElement LastElementPlayed => lastElementPlayed.Value;
     public int AmountOfOverload => amountOfOverload.Value;
 
@@ -83,8 +84,7 @@ public class PlayerEntity : NetworkBehaviour
         DrawInitCards_ServerRpc();
 
         InteractComponent.SetOwner(this);
-        InterfaceComponent.gameObject.SetActive(true);
-        
+        InterfaceComponent.gameObject.SetActive(true);        
 
         InitInputs();
         InitNetworkEvents();
@@ -103,7 +103,6 @@ public class PlayerEntity : NetworkBehaviour
 
     void InitNetworkEvents()
     {
-        arcaneAmount.OnValueChanged += (_old, _new) => InterfaceComponent.SetArcaneText(_new);
         amountOfOverload.OnValueChanged += (_old, _new) => overloadAmountChanged?.Invoke(_new);
     }
 
@@ -171,28 +170,46 @@ public class PlayerEntity : NetworkBehaviour
     /// <summary>
     /// Server Function
     /// </summary>
-    public void AddArcane(int _amount)
+    public void AddArcaneForThisTurn(int _amount)
     {
-        int _newAmount = Mathf.Clamp(arcaneAmount.Value + _amount, 0, maxArcaneAmount);
-        arcaneAmount.Value = _newAmount;
+        int _newAmount = Mathf.Clamp(currentArcaneAmount.Value + _amount, 0, maxArcaneAmount.Value);
+        currentArcaneAmount.Value = _newAmount;
+
+        InterfaceComponent.SetArcaneText(_newAmount, currentArcaneAmount.Value);
     }
 
     /// <summary>
     /// Server Function
     /// </summary>
-    public void RemoveArcane(int _amount)
+    public void RemoveCurrentArcane(int _amount)
     {
-        int _newAmount = Mathf.Clamp(arcaneAmount.Value - _amount, 0, maxArcaneAmount);
-        arcaneAmount.Value = _newAmount;
+        int _newAmount = Mathf.Clamp(currentArcaneAmount.Value - _amount, 0, arcanelimit);
+        currentArcaneAmount.Value = _newAmount;
+
+        InterfaceComponent.SetArcaneText(_newAmount, currentArcaneAmount.Value);
     }
 
     /// <summary>
     /// Server Function
     /// </summary>
-    public void SetArcaneAmount(int _amount)
+    public void AddArcaneAmount(int _amount)
     {
-        int _newAmount = Mathf.Clamp(_amount, 0, maxArcaneAmount);
-        arcaneAmount.Value = _newAmount;
+        int _newAmount = Mathf.Clamp(maxArcaneAmount.Value + _amount, 0, arcanelimit);
+        maxArcaneAmount.Value = _amount;
+
+        InterfaceComponent.SetArcaneText(currentArcaneAmount.Value, _newAmount);
+    }
+
+    /// <summary>
+    /// Server Function
+    /// </summary>
+    public void NewTurnArcaneGain()
+    {
+        int _newAmount = Mathf.Clamp(maxArcaneAmount.Value + 1, 0, arcanelimit);
+        maxArcaneAmount.Value = _newAmount;
+        currentArcaneAmount.Value = _newAmount;
+
+        InterfaceComponent.SetArcaneText(_newAmount, _newAmount);
     }
 
     /// <summary>

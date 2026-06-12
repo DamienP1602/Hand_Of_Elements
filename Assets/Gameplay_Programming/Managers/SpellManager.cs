@@ -80,6 +80,7 @@ public class SpellManager : Singleton<SpellManager>
         effectDic.Add(CardEffectData.CardEffectMode.Debuff, AddDebuff);
         effectDic.Add(CardEffectData.CardEffectMode.Draw, DrawCard);
         effectDic.Add(CardEffectData.CardEffectMode.RestaureArcane, RestaureArcane);
+        effectDic.Add(CardEffectData.CardEffectMode.GainArcane, GainArcane);
 
         // Can Lauch
         canLaunchDic.Add(CardEffectData.CardEffectSelectionMode.NoTarget, () => true);
@@ -155,7 +156,7 @@ public class SpellManager : Singleton<SpellManager>
 
         if (_canInHand)
         {
-            playerOwner.RemoveArcane(data.cardCost);
+            playerOwner.RemoveCurrentArcane(data.cardCost);
         }
     }
 
@@ -170,7 +171,7 @@ public class SpellManager : Singleton<SpellManager>
         // Launch Effect
         CreateVisualEffect(0);
 
-        playerOwner.RemoveArcane(data.cardCost);
+        playerOwner.RemoveCurrentArcane(data.cardCost);
 
         // Stop Card Selection
         playerOwner.InteractComponent.SetSelectCard(false);
@@ -434,7 +435,14 @@ public class SpellManager : Singleton<SpellManager>
 
     void RestaureArcane(CardEffectData _effect,int _index)
     {
-        playerTarget.AddArcane(_effect.amount);
+        playerTarget.AddArcaneForThisTurn(_effect.amount);
+
+        SetWaitTime(0.2f);
+    }
+
+    void GainArcane(CardEffectData _effect, int _index)
+    {
+        playerTarget.AddArcaneAmount(_effect.amount);
 
         SetWaitTime(0.2f);
     }
